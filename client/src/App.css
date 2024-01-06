@@ -24,6 +24,12 @@
   color: white;
 }
 
+#home-link{
+  color: white;
+  text-decoration: none;
+  position: absolute;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -36,3 +42,5 @@
     transform: rotate(360deg);
   }
 }
+
+
