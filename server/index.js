@@ -102,6 +102,77 @@ app.get("/home", async (req, res) => {
     }
 });
 
+app.get("/anime/:id", async (req, res) => {
+    try {
+        const idAnime = await pool.query("SELECT * FROM ANIME where ANIME_ID = $1", [req.params.id]);
+        res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
+        res.json(idAnime.rows);
+    } catch (error) {
+        console.error(err.message);
+    }
+});
+
+app.put("/anime/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        anime_name,
+        number_of_episodes,
+        type,
+        age_rating,
+        demographic,
+        season,
+        year,
+        source,
+        description,
+        title_screen,
+        next_season,
+        previous_season,
+      } = req.body;
+  
+      const updateAnime = await pool.query(
+        `
+        UPDATE ANIME
+        SET
+          ANIME_NAME = $1,
+          NUMBER_OF_EPISODES = $2,
+          "TYPE" = $3,
+          AGE_RATING = $4,
+          DEMOGRAPHIC = $5,
+          SEASON = $6,
+          YEAR = $7,
+          "SOURCE" = $8,
+          DESCRIPTION = $9,
+          TITLE_SCREEN = $10,
+          NEXT_SEASON = $11,
+          PREVIOUS_SEASON = $12
+        WHERE ANIME_ID = $13
+        `,
+        [
+          anime_name,
+          number_of_episodes,
+          type,
+          age_rating,
+          demographic,
+          season,
+          year,
+          source,
+          description,
+          title_screen,
+          next_season,
+          previous_season,
+          id,
+        ]
+      );
+  
+      res.json("Anime was updated");
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json("Internal Server Error");
+    }
+  });
+  
+
 // -----------------------------------------------creating anime
 // ANIME_ID INT PRIMARY KEY ,
 // ANIME_NAME VARCHAR(255),

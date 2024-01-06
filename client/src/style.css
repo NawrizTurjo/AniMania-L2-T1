@@ -77,7 +77,6 @@ body{
     clear: both;
 }
 
-/* Add this to your styles.css or Home.css */
 .anime-list {
     list-style: none;
     display: flex;
@@ -90,8 +89,14 @@ body{
   .anime-list-item {
     border: 1px solid #ccc;
     padding: 20px;
-    /* flex: 1 0 calc(100% - 40px); */
+    flex: 1 0 calc(100% - 40px);
     box-sizing: border-box;
+  }
+
+  .pagination {
+      display: flex;  
+      align-items: center;
+      flex-wrap: wrap;
   }
   
   /* Responsive Styles */
