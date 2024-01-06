@@ -90,7 +90,7 @@ body{
   .anime-list-item {
     border: 1px solid #ccc;
     padding: 20px;
-    flex: 1 0 calc(25% - 40px);
+    /* flex: 1 0 calc(100% - 40px); */
     box-sizing: border-box;
   }
   

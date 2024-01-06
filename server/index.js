@@ -92,7 +92,17 @@ app.put("/moderators/:id", async (req, res) => {
     }
 });
 
-//-----------------------------------------------creating anime
+app.get("/home", async (req, res) => {
+    try {
+        const allAnimes = await pool.query("SELECT * FROM ANIME");
+        res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
+        res.json(allAnimes.rows);
+    } catch (error) {
+        console.error(err.message);
+    }
+});
+
+// -----------------------------------------------creating anime
 // ANIME_ID INT PRIMARY KEY ,
 // ANIME_NAME VARCHAR(255),
 // NUMBER_OF_EPISODES INT,
@@ -138,7 +148,7 @@ app.put("/moderators/:id", async (req, res) => {
 
 
 
-//-----------------------------------------------------------------CREATING TAGS
+// -----------------------------------------------------------------CREATING TAGS
 
 // app.post("/animania/:TAG_ID/:TAG_NAME",async(req,res) =>{
 //     try {
@@ -154,7 +164,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//----------------------------------------------------------------CREATING TAG-ID-TABLE
+// ----------------------------------------------------------------CREATING TAG-ID-TABLE
 
 // app.post("/animania/:ANIME_ID/:TAG_ID",async(req,res) =>{
 //     try {
@@ -170,7 +180,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//-----------------------------------------------------------------CREATING GENRES
+// -----------------------------------------------------------------CREATING GENRES
 
 // app.post("/animania/:ANIME_ID/:GENRE_NAME",async(req,res) =>{
 //     try {
@@ -186,7 +196,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//-----------------------------------------------------------------CREATING STAFFS
+// -----------------------------------------------------------------CREATING STAFFS
 
 // ANIME_ID INT REFERENCES ANIME(ANIME_ID),
 //     STAFF_ID INT,
@@ -220,7 +230,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//----------------------------------------------------------CREATING CHARACTERS
+// ----------------------------------------------------------CREATING CHARACTERS
 
 // ANIME_ID INT REFERENCES ANIME(ANIME_ID),
 //     CHARACTER_ID INT,
@@ -247,7 +257,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//-------------------------------------------------------------------------CREATING STUDIO
+// -------------------------------------------------------------------------CREATING STUDIO
 
 // STUDIO_ID INT PRIMARY KEY,
 //     STUDIO_NAME VARCHAR(255),
@@ -274,7 +284,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//--------------------------------------------------------------------CREATING ANIME STUDIO RELATIONSHIP
+// --------------------------------------------------------------------CREATING ANIME STUDIO RELATIONSHIP
 
 // ANIME_ID INT REFERENCES ANIME(ANIME_ID),
 //     STUDIO_ID INT REFERENCES STUDIO(STUDIO_ID)
@@ -293,7 +303,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//----------------------------------------------------------------CREATING EPISODES
+// ----------------------------------------------------------------CREATING EPISODES
 
 // ANIME_ID INT REFERENCES ANIME(ANIME_ID),
 //     EPISODE_NO INT,
@@ -326,7 +336,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//------------------------------------------------------------CREATING SUBTITLES
+// ------------------------------------------------------------CREATING SUBTITLES
 
 // ANIME_ID INT,
 //     EPISODE_NO INT,
@@ -354,7 +364,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//----------------------------------------------------------------CREATING SOUND_TRACK
+// ----------------------------------------------------------------CREATING SOUND_TRACK
 
 // CREATE TABLE SOUND_TRACKS (
 //     ANIME_ID INT REFERENCES ANIME(ANIME_ID),
@@ -380,7 +390,7 @@ app.put("/moderators/:id", async (req, res) => {
 //     }
 // });
 
-//----------------------------------------------------------CREATING MUSIC_GENRES
+// ----------------------------------------------------------CREATING MUSIC_GENRES
 
 // CREATE TABLE MUSIC_GENRES (
 //     ANIME_ID INT,
@@ -403,7 +413,7 @@ app.put("/moderators/:id", async (req, res) => {
 // });
 
 
-//-----------------------------------------------------------------CREATING
+// -----------------------------------------------------------------CREATING
 
 // CREATE TABLE WATCH_HISTORY(
 //     USER_ID INT REFERENCES "USER"(USER_ID),
@@ -413,12 +423,15 @@ app.put("/moderators/:id", async (req, res) => {
 //     VIEW_NO INT,
 
 
-app.use(cors());
-app.use(express.json());
+// Allow requests from localhost:3001
+app.use(cors({ origin: 'http://localhost:3001' }));
 
-app.listen(5000, () =>
-{
-    console.log("started...");
+// Other configurations and routes
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
+
 
 
