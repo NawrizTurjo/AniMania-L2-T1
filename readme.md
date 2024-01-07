@@ -77,6 +77,6 @@ If you're interested in contributing to AniMania, follow these steps:
 
 ## Team Members
 
-- List of 2105032 (Nawriz Ahmed Turjo) and 2105048(Shams Hossain Simanto).
+- 2105032 (Nawriz Ahmed Turjo) and 2105048(Shams Hossain Simanto).
 
 Feel free to explore and enhance the AniMania project. Happy coding! 🎉
