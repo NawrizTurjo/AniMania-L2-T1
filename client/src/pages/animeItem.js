@@ -3,7 +3,7 @@ import React from "react";
 const AnimeListItem = ({
   title,
   ep,
-  type,
+  anime_type,
   age_rating,
   demo,
   season,
@@ -20,7 +20,7 @@ const AnimeListItem = ({
     <h6>{title}</h6>
     <p>
       Num of episodes: {ep != null ? ep : "N/A"} | Type:{" "}
-      {type != null ? type : "N/A"} | {age_rating != null ? age_rating : "N/A"}
+      {anime_type != null ? anime_type : "N/A"} | {age_rating != null ? age_rating : "N/A"}
     </p>
     <p>Demographic: {demo != null ? demo : "N/A"}</p>
     <p>
@@ -42,7 +42,7 @@ const AnimeItem =({currentanimes,loading})=>{
                   key={index}
                   title={anime.anime_name}
                   ep={anime.number_of_episodes}
-                  type={anime.type}
+                  anime_type={anime.anime_type}
                   age_rating={anime.age_rating}
                   demo={anime.demographic}
                   season={anime.season}

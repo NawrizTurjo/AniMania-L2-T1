@@ -165,7 +165,7 @@ app.put("/moderators/:id", async (req, res) => {
 
 app.get("/home", async (req, res) => {
   try {
-    const allAnimes = await pool.query("SELECT * FROM ANIME");
+    const allAnimes = await pool.query("SELECT * FROM ANIME ORDER BY ANIME_ID");
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
   } catch (error) {
@@ -193,12 +193,12 @@ app.put("/anime/:id", async (req, res) => {
     const {
       anime_name,
       number_of_episodes,
-      type,
+      anime_type,
       age_rating,
       demographic,
       season,
       year,
-      source,
+      anime_source,
       description,
       title_screen,
       next_season,
@@ -206,16 +206,16 @@ app.put("/anime/:id", async (req, res) => {
     } = req.body;
 
     const updateAnime = await pool.query(
-      `UPDATE ANIME SET ANIME_NAME = $1, NUMBER_OF_EPISODES = $2,"TYPE"=$3,AGE_RATING=$4,DEMOGRAPHIC=$5,SEASON=$6,YEAR=$7,"SOURCE"=$8,DESCRIPTION=$9,TITLE_SCREEN = $10,NEXT_SEASON=$11,PREVIOUS_SEASON=$12 WHERE ANIME_ID = $13`,
+      `UPDATE ANIME SET ANIME_NAME = $1, NUMBER_OF_EPISODES = $2,ANIME_TYPE=$3,AGE_RATING=$4,DEMOGRAPHIC=$5,SEASON=$6,YEAR=$7,ANIME_SOURCE=$8,DESCRIPTION=$9,TITLE_SCREEN = $10,NEXT_SEASON=$11,PREVIOUS_SEASON=$12 WHERE ANIME_ID = $13`,
       [
         anime_name,
         number_of_episodes,
-          type,
+          anime_type,
           age_rating,
           demographic,
           season,
           year,
-          source,
+          anime_source,
           description,
           title_screen,
           next_season,

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate  } from "react-router-dom";
 
-const AnimePage = () => {
+const AnimePage = ({toggleRerender}) => {
   const [anime, setAnime] = useState({
     anime_name: "",
     number_of_episodes: 0,
-    type: "",
+    anime_type: "",
     age_rating: "",
     demographic: "",
     season: "",
     year: 0,
-    source: "",
+    anime_source: "",
     description: "",
     title_screen: "",
     next_season: "",
@@ -35,25 +35,13 @@ const AnimePage = () => {
   }, [id]);
 
 
-  // useEffect(() => {
-    
-  //   const fetchAnimeData = async () => {
-  //     try {
-  //       const response = await axios.get(`http://localhost:3000/anime/${id}`);
-  //       setAnime(response.data);
-  //     } catch (error) {
-  //       console.error(error.message);
-  //     }
-  //   };
-
-  //   fetchAnimeData();
-  // }, [id]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAnime((prevData) => ({ ...prevData, [name]: value }));
+    toggleRerender();
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,10 +52,17 @@ const AnimePage = () => {
         },
       });
       console.log("Anime updated successfully!",res.data);
+      goToHome();
+      toggleRerender();
     } catch (error) {
       console.error(error.message);
     }
   };
+
+  const goToHome = () => {
+    window.location.href = "/home";
+  };
+  
 
   return (
     <div>
@@ -77,7 +72,7 @@ const AnimePage = () => {
         <form onSubmit={handleSubmit}>
           <label>Anime Name:</label>
           <input
-            type="text"
+            anime_type="text"
             name="anime_name"
             value={anime.anime_name}
             onChange={handleChange}
@@ -85,23 +80,23 @@ const AnimePage = () => {
 
           <label>Number of Episodes:</label>
           <input
-            type="text"
+            anime_type="text"
             name="number_of_episodes"
             value={anime.number_of_episodes}
             onChange={handleChange}
           />
 
-          <label>Type:</label>
+          <label>anime_type:</label>
           <input
-            type="text"
-            name="type"
-            value={anime.type}
+            anime_type="text"
+            name="anime_type"
+            value={anime.anime_type}
             onChange={handleChange}
           />
 
           <label>Age Rating:</label>
           <input
-            type="text"
+            anime_type="text"
             name="age_rating"
             value={anime.age_rating}
             onChange={handleChange}
@@ -109,7 +104,7 @@ const AnimePage = () => {
 
           <label>Demographic:</label>
           <input
-            type="text"
+            anime_type="text"
             name="demographic"
             value={anime.demographic}
             onChange={handleChange}
@@ -117,7 +112,7 @@ const AnimePage = () => {
 
           <label>Season:</label>
           <input
-            type="text"
+            anime_type="text"
             name="season"
             value={anime.season}
             onChange={handleChange}
@@ -125,30 +120,31 @@ const AnimePage = () => {
 
           <label>Year:</label>
           <input
-            type="text"
+            anime_type="text"
             name="year"
             value={anime.year}
             onChange={handleChange}
           />
 
-          <label>Source:</label>
+          <label>anime_source:</label>
           <input
-            type="text"
-            name="source"
-            value={anime.source}
+            anime_type="text"
+            name="anime_source"
+            value={anime.anime_source}
             onChange={handleChange}
           />
 
           <label>Description:</label>
           <input
-            type="text"
+            anime_type="text"
             name="description"
             value={anime.description}
             onChange={handleChange}
           />
 
+          <label>Thumbnail Url:</label>
           <input
-            type="text"
+            anime_type="text"
             name="title_screen"
             value={anime.title_screen}
             onChange={handleChange}
@@ -156,7 +152,7 @@ const AnimePage = () => {
 
           <label>Next Season:</label>
           <input
-            type="text"
+            anime_type="text"
             name="next_season"
             value={anime.next_season}
             onChange={handleChange}
@@ -164,12 +160,12 @@ const AnimePage = () => {
 
           <label>Previous Season:</label>
           <input
-            type="text"
+            anime_type="text"
             name="previous_season"
             value={anime.previous_season}
             onChange={handleChange}
           />
-          <input type="submit" value="Submit" onClick={handleSubmit}/>
+          <input anime_type="submit" value="Submit" onClick={handleSubmit}/>
         </form>
       )}
     </div>
