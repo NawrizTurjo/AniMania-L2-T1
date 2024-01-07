@@ -3,18 +3,28 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 const AnimePage = () => {
-  const [anime, setAnime] = useState({});
+  const [anime, setAnime] = useState({
+    anime_name: "",
+    number_of_episodes: 0,
+    type: "",
+    age_rating: "",
+    demographic: "",
+    season: "",
+    year: 0,
+    source: "",
+    description: "",
+    title_screen: "",
+    next_season: "",
+    previous_season: "",
+  });
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  var title;
   const getAnime = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/anime/${id}`);
       setAnime(res.data[0]);
       setLoading(false);
       console.log(res.data);
-      title = res.data[0].anime_name;
-      console.log(title);
     } catch (err) {
       console.error(err.message);
     }
@@ -25,19 +35,19 @@ const AnimePage = () => {
   }, [id]);
 
 
-  useEffect(() => {
+  // useEffect(() => {
     
-    const fetchAnimeData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3000/anime/${id}`);
-        setAnime(response.data);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
+  //   const fetchAnimeData = async () => {
+  //     try {
+  //       const response = await axios.get(`http://localhost:3000/anime/${id}`);
+  //       setAnime(response.data);
+  //     } catch (error) {
+  //       console.error(error.message);
+  //     }
+  //   };
 
-    fetchAnimeData();
-  }, [id]);
+  //   fetchAnimeData();
+  // }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,8 +58,12 @@ const AnimePage = () => {
     e.preventDefault();
 
     try {
-      await axios.put(`http://localhost:3000/anime/${id}`, anime);
-      console.log("Anime updated successfully!");
+      const res = await axios.put(`http://localhost:3000/anime/${id}`, JSON.stringify(anime),{
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log("Anime updated successfully!",res.data);
     } catch (error) {
       console.error(error.message);
     }
@@ -133,7 +147,6 @@ const AnimePage = () => {
             onChange={handleChange}
           />
 
-          <label>Title Screen:</label>
           <input
             type="text"
             name="title_screen"
@@ -156,7 +169,7 @@ const AnimePage = () => {
             value={anime.previous_season}
             onChange={handleChange}
           />
-          <input type="submit" value="Submit" />
+          <input type="submit" value="Submit" onClick={handleSubmit}/>
         </form>
       )}
     </div>

@@ -12,7 +12,7 @@ const AnimeListItem = ({
   id,
 }) => (
   <li className="anime-list-item">
-    <a href={`http://localhost:3001/home/anime/${id}`}>
+    <a href={`http://localhost:3001/anime/${id}`}>
       {thumbnail && (
         <img src={thumbnail} alt={`${title} Thumbnail`} className="thumbnail" />
       )}

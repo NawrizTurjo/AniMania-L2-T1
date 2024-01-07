@@ -1,156 +1,215 @@
-const express=require("express");
-const app=express();
-const cors=require("cors");
-const pool=require("./db");
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const pool = require("./db");
 
+const corsOptions = {
+  origin: "http://localhost:3001",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 //--------------------------------------creating user
 
 app.post("/users", async (req, res) => {
-    try {
-        const { user_name, password, email, role, bio, most_favourite_anime, first_access, last_access, active_time } = req.body;
+  try {
+    const {
+      user_name,
+      password,
+      email,
+      role,
+      bio,
+      most_favourite_anime,
+      first_access,
+      last_access,
+      active_time,
+    } = req.body;
 
-        const newUser = await pool.query(
-            "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-            [user_name, password, email, role]
-        );
+    const newUser = await pool.query(
+      "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
+      [user_name, password, email, role]
+    );
 
-        const userId = newUser.rows[0].id;
+    const userId = newUser.rows[0].id;
 
-        await pool.query(
-            "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
-            [userId, bio, most_favourite_anime, first_access, last_access, active_time]
-        );
+    await pool.query(
+      "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
+      [
+        userId,
+        bio,
+        most_favourite_anime,
+        first_access,
+        last_access,
+        active_time,
+      ]
+    );
 
-        res.json("User created successfully");
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-    }
+    res.json("User created successfully");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 //---------------------------------------------creating moderator
 
 app.post("/moderators", async (req, res) => {
-    try {
-        const { user_name, password, email, role, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments } = req.body;
+  try {
+    const {
+      user_name,
+      password,
+      email,
+      role,
+      added_series,
+      deleted_series,
+      added_episodes,
+      deleted_episodes,
+      review_verifications,
+      filtered_comments,
+    } = req.body;
 
-        const newModerator = await pool.query(
-            "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-            [user_name, password, email, role]
-        );
+    const newModerator = await pool.query(
+      "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
+      [user_name, password, email, role]
+    );
 
-        const moderatorId = newModerator.rows[0].id;
+    const moderatorId = newModerator.rows[0].id;
 
-        await pool.query(
-            "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-            [moderatorId, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments]
-        );
+    await pool.query(
+      "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      [
+        moderatorId,
+        added_series,
+        deleted_series,
+        added_episodes,
+        deleted_episodes,
+        review_verifications,
+        filtered_comments,
+      ]
+    );
 
-        res.json("Moderator created successfully");
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-    }
+    res.json("Moderator created successfully");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 //-----------------------------------------------updating user
 
 app.put("/users/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { bio, most_favourite_anime, first_access, last_access, active_time } = req.body;
+  try {
+    const { id } = req.params;
+    const {
+      bio,
+      most_favourite_anime,
+      first_access,
+      last_access,
+      active_time,
+    } = req.body;
 
-        const updateUser = await pool.query(
-            "UPDATE user SET bio = $1, most_favourite_anime = $2, first_access = $3, last_access = $4, active_time = $5 WHERE user_id = $6",
-            [bio, most_favourite_anime, first_access, last_access, active_time, id]
-        );
+    const updateUser = await pool.query(
+      "UPDATE user SET bio = $1, most_favourite_anime = $2, first_access = $3, last_access = $4, active_time = $5 WHERE user_id = $6",
+      [bio, most_favourite_anime, first_access, last_access, active_time, id]
+    );
 
-        res.json("User updated successfully");
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-    }
+    res.json("User updated successfully");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 //------------------------------------------------updating moderator
 
 app.put("/moderators/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments } = req.body;
+  try {
+    const { id } = req.params;
+    const {
+      added_series,
+      deleted_series,
+      added_episodes,
+      deleted_episodes,
+      review_verifications,
+      filtered_comments,
+    } = req.body;
 
-        const updateModerator = await pool.query(
-            "UPDATE moderator SET added_series = $1, deleted_series = $2, added_episodes = $3, deleted_episodes = $4, review_verifications = $5, filtered_comments = $6 WHERE moderator_id = $7",
-            [added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments, id]
-        );
+    const updateModerator = await pool.query(
+      "UPDATE moderator SET added_series = $1, deleted_series = $2, added_episodes = $3, deleted_episodes = $4, review_verifications = $5, filtered_comments = $6 WHERE moderator_id = $7",
+      [
+        added_series,
+        deleted_series,
+        added_episodes,
+        deleted_episodes,
+        review_verifications,
+        filtered_comments,
+        id,
+      ]
+    );
 
-        res.json("Moderator updated successfully");
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-    }
+    res.json("Moderator updated successfully");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.get("/home", async (req, res) => {
-    try {
-        const allAnimes = await pool.query("SELECT * FROM ANIME");
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
-        res.json(allAnimes.rows);
-    } catch (error) {
-        console.error(err.message);
-    }
+  try {
+    const allAnimes = await pool.query("SELECT * FROM ANIME");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(allAnimes.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
 });
 
 app.get("/anime/:id", async (req, res) => {
-    try {
-        const idAnime = await pool.query("SELECT * FROM ANIME where ANIME_ID = $1", [req.params.id]);
-        res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
-        res.json(idAnime.rows);
-    } catch (error) {
-        console.error(err.message);
-    }
+  try {
+    const idAnime = await pool.query(
+      "SELECT * FROM ANIME where ANIME_ID = $1",
+      [req.params.id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(idAnime.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
 });
 
 app.put("/anime/:id", async (req, res) => {
-    try {
-      const { id } = req.params;
-      const {
+  try {
+    const { id } = req.params;
+    // console.log(req.body);
+    const {
+      anime_name,
+      number_of_episodes,
+      type,
+      age_rating,
+      demographic,
+      season,
+      year,
+      source,
+      description,
+      title_screen,
+      next_season,
+      previous_season
+    } = req.body;
+
+    const updateAnime = await pool.query(
+      `UPDATE ANIME SET ANIME_NAME = $1, NUMBER_OF_EPISODES = $2,"TYPE"=$3,AGE_RATING=$4,DEMOGRAPHIC=$5,SEASON=$6,YEAR=$7,"SOURCE"=$8,DESCRIPTION=$9,TITLE_SCREEN = $10,NEXT_SEASON=$11,PREVIOUS_SEASON=$12 WHERE ANIME_ID = $13`,
+      [
         anime_name,
         number_of_episodes,
-        type,
-        age_rating,
-        demographic,
-        season,
-        year,
-        source,
-        description,
-        title_screen,
-        next_season,
-        previous_season,
-      } = req.body;
-  
-      const updateAnime = await pool.query(
-        `
-        UPDATE ANIME
-        SET
-          ANIME_NAME = $1,
-          NUMBER_OF_EPISODES = $2,
-          "TYPE" = $3,
-          AGE_RATING = $4,
-          DEMOGRAPHIC = $5,
-          SEASON = $6,
-          YEAR = $7,
-          "SOURCE" = $8,
-          DESCRIPTION = $9,
-          TITLE_SCREEN = $10,
-          NEXT_SEASON = $11,
-          PREVIOUS_SEASON = $12
-        WHERE ANIME_ID = $13
-        `,
-        [
-          anime_name,
-          number_of_episodes,
           type,
           age_rating,
           demographic,
@@ -161,17 +220,16 @@ app.put("/anime/:id", async (req, res) => {
           title_screen,
           next_season,
           previous_season,
-          id,
-        ]
-      );
-  
-      res.json("Anime was updated");
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).json("Internal Server Error");
-    }
-  });
-  
+        id
+      ]
+    );
+
+    res.json("Anime was updated");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json("Internal Server Error");
+  }
+});
 
 // -----------------------------------------------creating anime
 // ANIME_ID INT PRIMARY KEY ,
@@ -185,7 +243,7 @@ app.put("/anime/:id", async (req, res) => {
 // SEASON VARCHAR(255),
 // YEAR INT,
 // --User_rating()
-// "SOURCE" VARCHAR(255), 
+// "SOURCE" VARCHAR(255),
 // DESCRIPTION VARCHAR(4000),
 // TITLE_SCREEN VARCHAR(250),
 // NEXT_SEASON VARCHAR(250),
@@ -209,15 +267,13 @@ app.put("/anime/:id", async (req, res) => {
 //         const new_anime= await pool.query(
 //             "INSERT INTO ANIME(ANIME_ID,ANIME_NAME,NUMBER_OF_EPISODES,TYPE,AGE_RATING,DEMOGRAPHIC,SEASON,YEAR,SOURCE,DESCRIPTION,TITLE_SCREEN,NEXT_SEASON,PREVIOUS_SEASON)VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *",
 //                 [ANIME_ID,ANIME_NAME,NUMBER_OF_EPISODES,TYPE,AGE_RATING,DEMOGRAPHIC,SEASON,YEAR,SOURCE,DESCRIPTION,TITLE_SCREEN,NEXT_SEASON,PREVIOUS_SEASON]
-                
+
 //         );
 //         res.json(new_anime.rows[0]);
 //     } catch (err) {
 //         console.error(err.message);
 //     }
 // });
-
-
 
 // -----------------------------------------------------------------CREATING TAGS
 
@@ -227,7 +283,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const TAG_NAME=req.params.TAG_NAME;
 //         const new_tag= await pool.query(
 //             "INSERT INTO TAGS(TAG_ID,TAG_NAME)VALUES($1,$2) RETURNING *",
-//                 [TAG_ID,TAG_NAME]   
+//                 [TAG_ID,TAG_NAME]
 //         );
 //         res.json(new_tag.rows[0]);
 //     } catch (err) {
@@ -243,7 +299,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const TAG_ID=req.params.TAG_ID;
 //         const new_tag_id_table= await pool.query(
 //             "INSERT INTO TAG_ID_TABLE(ANIME_ID,TAG_ID)VALUES($1,$2) RETURNING *",
-//                 [ANIME_ID,TAG_ID]   
+//                 [ANIME_ID,TAG_ID]
 //         );
 //         res.json(new_tag_id_table.rows[0]);
 //     } catch (err) {
@@ -259,7 +315,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const GENRE_NAME=req.params.GENRE_NAME;
 //         const new_genre= await pool.query(
 //             "INSERT INTO GENRES(ANIME_ID,GENRE_NAME)VALUES($1,$2) RETURNING *",
-//                 [ANIME_ID,GENRE_NAME]   
+//                 [ANIME_ID,GENRE_NAME]
 //         );
 //         res.json(new_genre.rows[0]);
 //     } catch (err) {
@@ -293,7 +349,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const SPECIALIZATION=req.params.SPECIALIZATION;
 //         const new_staff= await pool.query(
 //             "INSERT INTO STAFFS(ANIME_ID,STAFF_ID,NAME,ROLE,PROFILE_PICTURE,GENDER,DATE_OF_BIRTH,SALARY,SPECIALIZATION)VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
-//                 [ANIME_ID,STAFF_ID,NAME,ROLE,PROFILE_PICTURE,GENDER,DATE_OF_BIRTH,SALARY,SPECIALIZATION]   
+//                 [ANIME_ID,STAFF_ID,NAME,ROLE,PROFILE_PICTURE,GENDER,DATE_OF_BIRTH,SALARY,SPECIALIZATION]
 //         );
 //         res.json(new_staff.rows[0]);
 //     } catch (err) {
@@ -320,7 +376,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const PROFILE_PICTURE=req.params.PROFILE_PICTURE;
 //         const new_character= await pool.query(
 //             "INSERT INTO CHARACTERS(ANIME_ID,CHARACTER_ID,CHARACTER_NAME,ROLE,GENDER,PROFILE_PICTURE)VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
-//                 [ANIME_ID,CHARACTER_ID,CHARACTER_NAME,ROLE,GENDER,PROFILE_PICTURE]   
+//                 [ANIME_ID,CHARACTER_ID,CHARACTER_NAME,ROLE,GENDER,PROFILE_PICTURE]
 //         );
 //         res.json(new_character.rows[0]);
 //     } catch (err) {
@@ -347,7 +403,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const COUNTRY=req.params.COUNTRY;
 //         const new_studio= await pool.query(
 //             "INSERT INTO STUDIO(STUDIO_ID,STUDIO_NAME,BUDGET,REVENUE,NO_OF_EMPLOYEES,COUNTRY)VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
-//                 [STUDIO_ID,STUDIO_NAME,BUDGET,REVENUE,NO_OF_EMPLOYEES,COUNTRY]   
+//                 [STUDIO_ID,STUDIO_NAME,BUDGET,REVENUE,NO_OF_EMPLOYEES,COUNTRY]
 //         );
 //         res.json(new_studio.rows[0]);
 //     } catch (err) {
@@ -366,7 +422,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const STUDIO_ID=req.params.STUDIO_ID;
 //         const new_anime_studio_relationship= await pool.query(
 //             "INSERT INTO ANIME_STUDIO_RELATIONSHIP(ANIME_ID,STUDIO_ID)VALUES($1,$2) RETURNING *",
-//                 [ANIME_ID,STUDIO_ID]   
+//                 [ANIME_ID,STUDIO_ID]
 //         );
 //         res.json(new_anime_studio_relationship.rows[0]);
 //     } catch (err) {
@@ -380,12 +436,11 @@ app.put("/anime/:id", async (req, res) => {
 //     EPISODE_NO INT,
 //     EPISODE_TITLE VARCHAR(255),
 //     THUMBNAIL VARCHAR(255),
-//     "LENGTH" VARCHAR(255), 
+//     "LENGTH" VARCHAR(255),
 //     --"VIEWS" INT,
 //     RELEASE_DATE DATE,
 //     AVAILABILITY VARCHAR(255),
 //     STREAMING_SITES VARCHAR(255),
-
 
 // app.post("/animania/:ANIME_ID/:EPISODE_NO/:EPISODE_TITLE/:THUMBNAIL/:LENGTH/:RELEASE_DATE/:AVAILABILITY/:STREAMING_SITES",async(req,res) =>{
 //     try {
@@ -399,7 +454,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const STREAMING_SITES=req.params.STREAMING_SITES;
 //         const new_episode= await pool.query(
 //             "INSERT INTO EPISODES(ANIME_ID,EPISODE_NO,EPISODE_TITLE,THUMBNAIL,LENGTH,RELEASE_DATE,AVAILABILITY,STREAMING_SITES)VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *",
-//                 [ANIME_ID,EPISODE_NO,EPISODE_TITLE,THUMBNAIL,LENGTH,RELEASE_DATE,AVAILABILITY,STREAMING_SITES]   
+//                 [ANIME_ID,EPISODE_NO,EPISODE_TITLE,THUMBNAIL,LENGTH,RELEASE_DATE,AVAILABILITY,STREAMING_SITES]
 //         );
 //         res.json(new_episode.rows[0]);
 //     } catch (err) {
@@ -416,7 +471,6 @@ app.put("/anime/:id", async (req, res) => {
 //     CREATOR VARCHAR(255),
 //     URL VARCHAR(255),
 
-
 // app.post("/animania/:ANIME_ID/:EPISODE_NO/:SUBTITLE_ID/:LANGUAGE/:CREATOR/:URL",async(req,res) =>{
 //     try {
 //         const ANIME_ID=req.params.ANIME_ID;
@@ -427,7 +481,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const URL=req.params.URL;
 //         const new_subtitle= await pool.query(
 //             "INSERT INTO EPISODES(ANIME_ID,EPISODE_NO,SUBTITLE_ID,LANGUAGE,CREATOR,URL)VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
-//                 [ANIME_ID,EPISODE_NO,SUBTITLE_ID,LANGUAGE,CREATOR,URL]   
+//                 [ANIME_ID,EPISODE_NO,SUBTITLE_ID,LANGUAGE,CREATOR,URL]
 //         );
 //         res.json(new_subtitle.rows[0]);
 //     } catch (err) {
@@ -453,7 +507,7 @@ app.put("/anime/:id", async (req, res) => {
 //         const BAND=req.params.BAND;
 //         const new_sound_track= await pool.query(
 //             "INSERT INTO SOUND_TRACKS(ANIME_ID,MUSIC_ID,TITLE,BAND)VALUES($1,$2,$3,$4) RETURNING *",
-//                 [ANIME_ID,MUSIC_ID,TITLE,BAND]   
+//                 [ANIME_ID,MUSIC_ID,TITLE,BAND]
 //         );
 //         res.json(new_sound_track.rows[0]);
 //     } catch (err) {
@@ -475,14 +529,13 @@ app.put("/anime/:id", async (req, res) => {
 //         const GENRE=req.params.GENRE;
 //         const new_music_genre= await pool.query(
 //             "INSERT INTO SOUND_TRACKS(ANIME_ID,MUSIC_ID,GENRE)VALUES($1,$2,$3) RETURNING *",
-//                 [ANIME_ID,MUSIC_ID,GENRE]   
+//                 [ANIME_ID,MUSIC_ID,GENRE]
 //         );
 //         res.json(new_music_genre.rows[0]);
 //     } catch (err) {
 //         console.error(err.message);
 //     }
 // });
-
 
 // -----------------------------------------------------------------CREATING
 
@@ -493,16 +546,4 @@ app.put("/anime/:id", async (req, res) => {
 //     TIME DATE,
 //     VIEW_NO INT,
 
-
-// Allow requests from localhost:3001
-app.use(cors({ origin: 'http://localhost:3001' }));
-
 // Other configurations and routes
-
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-
-
