@@ -6,7 +6,7 @@ import AnimeItem from "./animeItem";
 // const AnimeListItem = ({
 //   title,
 //   ep,
-//   type,
+//   anime_type,
 //   age_rating,
 //   demo,
 //   season,
@@ -22,8 +22,8 @@ import AnimeItem from "./animeItem";
 //     </a>
 //     <h6>{title}</h6>
 //     <p>
-//       Num of episodes: {ep != null ? ep : "N/A"} | Type:{" "}
-//       {type != null ? type : "N/A"} | {age_rating != null ? age_rating : "N/A"}
+//       Num of episodes: {ep != null ? ep : "N/A"} | anime_type:{" "}
+//       {anime_type != null ? anime_type : "N/A"} | {age_rating != null ? age_rating : "N/A"}
 //     </p>
 //     <p>Demographic: {demo != null ? demo : "N/A"}</p>
 //     <p>
@@ -33,7 +33,7 @@ import AnimeItem from "./animeItem";
 //   </li>
 // );
 
-export default function Home() {
+export default function Home({forceRerender}) {
   const [animes, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +52,9 @@ export default function Home() {
   };
   useEffect(() => {
     getAnime();
-  }, []);
+  }, [forceRerender]);
+
+
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
