@@ -34,22 +34,22 @@ async function insertDataIntoDatabase(data,length) {
     try {
         for(var i=0;i<length;i++)
         {
-            const result = await pool.query(
-                `INSERT INTO studio(studio_id,studio_name,budget,revenue,no_of_employees,country)
-                VALUES ($1, $2, 0, 0, 0, NULL)`,
-                [
-                    data.studios[i].mal_id,
-                    data.studios[i].name
-                ]
-              );
-            //   const result2 = await pool.query(
-            //     `INSERT INTO anime_studio_relationship(anime_id,studio_id)
-            //     VALUES ($1, $2)`,
+            // const result = await pool.query(
+            //     `INSERT INTO studio(studio_id,studio_name,budget,revenue,no_of_employees,country)
+            //     VALUES ($1, $2, 0, 0, 0, NULL)`,
             //     [
-            //         data.mal_id,
-            //         data.studios[i].mal_id
+            //         data.studios[i].mal_id,
+            //         data.studios[i].name
             //     ]
-            //   );  
+            //   );
+              const result2 = await pool.query(
+                `INSERT INTO anime_studio_relationship(anime_id,studio_id)
+                VALUES ($1, $2)`,
+                [
+                    data.mal_id,
+                    data.studios[i].mal_id
+                ]
+              );  
         }
         
     } catch (error) {
