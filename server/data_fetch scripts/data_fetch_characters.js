@@ -2,7 +2,7 @@ const jikan = require('@mateoaranda/jikanjs');
 const express=require("express");
 const app=express();
 const cors=require("cors");
-const pool=require("./db");
+const pool=require("../db");
 
 var mypw = "123"  // set mypw to the hr schema password
 
@@ -41,24 +41,24 @@ async function insertDataIntoDatabase(data,length) {
     try {
             for(var i=0;i<length;i++)
             {
-                // const result = await pool.query(
-                //     `INSERT INTO  characters(character_id,character_name,"ROLE",gender,profile_picture )
-                //     VALUES ($1, $2, $3, NULL, NULL)`,
-                //     [
-                //       data[i].character.mal_id,
-                //       data[i].character.name,
-                //       data[i].role
-                //     ]
-                //   );
-                
-                  const result2 = await pool.query(
-                    `INSERT INTO  character_anime_relationship(anime_id,character_id )
-                    VALUES ($1, $2)`,
+                const result = await pool.query(
+                    `INSERT INTO  characters(character_id,character_name,"ROLE",gender,profile_picture )
+                    VALUES ($1, $2, $3, NULL, NULL)`,
                     [
-                      j,
-                      data[i].character.mal_id
+                      data[i].character.mal_id,
+                      data[i].character.name,
+                      data[i].role
                     ]
                   );
+                
+                //   const result2 = await pool.query(
+                //     `INSERT INTO  character_anime_relationship(anime_id,character_id )
+                //     VALUES ($1, $2)`,
+                //     [
+                //       j,
+                //       data[i].character.mal_id
+                //     ]
+                //   );
                     
             }
             

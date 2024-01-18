@@ -2,7 +2,7 @@ const jikan = require('@mateoaranda/jikanjs');
 const express=require("express");
 const app=express();
 const cors=require("cors");
-const pool=require("./db");
+const pool=require("../db");
 
 var mypw = "123"  // set mypw to the hr schema password
 
@@ -13,7 +13,7 @@ async function fetchData(i) {
     try {
         const response = await jikanjs.loadAnime(i);
         const data = response['data'];
-        const length=data.genres.length;
+        const length=data.studios.length;
         //console.log(data);
         
 
@@ -34,14 +34,22 @@ async function insertDataIntoDatabase(data,length) {
     try {
         for(var i=0;i<length;i++)
         {
-            const result = await pool.query(
-                `INSERT INTO genre_anime_relationship(genre_id,anime_id )
+            // const result = await pool.query(
+            //     `INSERT INTO studio(studio_id,studio_name,budget,revenue,no_of_employees,country)
+            //     VALUES ($1, $2, 0, 0, 0, NULL)`,
+            //     [
+            //         data.studios[i].mal_id,
+            //         data.studios[i].name
+            //     ]
+            //   );
+              const result2 = await pool.query(
+                `INSERT INTO anime_studio_relationship(anime_id,studio_id)
                 VALUES ($1, $2)`,
                 [
-                    data.genres[i].mal_id,
-                    data.mal_id
+                    data.mal_id,
+                    data.studios[i].mal_id
                 ]
-              );
+              );  
         }
         
     } catch (error) {
