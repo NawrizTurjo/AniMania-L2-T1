@@ -108,14 +108,15 @@ app.post("/moderators", async (req, res) => {
 app.post("/sign_up", async (req, res) => {
   try {
     const {
-      user_name,
-      password
+      user,
+      pwd
     } = req.body;
 
     const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password) VALUES ($1, $2) RETURNING id",
-      [user_name, password]
+      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2,'b','M') RETURNING id",
+      [user, pwd]
     );
+    console.log(1);
 
     const moderatorId = newModerator.rows[0].id;
 

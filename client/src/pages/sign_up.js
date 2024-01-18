@@ -37,6 +37,7 @@ const SignUp = () => {
 
   useEffect(() => {
     setValidName(USER_REGEX.test(user));
+    console.log("user", user);
   }, [user]);
 
   useEffect(() => {
@@ -83,9 +84,9 @@ const SignUp = () => {
       } else if (err.response?.status === 409) {
         setErrMsg("Username Taken");
       } 
-    //   else {
-    //     setErrMsg("Registration Failed");
-    //   }
+      else {
+        setErrMsg("Registration Failed");
+      }
 
       // Focus on the error message
       errRef.current.focus();
@@ -98,7 +99,7 @@ const SignUp = () => {
         <section>
           <h1>Success!</h1>
           <p>
-            <Link to="/Home">Sign Up</Link>
+            <Link to="/Home">Anime Page</Link>
           </p>
         </section>
       ) : (
