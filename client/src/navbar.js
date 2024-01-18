@@ -15,6 +15,8 @@ export default function Navbar() {
         <CustomLink to="/genre">Genre</CustomLink>
         <CustomLink to="/season">Season</CustomLink>
         <CustomLink to="/about">About Us</CustomLink>
+        <CustomLink to="/sign_up">sign_up</CustomLink>
+        <CustomLink to="/login">login</CustomLink>
       </ul>
       <SearchBar />
     </nav>
