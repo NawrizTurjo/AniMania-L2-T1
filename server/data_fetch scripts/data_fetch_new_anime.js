@@ -2,7 +2,7 @@ const jikan = require('@mateoaranda/jikanjs');
 const express=require("express");
 const app=express();
 const cors=require("cors");
-const pool=require("./db");
+const pool=require("../db");
 
 var mypw = "123"  // set mypw to the hr schema password
 

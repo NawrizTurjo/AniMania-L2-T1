@@ -2,7 +2,7 @@ const jikan = require('@mateoaranda/jikanjs');
 const express=require("express");
 const app=express();
 const cors=require("cors");
-const pool=require("./db");
+const pool=require("../db");
 
 var mypw = "123"  // set mypw to the hr schema password
 const new_anime=[52991,5114,9253,28977,38524,39486,11061,41467,9969,43608,42938,34096,51535,28851,4181,35180,2904,15335,51009,37491,37987,35247,32281,40682,47917,36838,45649,49387,54492,37510,52198,40028,31758,32935,47778,48583,17074,50399,37521,50160,24701,52034,2921

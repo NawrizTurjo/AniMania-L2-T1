@@ -104,6 +104,36 @@ app.post("/moderators", async (req, res) => {
   }
 });
 
+
+app.post("/sign_up", async (req, res) => {
+  try {
+    const {
+      user,
+      pwd
+    } = req.body;
+
+    const newModerator = await pool.query(
+      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2,'b','M') RETURNING id",
+      [user, pwd]
+    );
+    console.log(1);
+
+    const moderatorId = newModerator.rows[0].id;
+
+    await pool.query(
+      "INSERT INTO moderator (moderator_id) VALUES ($1)",
+      [
+        moderatorId
+      ]
+    );
+
+    res.json("Moderator created successfully");
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 //-----------------------------------------------updating user
 
 app.put("/users/:id", async (req, res) => {
