@@ -4,7 +4,7 @@ import AuthContext from "./context/AuthProvider";
 import axios from "axios";
 const LOGIN_URL = '/auth';
 
-const login = () => {
+const Login = () => {
     const { setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
