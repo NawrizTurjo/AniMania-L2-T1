@@ -31,6 +31,20 @@ async function fetchData(i) {
 
 async function insertDataIntoDatabase(data) {
     try {
+      var i = 0;
+      let demo_name;
+      if (data.demographics && data.demographics.length > 0) {
+          
+       demo_name = data.demographics[i].name ?? null;
+      } else {
+      demo_name = null;
+      }
+      let demo_url;
+      if (data.streaming && data.streaming.length > 0) {
+           demo_url = data.streaming[i].url ?? null;
+      } else {
+          demo_url = null;
+      }
         
         //const entry1Name = data.relations.entry && data.relations.entry[1] ? data.relations.entry[1].name : null;
         //const entry2Name = data.relations.entry && data.relations.entry[2] ? data.relations.entry[2].name : null;
@@ -44,7 +58,8 @@ async function insertDataIntoDatabase(data) {
           data.episodes,
           data.type,
           data.rating,
-          data.demographics[0].name,
+          //data.demographics[0].name,
+          demo_name,
           data.season,
           data.year,
           //data.trailer_url,
@@ -53,7 +68,8 @@ async function insertDataIntoDatabase(data) {
           data.synopsis,
           data.images.jpg.image_url,
           data.score,
-          data.streaming[0].url
+          demo_url
+          //data.streaming[0].url
           //data.relations[0].entry[0].name,
           //data.relations[1].relation
           //"post",
