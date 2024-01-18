@@ -113,7 +113,7 @@ app.post("/sign_up", async (req, res) => {
     } = req.body;
 
     const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2,'b','M') RETURNING id",
+      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2,'c','M') RETURNING id",
       [user, pwd]
     );
     console.log(1);
@@ -131,6 +131,44 @@ app.post("/sign_up", async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+// app.get("/auth", async (req, res) => {
+//   try {
+//     const {
+//       user,
+//       pwd
+//     } = req.query;
+//     console.log(user, pwd)
+//     const person = await pool.query(
+//       "SELECT * FROM PERSON where USER_NAME = $1 AND PASSWORD = $2",
+//       [user,pwd]
+//     );
+//     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+//     res.json(person.rows);
+//     console.log(person.rows);
+//   } catch (error) {
+//     console.error(err.message);
+//   }
+// });
+
+app.post("/auth", async (req, res) => {
+  try {
+    const {
+      user,
+      pwd
+    } = req.body;
+    console.log(user, pwd)
+    const person = await pool.query(
+      "SELECT * FROM PERSON where USER_NAME = $1 AND PASSWORD = $2",
+      [user,pwd]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
+  } catch (error) {
+    console.error(err.message);
   }
 });
 
@@ -158,6 +196,7 @@ app.put("/users/:id", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 //------------------------------------------------updating moderator
 

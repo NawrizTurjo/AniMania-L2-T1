@@ -18,12 +18,13 @@ export default function Navbar() {
         <CustomLink to="/sign_up">sign_up</CustomLink>
         <CustomLink to="/login">login</CustomLink>
       </ul>
+      <CustomLink to = "/advSearch">Advanced Search</CustomLink>
       <SearchBar />
     </nav>
   );
 }
 
-function CustomLink({ to, children, ...props }) {
+export function CustomLink({ to, children, ...props }) {
   const resolvedPath = useResolvedPath(to);
   const isActive = useMatch({ path: resolvedPath.pathname, end: true });
 
