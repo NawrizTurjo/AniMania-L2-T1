@@ -1,0 +1,21 @@
+.horizontal-list-container {
+    margin: 0 auto; /* Center the container horizontally */
+}
+
+.horizontal-list-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Allow the wrapper to wrap to the next line */
+}
+
+.horizontal-list {
+      min-width: 500px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    float: left; 
+  }
+  
+  .horizontal-list li {
+    margin-right: 10px; /* Adjust spacing between list items as needed */
+  }
+  

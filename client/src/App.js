@@ -10,6 +10,7 @@ import Footer from "./footer";
 import AnimePage from "./pages/anime_id";
 import SignUp from "./pages/sign_up";
 import Login from"./pages/login";
+import GenreAnimes from "./pages/genre_id";
 import { useState,useEffect } from "react";
 function App(){ 
   // State to force rerender in Home component
@@ -38,7 +39,7 @@ function App(){
           <Route path="/sign_up" element={<SignUp />}/>
           <Route path="/login" element={<Login />}/>
           <Route path="/anime/:id" element={<AnimePage toggleRerender={toggleRerender}/>} />
-          <Route path="/genre/:id" element={<AnimePage toggleRerender={toggleRerender}/>} />
+          <Route path="/genre/:id" element={<GenreAnimes/>} />
         </Routes>
       </div>
       <Footer />

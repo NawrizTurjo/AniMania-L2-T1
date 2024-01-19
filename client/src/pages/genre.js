@@ -24,24 +24,23 @@ const Genre = () => {
       <h1>Genre</h1>
       <table className="table table-striped">
         <thead>
-          <tr>
+          {/* <tr>
             <th>Genre ID</th>
             <th>Genre Name</th>
-          </tr>
+          </tr> */}
         </thead>
         <tbody>
           {genre.map((genre) => (
             <React.Fragment key={genre.genre_id}>
-              <tr>
+              {/* <tr>
                 <td>{genre.genre_id}</td>
                 <td>
                   <a href={`http://localhost:3001/genre/${genre.genre_id}`}>{genre.genre_name}</a>
                 </td>
-              </tr>
+              </tr> */}
               <tr>
                 <td colSpan="2">
-                  <GenreAnimes id={genre.genre_id} />
-                  <h3>Need to print names of anime along with other info but server is crushing each time</h3>
+                  <GenreAnimes id={genre.genre_id} name={genre.genre_name}/>
                 </td>
               </tr>
             </React.Fragment>
