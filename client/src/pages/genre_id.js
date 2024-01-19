@@ -6,6 +6,7 @@ const GenreAnimes = () => {
   const [loading, setLoading] = useState(true);
   const [animeList, setAnimeList] = useState([]);
   const { id } = useParams();
+  //const id=
 
   useEffect(() => {
     axios.get(`http://localhost:3000/genre/${id}`)
@@ -32,26 +33,26 @@ const GenreAnimes = () => {
     <div>
       <h1>Anime List</h1>
       <ul>
-        {/* {groupedAnimeList.map((group, index) => (
+        {groupedAnimeList.map((group, index) => (
           <li key={index}>
             <ul>
               {group.map(anime => (
                 <li key={anime.anime_id}>
-                  <a href={`http://localhost:3000/anime/${anime.anime_id}`}>
+                  <a href={`http://localhost:3001/anime/${anime.anime_id}`}>
                     {anime.anime_name}
                   </a>
                 </li>
               ))}
             </ul>
           </li>
-        ))} */}
-        {animeList.map((anime) => (
+        ))}
+        {/* {animeList.map((anime) => (
           <li key={anime.anime_id}>
-            <a href={`http://localhost:3000/anime/${anime.anime_id}`}>
+            <a href={`http://localhost:3001/anime/${anime.anime_id}`}>
               {anime.anime_name}
             </a>
           </li>
-        ))}
+        ))} */}
       </ul>
     </div>
   );

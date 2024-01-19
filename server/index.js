@@ -262,8 +262,32 @@ app.get("/genre", async (req, res) => {
   }
 });
 
+// app.get("/genre/:id", async (req, res) => {
+//   try {
+//     const allAnimes = await pool.query(
+//       `SELECT DISTINCT (A.*)
+//       FROM genres G JOIN genre_anime_relationship GA ON (G.genre_id = GA.genre_id)
+//       JOIN anime A ON (GA.anime_id = A.anime_id)
+//       WHERE G.genre_id = $1
+//       ORDER BY A.anime_id
+//       `,
+//       [req.params.id]
+//     );
+//     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+//     res.json(allAnimes.rows);
+//   } catch (error) {
+//     console.error(err.message);
+//   }
+// });
+
 app.get("/genre/:id", async (req, res) => {
   try {
+    const genreId = parseInt(req.params.id);
+
+    if (isNaN(genreId)) {
+      // Handle the case where the parameter is not a valid integer
+      return res.status(400).json({ error: "Invalid genre ID" });
+    }    
     const allAnimes = await pool.query(
       `SELECT DISTINCT (A.*)
       FROM genres G JOIN genre_anime_relationship GA ON (G.genre_id = GA.genre_id)
@@ -271,14 +295,15 @@ app.get("/genre/:id", async (req, res) => {
       WHERE G.genre_id = $1
       ORDER BY A.anime_id
       `,
-      [req.params.id]
+      [genreId]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message); // <-- Corrected from `err.message`
   }
 });
+
 
 app.get("/anime/:id", async (req, res) => {
   try {

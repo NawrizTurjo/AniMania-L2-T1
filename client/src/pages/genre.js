@@ -35,12 +35,12 @@ const Genre = () => {
               <tr>
                 <td>{genre.genre_id}</td>
                 <td>
-                  <a href={`http://localhost:3000/genres/${genre.genre_id}`}>{genre.genre_name}</a>
+                  <a href={`http://localhost:3001/genre/${genre.genre_id}`}>{genre.genre_name}</a>
                 </td>
               </tr>
               <tr>
                 <td colSpan="2">
-                  {/* <GenreAnimes id={genre.genre_id} /> */}
+                  <GenreAnimes id={genre.genre_id} />
                   <h3>Need to print names of anime along with other info but server is crushing each time</h3>
                 </td>
               </tr>
