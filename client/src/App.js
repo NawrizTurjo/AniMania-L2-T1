@@ -38,6 +38,7 @@ function App(){
           <Route path="/sign_up" element={<SignUp />}/>
           <Route path="/login" element={<Login />}/>
           <Route path="/anime/:id" element={<AnimePage toggleRerender={toggleRerender}/>} />
+          <Route path="/genre/:id" element={<AnimePage toggleRerender={toggleRerender}/>} />
         </Routes>
       </div>
       <Footer />

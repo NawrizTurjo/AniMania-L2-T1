@@ -252,6 +252,34 @@ app.get("/home", async (req, res) => {
   }
 });
 
+app.get("/genre", async (req, res) => {
+  try {
+    const ALLGENRES = await pool.query("SELECT * FROM GENRES ORDER BY GENRE_ID");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(ALLGENRES.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
+app.get("/genre/:id", async (req, res) => {
+  try {
+    const allAnimes = await pool.query(
+      `SELECT DISTINCT (A.*)
+      FROM genres G JOIN genre_anime_relationship GA ON (G.genre_id = GA.genre_id)
+      JOIN anime A ON (GA.anime_id = A.anime_id)
+      WHERE G.genre_id = $1
+      ORDER BY A.anime_id
+      `,
+      [req.params.id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(allAnimes.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
 app.get("/anime/:id", async (req, res) => {
   try {
     const idAnime = await pool.query(

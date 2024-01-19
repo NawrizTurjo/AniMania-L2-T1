@@ -3,36 +3,6 @@ import axios from "axios";
 import Pagination from "./pagination";
 import AnimeItem from "./animeItem";
 
-// const AnimeListItem = ({
-//   title,
-//   ep,
-//   anime_type,
-//   age_rating,
-//   demo,
-//   season,
-//   yr,
-//   thumbnail,
-//   id,
-// }) => (
-//   <li className="anime-list-item">
-//     <a href={`http://localhost:3001/home/anime/id?${id}`}>
-//       {thumbnail && (
-//         <img src={thumbnail} alt={`${title} Thumbnail`} className="thumbnail" />
-//       )}
-//     </a>
-//     <h6>{title}</h6>
-//     <p>
-//       Num of episodes: {ep != null ? ep : "N/A"} | anime_type:{" "}
-//       {anime_type != null ? anime_type : "N/A"} | {age_rating != null ? age_rating : "N/A"}
-//     </p>
-//     <p>Demographic: {demo != null ? demo : "N/A"}</p>
-//     <p>
-//       Season: {season != null ? season : "N/A"} | Year:{" "}
-//       {yr != null ? yr : "N/A"}
-//     </p>
-//   </li>
-// );
-
 export default function Home({forceRerender}) {
   const [animes, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
