@@ -77,6 +77,7 @@ const AnimePage = ({toggleRerender}) => {
             value={anime.anime_name}
             onChange={handleChange}
           />
+          <br />
 
           <label>Number of Episodes:</label>
           <input
@@ -86,6 +87,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Type:</label>
           <input
             anime_type="text"
@@ -94,6 +96,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Age Rating:</label>
           <input
             anime_type="text"
@@ -102,6 +105,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Demographic:</label>
           <input
             anime_type="text"
@@ -110,6 +114,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Season:</label>
           <input
             anime_type="text"
@@ -118,6 +123,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Year:</label>
           <input
             anime_type="text"
@@ -126,6 +132,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Source:</label>
           <input
             anime_type="text"
@@ -134,6 +141,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Description:</label>
           <input
             anime_type="text"
@@ -142,6 +150,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Thumbnail Url:</label>
           <input
             anime_type="text"
@@ -150,6 +159,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Next Season:</label>
           <input
             anime_type="text"
@@ -158,6 +168,7 @@ const AnimePage = ({toggleRerender}) => {
             onChange={handleChange}
           />
 
+          <br />
           <label>Previous Season:</label>
           <input
             anime_type="text"
@@ -165,6 +176,7 @@ const AnimePage = ({toggleRerender}) => {
             value={anime.previous_season}
             onChange={handleChange}
           />
+          <br />
           <input type="submit" value="Submit" onClick={handleSubmit}/>
         </form>
       )}

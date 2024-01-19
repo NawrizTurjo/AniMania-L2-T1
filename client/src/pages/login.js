@@ -2,6 +2,7 @@ import React from "react";
 import { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
+import bcrypt from "bcryptjs";
 
 import axios from "axios";
 const LOGIN_URL = "/auth";
@@ -26,43 +27,37 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("user", user);
-    console.log("pwd", pwd);
     try {
       const response = await axios.post(
         `http://localhost:3000/auth`,
-          JSON.stringify({ user, pwd }),
-          {
-              headers: { 'Content-Type': 'application/json' },
-              withCredentials: true
-          }
+        JSON.stringify({ user, pwd }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }
       );
-      // const response = await axios.get("http://localhost:3000/auth", {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   withCredentials: true,
-      //   params: {
-      //     user,
-      //     pwd
-      //   },
-      // });
-      // console.log(response.data?.id);
-      console.log(JSON.stringify(response?.data));
-      if(!Array.isArray(response?.data) || response.data.length === 0)
-      {
+
+      if (!Array.isArray(response?.data) || response.data.length === 0) {
         console.log("No response");
         setErrMsg("Invalid Username or Password");
         return;
       }
-      console.log(JSON.stringify(response));
-      const id = response?.data?.id;
-      const role = response?.data?.role;
-      const email = response?.data?.email;
-      setAuth({ id, user, pwd, role, email });
-      setUser("");
-      setPwd("");
-      setSuccess(true);
+
+      const storedHashedPwd = response?.data[0]?.password;
+
+      const passwordMatch = bcrypt.compareSync(pwd, storedHashedPwd);
+
+      if (passwordMatch) {
+        const id = response?.data[0]?.id;
+        const role = response?.data[0]?.role;
+        const email = response?.data[0]?.email;
+        setAuth({ id, user, pwd: storedHashedPwd, role, email });
+        setUser("");
+        setPwd("");
+        setSuccess(true);
+      } else {
+        setErrMsg("Invalid Username or Password");
+      }
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -98,7 +93,7 @@ const Login = () => {
           </p>
           <h1>Sign In</h1>
           <form onSubmit={handleSubmit}>
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">Username OR E-mail:</label>
             <input
               type="text"
               id="username"
@@ -108,8 +103,9 @@ const Login = () => {
               value={user}
               required
             />
+            <br />
 
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">Enter Password:</label>
             <input
               type="password"
               id="password"
@@ -117,6 +113,7 @@ const Login = () => {
               value={pwd}
               required
             />
+            <br />
             <button type="submit">Sign In</button>
           </form>
           <p>

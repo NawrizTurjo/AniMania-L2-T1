@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import bcrypt from "bcryptjs";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -30,6 +31,15 @@ const SignUp = () => {
 
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [validEmail, setValidEmail] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
+
+  useEffect(() => {
+    setValidEmail(/* your email validation logic here */);
+  }, [email]);
+
 
   useEffect(() => {
     userRef.current.focus();
@@ -58,11 +68,14 @@ const SignUp = () => {
       setErrMsg("Invalid Entry");
       return;
     }
+    const hashedPwd = bcrypt.hashSync(pwd, 10);
+    console.log("Pwd", pwd);
 
     try {
+      // setPwd(hashedPwd);
       const response = await axios.post(
         `http://localhost:3000/sign_up`,
-        JSON.stringify({ user, pwd }),
+        JSON.stringify({ user, pwd: hashedPwd,email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -78,13 +91,13 @@ const SignUp = () => {
       setUser("");
       setPwd("");
       setMatchPwd("");
+      setEmail("");
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
       } else if (err.response?.status === 409) {
-        setErrMsg("Username Taken");
-      } 
-      else {
+        setErrMsg("Email already exists. Please choose a different email.");
+      } else {
         setErrMsg("Registration Failed");
       }
 
@@ -149,6 +162,39 @@ const SignUp = () => {
               Must begin with a letter.
               <br />
               Letters, numbers, underscores, hyphens allowed.
+            </p>
+            <label htmlFor="email">
+              Email:
+              <FontAwesomeIcon
+                icon={faCheck}
+                className={validEmail ? "valid" : "hide"}
+              />
+              <FontAwesomeIcon
+                icon={faTimes}
+                className={validEmail || !email ? "hide" : "invalid"}
+              />
+            </label>
+            <input
+              type="email"
+              id="email"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              required
+              aria-invalid={validEmail ? "false" : "true"}
+              aria-describedby="emailnote"
+              onFocus={() => setEmailFocus(true)}
+              onBlur={() => setEmailFocus(false)}
+            />
+            <p
+              id="emailnote"
+              className={
+                emailFocus && email && !validEmail
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              Enter a valid email address.
             </p>
             <label htmlFor="password">
               Password:

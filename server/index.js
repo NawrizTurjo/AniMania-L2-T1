@@ -109,19 +109,29 @@ app.post("/sign_up", async (req, res) => {
   try {
     const {
       user,
-      pwd
+      pwd,
+      email
     } = req.body;
 
     const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2,'c','M') RETURNING id",
-      [user, pwd]
+      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2, $3,'M') RETURNING id",
+      [user, pwd,email]
     );
     console.log(1);
 
     const moderatorId = newModerator.rows[0].id;
 
     await pool.query(
-      "INSERT INTO moderator (moderator_id) VALUES ($1)",
+      `INSERT INTO moderator 
+        ( moderator_id,
+          added_series,
+          deleted_series,
+          added_episodes,
+          deleted_episodes,
+          review_verifications,
+          filtered_comments)
+      
+      VALUES ($1,0,0,0,0,0,0)`,
       [
         moderatorId
       ]
@@ -161,8 +171,8 @@ app.post("/auth", async (req, res) => {
     } = req.body;
     console.log(user, pwd)
     const person = await pool.query(
-      "SELECT * FROM PERSON where USER_NAME = $1 AND PASSWORD = $2",
-      [user,pwd]
+      "SELECT * FROM PERSON where USER_NAME = $1 OR EMAIL = $1",
+      [user]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
