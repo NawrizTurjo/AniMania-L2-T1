@@ -69,7 +69,7 @@ export default function Home({forceRerender}) {
         Unlock the Magic of Animation - where stories unfold, emotions ignite,
         and worlds come alive
       </h4>
-      <h1>Hello, {user}!</h1>
+      <h1>Hello {user}!</h1>
       <h1>Email: {email}</h1>
       {/* //<h1>Welcome, {username}!</h1> */}
       <img

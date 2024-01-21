@@ -3,11 +3,14 @@ import { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 import bcrypt from "bcryptjs";
+import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 const LOGIN_URL = "/auth";
 
 const Login = () => {
+
+  const navigate = useNavigate();  
   const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
@@ -51,7 +54,9 @@ const Login = () => {
         const id = response?.data[0]?.id;
         const role = response?.data[0]?.role;
         const email = response?.data[0]?.email;
+        const user=response?.data[0]?.user_name;
         setAuth({ id, user, pwd: storedHashedPwd, role, email });
+        navigate("/Home", { state: { user, email } });
         setUser("");
         setPwd("");
         setSuccess(true);
