@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import GenreAnimes from './genre_id';
+import GenrePage from './genrePage';
+import Test from './test';
 
 const Genre = () => {
   const [loading, setLoading] = useState(true);
@@ -40,7 +42,7 @@ const Genre = () => {
               </tr> */}
               <tr>
                 <td colSpan="2">
-                  <GenreAnimes id={genre.genre_id} name={genre.genre_name}/>
+                  <GenrePage id={genre.genre_id} name={genre.genre_name}/>
                 </td>
               </tr>
             </React.Fragment>
