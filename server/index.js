@@ -244,7 +244,7 @@ app.put("/moderators/:id", async (req, res) => {
 
 app.get("/home", async (req, res) => {
   try {
-    const allAnimes = await pool.query("SELECT * FROM ANIME ORDER BY ANIME_ID");
+    const allAnimes = await pool.query("SELECT * FROM ANIME ORDER BY MAL_SCORE DESC");
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
   } catch (error) {
