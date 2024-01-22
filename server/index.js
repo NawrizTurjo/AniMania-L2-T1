@@ -177,7 +177,8 @@ app.post("/moderatorDash", async (req, res) => {
     const { email } = req.body;
     console.log(email);
     const person = await pool.query(
-      `SELECT p.user_name AS NAME, P.role AS ROLE,M.added_series AS added_series,M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments
+      `SELECT p.user_name as name, M.added_series AS added_series,
+      M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments
       FROM person P JOIN moderator M ON (P.ID = M.moderator_id)
       WHERE P.email = $1
       `,
@@ -205,6 +206,22 @@ app.post("/home", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(genres.rows);
     console.log(genres.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
+app.put("/moderatorDash", async (req, res) => {
+  try {
+    const { newUsername, email } = req.body;
+    console.log(newUsername, email);
+    const person = await pool.query(
+      `UPDATE person SET user_name = $1 WHERE email = $2`,
+      [newUsername, email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
   } catch (error) {
     console.error(err.message);
   }
