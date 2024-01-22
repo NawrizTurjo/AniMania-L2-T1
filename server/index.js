@@ -104,18 +104,13 @@ app.post("/moderators", async (req, res) => {
   }
 });
 
-
 app.post("/sign_up", async (req, res) => {
   try {
-    const {
-      user,
-      pwd,
-      email
-    } = req.body;
+    const { user, pwd, email } = req.body;
 
     const newModerator = await pool.query(
       "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2, $3,'M') RETURNING id",
-      [user, pwd,email]
+      [user, pwd, email]
     );
     console.log(1);
 
@@ -132,9 +127,7 @@ app.post("/sign_up", async (req, res) => {
           filtered_comments)
       
       VALUES ($1,0,0,0,0,0,0)`,
-      [
-        moderatorId
-      ]
+      [moderatorId]
     );
 
     res.json("Moderator created successfully");
@@ -165,11 +158,8 @@ app.post("/sign_up", async (req, res) => {
 
 app.post("/auth", async (req, res) => {
   try {
-    const {
-      user,
-      pwd
-    } = req.body;
-    console.log(user, pwd)
+    const { user, pwd } = req.body;
+    console.log(user, pwd);
     const person = await pool.query(
       "SELECT * FROM PERSON where USER_NAME = $1 OR EMAIL = $1",
       [user]
@@ -182,12 +172,30 @@ app.post("/auth", async (req, res) => {
   }
 });
 
+app.post("/moderatorDash", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const person = await pool.query(
+      `SELECT p.user_name as name, M.added_series AS added_series,
+      M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments
+      FROM person P JOIN moderator M ON (P.ID = M.moderator_id)
+      WHERE P.email = $1
+      `,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
 app.post("/home", async (req, res) => {
   try {
-    const {
-      id
-    } = req.body;
-    console.log(id)
+    const { id } = req.body;
+    console.log(id);
     const genres = await pool.query(
       `SELECT G.genre_name AS genre_name
       FROM ANIME A JOIN genre_anime_relationship GA ON (A.anime_id = GA.anime_id)
@@ -198,6 +206,22 @@ app.post("/home", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(genres.rows);
     console.log(genres.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
+app.put("/moderatorDash", async (req, res) => {
+  try {
+    const { newUsername, email } = req.body;
+    console.log(newUsername, email);
+    const person = await pool.query(
+      `UPDATE person SET user_name = $1 WHERE email = $2`,
+      [newUsername, email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
   } catch (error) {
     console.error(err.message);
   }
@@ -227,7 +251,6 @@ app.put("/users/:id", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 //------------------------------------------------updating moderator
 
@@ -265,7 +288,9 @@ app.put("/moderators/:id", async (req, res) => {
 
 app.get("/home", async (req, res) => {
   try {
-    const allAnimes = await pool.query("SELECT * FROM ANIME ORDER BY MAL_SCORE DESC");
+    const allAnimes = await pool.query(
+      "SELECT * FROM ANIME ORDER BY MAL_SCORE DESC"
+    );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
   } catch (error) {
@@ -275,14 +300,11 @@ app.get("/home", async (req, res) => {
 
 app.put("/home", async (req, res) => {
   try {
-    const {
-      sort
-    } = req.body;
-    console.log(sort)
-    const animes = await pool.query(
-      `SELECT * FROM ANIME ORDER BY $1 DESC`,
-      [sort]
-    );
+    const { sort } = req.body;
+    console.log(sort);
+    const animes = await pool.query(`SELECT * FROM ANIME ORDER BY $1 DESC`, [
+      sort,
+    ]);
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(animes.rows);
     // console.log(animes.rows);
@@ -293,7 +315,9 @@ app.put("/home", async (req, res) => {
 
 app.get("/genre", async (req, res) => {
   try {
-    const ALLGENRES = await pool.query("SELECT * FROM GENRES ORDER BY GENRE_ID");
+    const ALLGENRES = await pool.query(
+      "SELECT * FROM GENRES ORDER BY GENRE_ID"
+    );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(ALLGENRES.rows);
   } catch (error) {
@@ -326,7 +350,7 @@ app.get("/genre/:id", async (req, res) => {
     if (isNaN(genreId)) {
       // Handle the case where the parameter is not a valid integer
       return res.status(400).json({ error: "Invalid genre ID" });
-    }    
+    }
     const allAnimes = await pool.query(
       `SELECT DISTINCT (A.*)
       FROM genres G JOIN genre_anime_relationship GA ON (G.genre_id = GA.genre_id)
@@ -342,7 +366,6 @@ app.get("/genre/:id", async (req, res) => {
     console.error(error.message); // <-- Corrected from `err.message`
   }
 });
-
 
 app.get("/anime/:id", async (req, res) => {
   try {
@@ -372,7 +395,6 @@ app.get("/searchAnime/:searchTerm", async (req, res) => {
   }
 });
 
-
 app.put("/anime/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -389,7 +411,7 @@ app.put("/anime/:id", async (req, res) => {
       description,
       title_screen,
       next_season,
-      previous_season
+      previous_season,
     } = req.body;
 
     const updateAnime = await pool.query(
@@ -397,17 +419,17 @@ app.put("/anime/:id", async (req, res) => {
       [
         anime_name,
         number_of_episodes,
-          anime_type,
-          age_rating,
-          demographic,
-          season,
-          year,
-          anime_source,
-          description,
-          title_screen,
-          next_season,
-          previous_season,
-        id
+        anime_type,
+        age_rating,
+        demographic,
+        season,
+        year,
+        anime_source,
+        description,
+        title_screen,
+        next_season,
+        previous_season,
+        id,
       ]
     );
 

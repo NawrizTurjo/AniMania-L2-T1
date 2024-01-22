@@ -3,13 +3,18 @@ import axios from "axios";
 import Pagination from "./pagination2";
 import AnimeItem from "./animeItem";
 //import { useParams } from 'react-router-dom';
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { faAlignRight } from "@fortawesome/free-solid-svg-icons";
+import PersonIcon from '@mui/icons-material/Person';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 
 export default function Home({forceRerender}) {
@@ -28,6 +33,7 @@ export default function Home({forceRerender}) {
 
   const [sort, setSort] = useState('ANIME_NAME');
 
+  // const history = useHistory();
   const handleChange = (event) => {
     setSort(event.target.value);
   };
@@ -106,8 +112,32 @@ export default function Home({forceRerender}) {
   //     />
   //   </div>
   // );
+  const navigate = useNavigate();
 
+  const handleClick = (event) => {
+    navigate("/moderatorDash", { state: { user, email } });
+  }
 
+  const handleLogout = async (e) => {
+    // e.preventDefault();
+    // try {
+    //   const response = await axios.post(
+    //     `http://localhost:3000/logout`,
+    //     JSON.stringify({ user, email }),
+    //     {
+    //       headers: { 'Content-Type': 'application/json' },
+    //       withCredentials: true,
+    //     }
+    //   );
+      localStorage.removeItem("user");
+      localStorage.removeItem("email");
+      setUser("");
+      setEmail("");
+      // navigate("/login");
+    // } catch (err) {
+    //   console.error(err.message);
+    // }
+  }
 
   return (
     <div className="Home-div container-fluid">
@@ -115,8 +145,29 @@ export default function Home({forceRerender}) {
         Unlock the Magic of Animation - where stories unfold, emotions ignite,
         and worlds come alive
       </h4>
-      <h1>Hello {user}!</h1>
-      <h1>Email: {email}</h1>
+      <div className="flex-row flex-wrap">
+      {/* <h1>Hello {user}!</h1>
+      <h1>Email: {email}</h1> */}
+      <Button
+          color="action"
+          // aria-describedby={pop_id}
+          variant="contained" 
+          onClick={handleClick}
+          style={{ float: 'right' }}
+        >
+          <PermIdentityIcon />
+        </Button>
+        <Button
+          color="action"
+          // aria-describedby={pop_id}
+          variant="contained" 
+          onClick={handleLogout}
+          style={{ float: 'right' }}
+        >
+          <LogoutIcon />
+        </Button>
+      {user && (<h1>Hello: {user}</h1>)}
+      {email && (<h1>Email: {email}</h1>)}
       {/* //<h1>Welcome, {username}!</h1> */}
       {/* <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
       <li className="list-group-item align-items-center flex-wrap"> */}
@@ -124,7 +175,8 @@ export default function Home({forceRerender}) {
         src="./images/AniMania.png"
         alt="AniMania Logo"
         className="logo img-fluid"
-      />
+        />
+      </div>
       {/* </li> */}
       {/* <li className="list-group-item align-items-center flex-wrap"> */}
       {/* <Box sx={{ width: 120, marginLeft: "auto"}}>

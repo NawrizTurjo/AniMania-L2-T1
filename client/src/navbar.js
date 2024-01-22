@@ -48,7 +48,7 @@ function SearchBar({ navigate }) {
     if (searchTerm) {
       navigate("/searchAnime", { state: { searchTerm } });
       // Navigate to the "searchAnime" page with the search term
-      //navigate(`/searchAnime`);
+      // navigate(`/searchAnime`);
     }
   };
 
