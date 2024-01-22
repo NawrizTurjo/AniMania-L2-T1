@@ -1,8 +1,11 @@
 // Navbar.jsx
 import React from "react";
-import { Link, useMatch, useResolvedPath } from "react-router-dom";
+import { Link, useNavigate,useLocation, useMatch, useResolvedPath } from "react-router-dom";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isSearchAnimePage = location.pathname === "/searchAnime";
   return (
     <nav className="nav">
       <Link to="/" className="site-title">
@@ -18,8 +21,8 @@ export default function Navbar() {
         <CustomLink to="/sign_up">sign_up</CustomLink>
         <CustomLink to="/login">login</CustomLink>
       </ul>
-      <CustomLink to = "/advSearch">Advanced Search</CustomLink>
-      <SearchBar />
+      { <CustomLink to="/advSearch">Advanced Search</CustomLink>}
+      {!isSearchAnimePage && <SearchBar navigate={navigate} />}
     </nav>
   );
 }
@@ -37,12 +40,24 @@ export function CustomLink({ to, children, ...props }) {
   );
 }
 
-function SearchBar() {
+function SearchBar({ navigate }) {
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const searchTerm = e.target.elements.searchTerm.value.trim();
+
+    if (searchTerm) {
+      navigate("/searchAnime", { state: { searchTerm } });
+      // Navigate to the "searchAnime" page with the search term
+      //navigate(`/searchAnime`);
+    }
+  };
+
   return (
     <div className="search-bar">
-      {/* Your search bar JSX */}
-      <input type="text" placeholder="Search..." />
-      <button>Search</button>
+      <form onSubmit={handleSearch}>
+        <input type="text" name="searchTerm" placeholder="Search..." />
+        <button type="submit">Search</button>
+      </form>
     </div>
   );
 }

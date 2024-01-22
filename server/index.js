@@ -357,6 +357,22 @@ app.get("/anime/:id", async (req, res) => {
   }
 });
 
+app.get("/searchAnime/:searchTerm", async (req, res) => {
+  try {
+    console.log(req.params.searchTerm);
+    const idAnime = await pool.query(
+      "SELECT * FROM ANIME WHERE ANIME_NAME ILIKE $1",
+      [`%${req.params.searchTerm}%`] // Using ILIKE for case-insensitive search and % for wildcard
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(idAnime.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
 app.put("/anime/:id", async (req, res) => {
   try {
     const { id } = req.params;
