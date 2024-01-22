@@ -11,7 +11,7 @@ const AnimeListItem = ({
   thumbnail,
   id,
 }) => (
-  <li className="anime-list-item">
+  <li className="list-group-item align-items-center">
     <a href={`http://localhost:3001/anime/${id}`}>
       {thumbnail && (
         <img src={thumbnail} alt={`${title} Thumbnail`} className="thumbnail" />
@@ -36,7 +36,7 @@ const AnimeItem =({currentanimes,loading})=>{
     }
 
     return(
-        <ul className="anime-list">
+        <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
               {currentanimes.map((anime, index) => (
                 <AnimeListItem
                   key={index}
