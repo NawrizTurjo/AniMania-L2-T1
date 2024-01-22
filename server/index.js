@@ -182,6 +182,27 @@ app.post("/auth", async (req, res) => {
   }
 });
 
+app.post("/home", async (req, res) => {
+  try {
+    const {
+      id
+    } = req.body;
+    console.log(id)
+    const genres = await pool.query(
+      `SELECT G.genre_name AS genre_name
+      FROM ANIME A JOIN genre_anime_relationship GA ON (A.anime_id = GA.anime_id)
+      JOIN genres G ON (GA.genre_id = G.genre_id)
+      WHERE A.anime_ID = $1`,
+      [id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(genres.rows);
+    console.log(genres.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
 //-----------------------------------------------updating user
 
 app.put("/users/:id", async (req, res) => {
