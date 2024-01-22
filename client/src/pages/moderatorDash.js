@@ -1,18 +1,28 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
+  let [added_series, setAddedSeries] = useState("");
+  let [deleted_series, setDeletedSeries] = useState("");
+  let [added_episodes, setAddedEpisodes] = useState("");
+  let [deleted_episodes, setDeletedEpisodes] = useState("");
+  let [review_verifications, setReviewVerifications] = useState("");
+  let [filtered_comments, setFileteredComments] = useState("");
+  let [loading, setLoading] = useState(true);
   let location = useLocation();
   let state = location.state;
+  let hasEffectRun = useRef(false);
 
-//   let user = state && state.user;
+  let[user,setUser] = useState("");
+
+    user = state && state.user;
   let email = state && state.email;
 
-  let person = {
+  let [person,setPerson] = useState({
     // user: "",
     added_episodes: 0,
     added_series: 0,
@@ -22,16 +32,17 @@ export default function ModeratorDash() {
     name: "",
     review_verifications: 0,
     role: "",
-  };
-  
-  let a = 4;
+  });
+
+//   let a = 4;
   let getPerson = async () => {
     // e.preventDefault();
     try {
+      setLoading(true);
       console.log(email);
       let response = await axios.post(
         `http://localhost:3000/moderatorDash`,
-        { email },
+        JSON.stringify({ email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -47,22 +58,37 @@ export default function ModeratorDash() {
         added_episodes: personData?.added_episodes || 0,
         deleted_episodes: personData?.deleted_episodes || 0,
         review_verifications: personData?.review_verifications || 0,
-        filtered_comments: personData?.filtered_comments || 0
+        filtered_comments: personData?.filtered_comments || 0,
       };
 
-      a = person.added_series;
-        console.log(person);
-        console.log(person.added_series);
-        console.log(a);
+      setPerson(personData);
+
+    //   a = person.added_series;
+    //   console.log(person);
+    //   console.log(person.added_series);
       //   console.log(response.data);
+      setNewUsername(person.name);
+      
+      setAddedSeries(person.added_series);
+      setDeletedSeries(person.deleted_series);
+      setAddedEpisodes(person.added_episodes);
+      setDeletedEpisodes(person.deleted_episodes);
+      setReviewVerifications(person.review_verifications);
+      setFileteredComments(person.filtered_comments);
+      setLoading(false);
     } catch (err) {
       console.error(err.message);
     }
   };
   useEffect(() => {
     getPerson();
-    setNewUsername(person.name);
+    // setNewUsername(person.name);
   }, []);
+  useEffect(() => {
+    setUser(newUsername);
+    console.log(user);
+  },[newUsername]);
+
   if (email == "") {
     return (
       <div>
@@ -83,8 +109,6 @@ export default function ModeratorDash() {
         }
       );
       console.log(response.data);
-
-
     } catch (err) {
       console.error(err.message);
     }
@@ -92,107 +116,112 @@ export default function ModeratorDash() {
 
   return (
     <div>
-      <h1>Welcome to the Moderator Dashboard</h1>
-      {/* {user && <p>User: {user}</p>} */}
-      {email && <p>Email: {email}</p>}
-      <form>
-        <div>
-          <label>
-            Name
-            <input
-              id="newUsername"
-              type="text"
-              name="newUsername"
-            //   placeholder={person.name}
-              value={newUsername}
-              onChange={(e) => setNewUsername(e.target.value)}
-            />
-          </label>
-          <Button variant="contained" disableElevation onClick={handleUpdate}>
-            Update Username
-          </Button>
-        </div>
-        <div>
-          <label>
-            E-mail
-            <input type="text" name="email" value={email} readOnly/>
-          </label>
-        </div>
-        <div>
-          <label>
-            Anime Added
-            <input
-              type="text"
-              name="added_series"
-              value={person.added_series} readOnly
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Anime Deleted
-            <input
-              type="text"
-              name="deleted_series"
-              value={person.deleted_series} readOnly
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Episodes Added
-            <input
-              type="text"
-              name="added_episodes"
-              value={person.added_episodes} readOnly
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Episodes Deleted
-            <input
-              type="text"
-              name="deleted_episodes"
-              value={person.deleted_episodes} readOnly
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Comments Filtered
-            <input
-              type="text"
-              name="filtered_comments"
-              value={person.filtered_comments} readOnly
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Review Verified
-            <input
-              type="text"
-              name="review_verifications"
-              value={person.review_verifications} readOnly
-            /> 
-          </label>
-        </div>
-        <div>
-          {/* <label>
-            <input
-              type="text"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-            />
-          </label> */}
-        </div>
-        {/* <div>
-          <Button>
-            
-          </Button>
-        </div> */}
-      </form>
+      {loading ? (
+        <h2>Loading...</h2>
+      ) : (
+        <>
+          <h1>Welcome to the Moderator Dashboard</h1>
+          {email && <p>Email: {email}</p>}
+          <form>
+            <div>
+              <label>
+                Name
+                <input
+                  id="newUsername"
+                  type="text"
+                  name="newUsername"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                />
+              </label>
+              <Button
+                variant="contained"
+                disableElevation
+                onClick={handleUpdate}
+              >
+                Update Username
+              </Button>
+            </div>
+            <div>
+              <label>
+                E-mail
+                <input type="text" name="email" value={email} readOnly />
+              </label>
+            </div>
+            <div>
+              <label>
+                Anime Added
+                <input
+                  type="text"
+                  name="added_series"
+                  value={person.added_series}
+                  readOnly
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Anime Deleted
+                <input
+                  type="text"
+                  name="deleted_series"
+                  value={deleted_series}
+                  readOnly
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Episodes Added
+                <input
+                  type="text"
+                  name="added_episodes"
+                  value={added_episodes}
+                  readOnly
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Episodes Deleted
+                <input
+                  type="text"
+                  name="deleted_episodes"
+                  value={deleted_episodes}
+                  readOnly
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Comments Filtered
+                <input
+                  type="text"
+                  name="filtered_comments"
+                  value={filtered_comments}
+                  readOnly
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Review Verified
+                <input
+                  type="text"
+                  name="review_verifications"
+                  value={review_verifications}
+                  readOnly
+                />
+              </label>
+            </div>
+            <div>
+                <label>
+                    
+                </label>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 }
