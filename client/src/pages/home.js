@@ -4,6 +4,12 @@ import Pagination from "./pagination";
 import AnimeItem from "./animeItem";
 //import { useParams } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
+import Box from '@mui/material/Box';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { faAlignRight } from "@fortawesome/free-solid-svg-icons";
 
 
 export default function Home({forceRerender}) {
@@ -20,11 +26,39 @@ export default function Home({forceRerender}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [animePerPage] = useState(10);
 
+  const [sort, setSort] = useState('ANIME_NAME');
+
+  const handleChange = (event) => {
+    setSort(event.target.value);
+  };
+
+  // const getAnime = async () => {
+  //   try {
+  //     setLoading(true);
+  //     console.log(1);
+  //     const res = await axios.put("http://localhost:3000/home",
+  //     JSON.stringify({ sort }),
+  //     {
+  //       headers: { "Content-Type": "application/json" },
+  //       withCredentials: true,
+  //     }
+  //     );
+  //     setAnime(res.data);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getAnime();
+  // }, [forceRerender,sort]);
+
   const getAnime = async () => {
     try {
       setLoading(true);
       console.log(1);
-      const res = await axios.get("http://localhost:3000/home");
+      const res = await axios.get(`http://localhost:3000/home`,
+      );
       setAnime(res.data);
       setLoading(false);
     } catch (err) {
@@ -73,6 +107,8 @@ export default function Home({forceRerender}) {
   //   </div>
   // );
 
+
+
   return (
     <div className="Home-div container-fluid">
       <h4 className="text-center mt-3">
@@ -82,11 +118,37 @@ export default function Home({forceRerender}) {
       <h1>Hello {user}!</h1>
       <h1>Email: {email}</h1>
       {/* //<h1>Welcome, {username}!</h1> */}
+      {/* <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
+      <li className="list-group-item align-items-center flex-wrap"> */}
       <img
         src="./images/AniMania.png"
         alt="AniMania Logo"
         className="logo img-fluid"
       />
+      {/* </li> */}
+      {/* <li className="list-group-item align-items-center flex-wrap"> */}
+      {/* <Box sx={{ width: 120, marginLeft: "auto"}}>
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={sort}
+          label="Sort"
+          onChange={handleChange}
+        >
+          <MenuItem value={'anime_id'}>id</MenuItem>
+          <MenuItem value={'anime_name'}>Name</MenuItem>
+          <MenuItem value={'year'}>Release Date</MenuItem>
+          <MenuItem value={'age_Rating'}>Age_rating</MenuItem>
+          <MenuItem value={'demographic'}>Demographic</MenuItem>
+          <MenuItem value={'season'}>Season</MenuItem>
+          <MenuItem value={'mal_score'}>Score</MenuItem>
+        </Select>
+      </FormControl>
+    </Box> */}
+      {/* </li> */}
+      {/* </ul> */}
       <div className="row">
         {/* <section className="col-md-6 upper-part">
           <div className="card-container">

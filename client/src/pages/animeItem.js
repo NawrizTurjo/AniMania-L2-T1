@@ -70,7 +70,12 @@ const AnimeListItem = ({
   const open = Boolean(anchorEl);
   const pop_id = open ? "simple-popover" : undefined;
   return (
-    <li className="list-group-item align-items-center flex-wrap" style={{ maxWidth: "500px", margin: "auto" }}>
+    <li className="list-group-item align-items-center flex-wrap" style={{
+      width: "500px",
+      height: "700px",
+      margin: "auto",
+      borderRadius: "8px",
+    }}>
       {thumbnail && (
         <img src={thumbnail} alt={`${title} Thumbnail`} className="thumbnail" />
       )}
@@ -86,7 +91,7 @@ const AnimeListItem = ({
         Season: {season != null ? season : "N/A"} | Year:{" "}
         {yr != null ? yr : "N/A"}
       </p>
-      <p>Genre: {concatenatedString !=null ? concatenatedString : "N/A"}</p>
+      <p style={{height: "70px"}}>Genre: {concatenatedString !=null ? concatenatedString : "N/A"}</p>
       <Stack direction="row" spacing={7}>
         <Rating
           name="customized-10"

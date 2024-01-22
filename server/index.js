@@ -273,6 +273,24 @@ app.get("/home", async (req, res) => {
   }
 });
 
+app.put("/home", async (req, res) => {
+  try {
+    const {
+      sort
+    } = req.body;
+    console.log(sort)
+    const animes = await pool.query(
+      `SELECT * FROM ANIME ORDER BY $1 DESC`,
+      [sort]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(animes.rows);
+    // console.log(animes.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
 app.get("/genre", async (req, res) => {
   try {
     const ALLGENRES = await pool.query("SELECT * FROM GENRES ORDER BY GENRE_ID");
