@@ -8,7 +8,12 @@ import { useLocation } from "react-router-dom";
 
 export default function Home({forceRerender}) {
   const location = useLocation();
-  const { user, email } = location.state || {};
+  //const { user, email } = location.state || {};
+  const { user: routeUser, email: routeEmail } = location.state || {};
+
+  // Use local state to store user information
+  const [user, setUser] = useState(routeUser || localStorage.getItem("user") || "");
+  const [email, setEmail] = useState(routeEmail || localStorage.getItem("email") || "");
   //const { username } = useParams();
   const [animes, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +49,11 @@ export default function Home({forceRerender}) {
   // }, []);
 
   // Get current posts
+  useEffect(() => {
+    // Update local state and local storage when user and email change
+    localStorage.setItem("user", user);
+    localStorage.setItem("email", email);
+  }, [user, email]);
   const indexOfLastAnime = currentPage * animePerPage;
   const indexOfFirstAnime = indexOfLastAnime - animePerPage;
   const currentanimes = animes.slice(indexOfFirstAnime, indexOfLastAnime);

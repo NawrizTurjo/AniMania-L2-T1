@@ -93,7 +93,10 @@ const SignUp = () => {
 
       // Set success state and clear inputs
       setSuccess(true);
-      navigate("/Home", { state: { user, email } });
+      //navigate("/Home", { state: { user, email } });
+      localStorage.setItem("user", user);
+      localStorage.setItem("email", email);
+      navigate("/Home");
       setUser("");
       setPwd("");
       setMatchPwd("");
