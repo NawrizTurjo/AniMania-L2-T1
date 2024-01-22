@@ -12,7 +12,10 @@ import SignUp from "./pages/sign_up";
 import Login from"./pages/login";
 import GenreAnimes from "./pages/genre_id";
 import { useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 function App(){ 
+  const navigate = useNavigate();
   // State to force rerender in Home component
   const [forceRerender, setForceRerender] = useState(false);
 
@@ -40,6 +43,11 @@ function App(){
           <Route path="/login" element={<Login />}/>
           <Route path="/anime/:id" element={<AnimePage toggleRerender={toggleRerender}/>} />
           <Route path="/genre/:id" element={<GenreAnimes/>} />
+          {/* <Route path="/home/:username" component={Home} /> */}
+          <Route
+          path="/Home"
+          element={<Home forceRerender={forceRerender} />}
+        />
         </Routes>
       </div>
       <Footer />

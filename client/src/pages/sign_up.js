@@ -8,12 +8,16 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import bcrypt from "bcryptjs";
+import { useNavigate } from "react-router-dom";
+
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const REGISTER_URL = "/sign_up";
 
 const SignUp = () => {
+
+  const navigate = useNavigate();
   const userRef = useRef();
   const errRef = useRef();
 
@@ -86,8 +90,10 @@ const SignUp = () => {
       console.log(response?.accessToken);
       console.log(JSON.stringify(response));
 
+
       // Set success state and clear inputs
       setSuccess(true);
+      navigate("/Home", { state: { user, email } });
       setUser("");
       setPwd("");
       setMatchPwd("");
