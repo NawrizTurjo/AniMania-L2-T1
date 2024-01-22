@@ -11,6 +11,7 @@ import AnimePage from "./pages/anime_id";
 import SignUp from "./pages/sign_up";
 import Login from"./pages/login";
 import GenreAnimes from "./pages/genre_id";
+import SearchAnime from "./pages/searchAnime"
 import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -43,10 +44,15 @@ function App(){
           <Route path="/login" element={<Login />}/>
           <Route path="/anime/:id" element={<AnimePage toggleRerender={toggleRerender}/>} />
           <Route path="/genre/:id" element={<GenreAnimes/>} />
+          <Route path="/searchAnime" element={<SearchAnime forceRerender={forceRerender} />} />
+          <Route path="/searchAnime/:searchTerm" element={<SearchAnime forceRerender={forceRerender} />} />
           {/* <Route path="/home/:username" component={Home} /> */}
           <Route
           path="/Home"
-          element={<Home forceRerender={forceRerender} />}
+          element={<Home forceRerender={forceRerender} />}/>
+          <Route
+          path="/searchAnime"
+          element={<SearchAnime forceRerender={forceRerender} />}
         />
         </Routes>
       </div>
