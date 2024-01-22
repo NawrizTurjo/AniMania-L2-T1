@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Pagination from "./pagination";
+import Pagination from "./pagination2";
 import AnimeItem from "./animeItem";
 //import { useParams } from 'react-router-dom';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
