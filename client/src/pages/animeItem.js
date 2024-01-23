@@ -10,6 +10,11 @@ import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 import GenreAnimes from "./genre_id";
 import axios from "axios";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const AnimeListItem = ({
   title,
@@ -23,10 +28,12 @@ const AnimeListItem = ({
   id,
   rating,
   description,
-  forceRerender
+  forceRerender,
+  toggleRerender,
 }) => {
   const [genres, setGenres] = useState([]);
   const [concatenatedString, setConcatenatedString] = useState("");
+  const [open, setOpen] = React.useState(false);
   const getGenres = async () => {
     try {
       const response = await axios.post(
@@ -43,9 +50,9 @@ const AnimeListItem = ({
       const newconcatenatedString = genres
         .map((genre) => genre.genre_name)
         .join(", ");
-        setConcatenatedString(newconcatenatedString);
-        // console.log(genres);
-    //   console.log(concatenatedString);
+      setConcatenatedString(newconcatenatedString);
+      // console.log(genres);
+      //   console.log(concatenatedString);
     } catch (err) {
       console.log(err);
     }
@@ -55,7 +62,9 @@ const AnimeListItem = ({
   }, [id]);
 
   useEffect(() => {
-    const newConcatenatedString = genres.map((genre) => genre.genre_name).join(", ");
+    const newConcatenatedString = genres
+      .map((genre) => genre.genre_name)
+      .join(", ");
     setConcatenatedString(newConcatenatedString);
   }, [genres]);
 
@@ -68,15 +77,31 @@ const AnimeListItem = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const open = Boolean(anchorEl);
-  const pop_id = open ? "simple-popover" : undefined;
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpen(false);
+  };
+
+  const handleAgree = async () => {
+    toggleRerender();
+  };
+
+  const Open = Boolean(anchorEl);
+  const pop_id = Open ? "simple-popover" : undefined;
   return (
-    <li className="list-group-item align-items-center flex-wrap" style={{
-      width: "500px",
-      height: "700px",
-      margin: "auto",
-      borderRadius: "8px",
-    }}>
+    <li
+      className="list-group-item align-items-center flex-wrap"
+      style={{
+        width: "500px",
+        height: "700px",
+        margin: "auto",
+        borderRadius: "8px",
+      }}
+    >
       {thumbnail && (
         <img src={thumbnail} alt={`${title} Thumbnail`} className="thumbnail" />
       )}
@@ -92,7 +117,9 @@ const AnimeListItem = ({
         Season: {season != null ? season : "N/A"} | Year:{" "}
         {yr != null ? yr : "N/A"}
       </p>
-      <p style={{height: "70px"}}>Genre: {concatenatedString !=null ? concatenatedString : "N/A"}</p>
+      <p style={{ height: "70px" }}>
+        Genre: {concatenatedString != null ? concatenatedString : "N/A"}
+      </p>
       <Stack direction="row" spacing={7}>
         <Rating
           name="customized-10"
@@ -120,7 +147,7 @@ const AnimeListItem = ({
         </Button>
         <Popover
           pop_id={pop_id}
-          open={open}
+          open={Open}
           anchorEl={anchorEl}
           onClose={handleClose}
           anchorOrigin={{
@@ -131,15 +158,41 @@ const AnimeListItem = ({
           <Typography sx={{ p: 2 }}>{description}</Typography>
         </Popover>
         {/* <Button  color="secondary" ><FavoriteIcon /></Button> */}
-        <Button variant="outlined" color="error" startIcon={<DeleteIcon />}>
+        <Button
+          variant="outlined"
+          color="error"
+          startIcon={<DeleteIcon />}
+          onClick={handleClickOpen}
+        >
           Delete
         </Button>
+        <Dialog
+          open={open}
+          onClose={handleCloseDelete}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Are you sure you want to delete this anime?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              This action will delete all about this anime from the database.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDelete}>Disagree</Button>
+            <Button onClick={handleAgree} autoFocus>
+              Agree
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Stack>
     </li>
   );
 };
 
-const AnimeItem = ({ currentanimes, loading,forceRerender }) => {
+const AnimeItem = ({ currentanimes, loading, forceRerender,toggleRerender }) => {
   if (loading) {
     return <h2>Loading...</h2>;
   }
@@ -161,6 +214,7 @@ const AnimeItem = ({ currentanimes, loading,forceRerender }) => {
           rating={anime.mal_score}
           description={anime.description}
           forceRerender={forceRerender}
+          toggleRerender={toggleRerender}
         />
       ))}
     </ul>
