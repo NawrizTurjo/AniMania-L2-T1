@@ -214,7 +214,7 @@ export default function Home({forceRerender}) {
         </section> */}
         <section>
           <div className="anime-list-container">
-            <AnimeItem currentanimes={currentanimes} loading={loading} />
+            <AnimeItem currentanimes={currentanimes} loading={loading} forceRerender={forceRerender}/>
           </div>
         </section>
         <section className="pagination-container">

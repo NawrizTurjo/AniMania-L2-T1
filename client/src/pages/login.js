@@ -103,7 +103,7 @@ const Login = () => {
           </p>
           <h1>Sign In</h1>
           <form onSubmit={handleSubmit}>
-            <label htmlFor="username">Username OR E-mail:</label>
+            <label htmlFor="username">E-mail:</label>
             <input
               type="text"
               id="username"

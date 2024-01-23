@@ -24,7 +24,7 @@ const Genre = () => {
   return (
     <div>
       <h1>Genre</h1>
-      <table className="table table-striped">
+      <table className="table table-striped d-flex justify-content-center">
         <thead>
           {/* <tr>
             <th>Genre ID</th>

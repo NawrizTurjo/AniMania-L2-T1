@@ -161,7 +161,7 @@ app.post("/auth", async (req, res) => {
     const { user, pwd } = req.body;
     console.log(user, pwd);
     const person = await pool.query(
-      "SELECT * FROM PERSON where USER_NAME = $1 OR EMAIL = $1",
+      "SELECT * FROM PERSON where EMAIL = $1",
       [user]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
@@ -197,7 +197,7 @@ app.post("/home", async (req, res) => {
     const { id } = req.body;
     console.log(id);
     const genres = await pool.query(
-      `SELECT G.genre_name AS genre_name
+      `SELECT DISTINCT(G.genre_name) AS genre_name
       FROM ANIME A JOIN genre_anime_relationship GA ON (A.anime_id = GA.anime_id)
       JOIN genres G ON (GA.genre_id = G.genre_id)
       WHERE A.anime_ID = $1`,
@@ -215,9 +215,16 @@ app.put("/moderatorDash", async (req, res) => {
   try {
     const { newUsername, email } = req.body;
     console.log(newUsername, email);
-    const person = await pool.query(
+    await pool.query(
       `UPDATE person SET user_name = $1 WHERE email = $2`,
       [newUsername, email]
+    );
+
+    const person = await pool.query(
+      `SELECT user_name
+      FROM person
+      WHERE email = $1`
+      ,[email]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);

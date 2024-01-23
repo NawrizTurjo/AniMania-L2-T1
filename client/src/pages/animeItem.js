@@ -23,6 +23,7 @@ const AnimeListItem = ({
   id,
   rating,
   description,
+  forceRerender
 }) => {
   const [genres, setGenres] = useState([]);
   const [concatenatedString, setConcatenatedString] = useState("");
@@ -51,7 +52,7 @@ const AnimeListItem = ({
   };
   useEffect(() => {
     getGenres();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const newConcatenatedString = genres.map((genre) => genre.genre_name).join(", ");
@@ -138,7 +139,7 @@ const AnimeListItem = ({
   );
 };
 
-const AnimeItem = ({ currentanimes, loading }) => {
+const AnimeItem = ({ currentanimes, loading,forceRerender }) => {
   if (loading) {
     return <h2>Loading...</h2>;
   }
@@ -159,6 +160,7 @@ const AnimeItem = ({ currentanimes, loading }) => {
           id={anime.anime_id}
           rating={anime.mal_score}
           description={anime.description}
+          forceRerender={forceRerender}
         />
       ))}
     </ul>

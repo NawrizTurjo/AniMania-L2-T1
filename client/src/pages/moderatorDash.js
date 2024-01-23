@@ -15,14 +15,13 @@ export default function ModeratorDash() {
   let [loading, setLoading] = useState(true);
   let location = useLocation();
   let state = location.state;
-  let hasEffectRun = useRef(false);
 
-  let[user,setUser] = useState("");
+  let [user, setUser] = useState("");
 
-    user = state && state.user;
+  user = state && state.user;
   let email = state && state.email;
 
-  let [person,setPerson] = useState({
+  let [person, setPerson] = useState({
     // user: "",
     added_episodes: 0,
     added_series: 0,
@@ -34,7 +33,7 @@ export default function ModeratorDash() {
     role: "",
   });
 
-//   let a = 4;
+  //   let a = 4;
   let getPerson = async () => {
     // e.preventDefault();
     try {
@@ -63,12 +62,12 @@ export default function ModeratorDash() {
 
       setPerson(personData);
 
-    //   a = person.added_series;
-    //   console.log(person);
-    //   console.log(person.added_series);
-      //   console.log(response.data);
+        // a = person.added_series;
+        // console.log(person);
+        // console.log(person.added_series);
+        // console.log(response.data);
       setNewUsername(person.name);
-      
+
       setAddedSeries(person.added_series);
       setDeletedSeries(person.deleted_series);
       setAddedEpisodes(person.added_episodes);
@@ -87,7 +86,7 @@ export default function ModeratorDash() {
   useEffect(() => {
     setUser(newUsername);
     console.log(user);
-  },[newUsername]);
+  }, [newUsername]);
 
   if (email == "") {
     return (
@@ -109,6 +108,10 @@ export default function ModeratorDash() {
         }
       );
       console.log(response.data);
+      let name = response.data[0].user_name;
+      console.log(name);
+      setUser(name);
+      // localStorage.setItem("user", user);
     } catch (err) {
       console.error(err.message);
     }
@@ -138,6 +141,7 @@ export default function ModeratorDash() {
                 variant="contained"
                 disableElevation
                 onClick={handleUpdate}
+                size="small"
               >
                 Update Username
               </Button>
@@ -215,9 +219,11 @@ export default function ModeratorDash() {
               </label>
             </div>
             <div>
-                <label>
-                    
-                </label>
+              <label>
+                <Button variant="contained" color="success" href="/home">
+                  Edit and delete anime
+                </Button>
+              </label>
             </div>
           </form>
         </>
