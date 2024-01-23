@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 
+
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
   let [added_series, setAddedSeries] = useState("");
@@ -142,6 +143,7 @@ export default function ModeratorDash() {
                 disableElevation
                 onClick={handleUpdate}
                 size="small"
+                // href="/home"
               >
                 Update Username
               </Button>
