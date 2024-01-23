@@ -323,7 +323,11 @@ app.put("/home", async (req, res) => {
 app.get("/genre", async (req, res) => {
   try {
     const ALLGENRES = await pool.query(
-      "SELECT * FROM GENRES ORDER BY GENRE_ID"
+      `
+      SELECT * FROM GENRES 
+      --WHERE GENRE_NAME <> 'Hentai'
+			ORDER BY GENRE_ID
+      `
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(ALLGENRES.rows);

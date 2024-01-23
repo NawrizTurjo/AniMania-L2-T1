@@ -17,7 +17,7 @@ import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 
-export default function Home({forceRerender}) {
+export default function Home({forceRerender,toggleRerender}) {
   const location = useLocation();
   //const { user, email } = location.state || {};
   const { user: routeUser, email: routeEmail } = location.state || {};
@@ -214,7 +214,10 @@ export default function Home({forceRerender}) {
         </section> */}
         <section>
           <div className="anime-list-container">
-            <AnimeItem currentanimes={currentanimes} loading={loading} forceRerender={forceRerender}/>
+            <AnimeItem currentanimes={currentanimes} 
+            loading={loading} 
+            forceRerender={forceRerender} 
+            toggleRerender={toggleRerender}/>
           </div>
         </section>
         <section className="pagination-container">

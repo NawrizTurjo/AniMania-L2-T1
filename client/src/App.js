@@ -37,7 +37,7 @@ function App(){
       <div className="container">
         <Routes>
           <Route path="/" element={<Landing toggleRerender={toggleRerender}/>} />
-          <Route path="/Home" element={<Home forceRerender={forceRerender}/>} />
+          <Route path="/Home" element={<Home forceRerender={forceRerender} toggleRerender={toggleRerender}/>} />
           <Route path="/about" element={<About />} />
           <Route path="/season" element={<Season />} />
           <Route path="/genre" element={<Genre />} />
