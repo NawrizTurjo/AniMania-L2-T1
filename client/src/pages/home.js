@@ -17,13 +17,17 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import Alert from '@mui/material/Alert';
-import Avatar from '@mui/material/Avatar';
+import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
 
 export default function Home({ forceRerender, toggleRerender }) {
   const location = useLocation();
   //const { user, email } = location.state || {};
-  const { user: routeUser, email: routeEmail } = location.state || {};
+  const {
+    user: routeUser,
+    email: routeEmail,
+    userRole: routeUserRole,
+  } = location.state || {};
 
   // Use local state to store user information
   const [user, setUser] = useState(
@@ -31,6 +35,10 @@ export default function Home({ forceRerender, toggleRerender }) {
   );
   const [email, setEmail] = useState(
     routeEmail || localStorage.getItem("email") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    routeUserRole || localStorage.getItem("userRole") || ""
   );
   //const { username } = useParams();
   const [animes, setAnime] = useState([]);
@@ -55,7 +63,6 @@ export default function Home({ forceRerender, toggleRerender }) {
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
-
 
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorE2);
@@ -112,7 +119,8 @@ export default function Home({ forceRerender, toggleRerender }) {
     // Update local state and local storage when user and email change
     localStorage.setItem("user", user);
     localStorage.setItem("email", email);
-  }, [user, email]);
+    localStorage.setItem("userRole", userRole);
+  }, [user, email, userRole]);
   const indexOfLastAnime = currentPage * animePerPage;
   const indexOfFirstAnime = indexOfLastAnime - animePerPage;
   const currentanimes = animes.slice(indexOfFirstAnime, indexOfLastAnime);
@@ -134,10 +142,8 @@ export default function Home({ forceRerender, toggleRerender }) {
   const navigate = useNavigate();
 
   const handleClick = (event) => {
-    if(user!=="")
-      navigate("/moderatorDash", { state: { user, email } });
-    else
-      navigate("/login");
+    if (user !== "") navigate("/moderatorDash", { state: { user, email } });
+    else navigate("/login");
   };
 
   const handleLogout = async (e) => {
@@ -155,7 +161,7 @@ export default function Home({ forceRerender, toggleRerender }) {
     localStorage.removeItem("email");
     setUser("");
     setEmail("");
-    
+
     // navigate("/login");
     // } catch (err) {
     //   console.error(err.message);
@@ -227,6 +233,19 @@ export default function Home({ forceRerender, toggleRerender }) {
                 <b>Email:</b> {email}
               </h3>
             )}
+            {user !== "" && userRole === "U" && (
+              <div>
+                <h3>User Content</h3>
+                {/* Render additional content for User */}
+              </div>
+            )}
+
+            {user !== "" && userRole === "M" && (
+              <div>
+                <h3>Moderator Content</h3>
+                {/* Render additional content for Moderator */}
+              </div>
+            )}
           </Typography>
         </Popover>
         <Button
@@ -235,37 +254,37 @@ export default function Home({ forceRerender, toggleRerender }) {
           variant="contained"
           onClick={handleLogout}
           style={{ float: "right" }}
-          onMouseEnter={(event)=>{
+          onMouseEnter={(event) => {
             setAnchorE2(event.currentTarget);
           }}
-          onMouseLeave={()=>{
+          onMouseLeave={() => {
             setAnchorE2(null);
           }}
         >
           <LogoutIcon />
         </Button>
         <Popover
-        id="mouse-over-popover"
-        sx={{
-          pointerEvents: 'none',
-        }}
-        open={open2}
-        anchorEl={anchorE2}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-        onClose={()=>{
-          setAnchorE2(null);
-        }}
-        disableRestoreFocus
-      >
-        <Typography sx={{ p: 1 }}>Logout</Typography>
-      </Popover>
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: "none",
+          }}
+          open={open2}
+          anchorEl={anchorE2}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          onClose={() => {
+            setAnchorE2(null);
+          }}
+          disableRestoreFocus
+        >
+          <Typography sx={{ p: 1 }}>Logout</Typography>
+        </Popover>
 
         {/* //<h1>Welcome, {username}!</h1> */}
         {/* <ul className="list-group list-group-horizontal-md flex-row flex-wrap">

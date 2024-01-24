@@ -9,14 +9,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
-
+import Dropdown from "react-bootstrap/Dropdown";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const REGISTER_URL = "/sign_up";
 
 const SignUp = () => {
-
   const navigate = useNavigate();
   const userRef = useRef();
   const errRef = useRef();
@@ -39,11 +38,16 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
+  
+  const [userRole, setUserRole] = useState(""); // State to store user role
+
+  const handleRoleChange = (role) => {
+    setUserRole(role);
+  };
 
   useEffect(() => {
     setValidEmail(/* your email validation logic here */);
   }, [email]);
-
 
   useEffect(() => {
     userRef.current.focus();
@@ -64,11 +68,12 @@ const SignUp = () => {
     setErrMsg("");
   }, [user, pwd, matchPwd]);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate user input
-    if (!validName || !validPwd || !validMatch) {
+    if (!validName || !validPwd || !validMatch || !userRole ) {
       setErrMsg("Invalid Entry");
       return;
     }
@@ -79,7 +84,7 @@ const SignUp = () => {
       // setPwd(hashedPwd);
       const response = await axios.post(
         `http://localhost:3000/sign_up`,
-        JSON.stringify({ user, pwd: hashedPwd,email }),
+        JSON.stringify({ user, pwd: hashedPwd, email,userRole }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -90,12 +95,12 @@ const SignUp = () => {
       console.log(response?.accessToken);
       console.log(JSON.stringify(response));
 
-
       // Set success state and clear inputs
       setSuccess(true);
       //navigate("/Home", { state: { user, email } });
       localStorage.setItem("user", user);
       localStorage.setItem("email", email);
+      localStorage.setItem("userRole", userRole);
       navigate("/Home");
       setUser("");
       setPwd("");
@@ -275,8 +280,23 @@ const SignUp = () => {
               <FontAwesomeIcon icon={faInfoCircle} />
               Must match the first password input field.
             </p>
+
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {userRole ? `Selected Role: ${userRole}` : "Select Role"}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleRoleChange("M")}>
+                  Manager
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleRoleChange("U")}>
+                  User
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
             <button
-              disabled={!validName || !validPwd || !validMatch ? true : false}
+              disabled={!validName || !validPwd || !validMatch ||!userRole ? true : false}
             >
               Sign Up
             </button>

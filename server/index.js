@@ -106,18 +106,35 @@ app.post("/moderators", async (req, res) => {
 
 app.post("/sign_up", async (req, res) => {
   try {
-    const { user, pwd, email } = req.body;
+    const { user, pwd, email, userRole } = req.body;
 
     const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2, $3,'M') RETURNING id",
-      [user, pwd, email]
+      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2, $3, $4) RETURNING id",
+      [user, pwd, email, userRole]
     );
     console.log(1);
 
-    const moderatorId = newModerator.rows[0].id;
-
-    await pool.query(
-      `INSERT INTO moderator 
+    if (userRole === "U") {
+      const userId = newModerator.rows[0].id;
+      await pool.query(
+        `INSERT INTO "USER" 
+        ( 
+          user_id,
+          bio,
+          most_favourite_anime,
+          first_access,
+          last_access,
+          active_time
+        )
+          
+          VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)`,
+        [userId]
+        );
+        res.json("user created successfully");
+    } else {
+      const moderatorId = newModerator.rows[0].id;
+      await pool.query(
+        `INSERT INTO moderator 
         ( moderator_id,
           added_series,
           deleted_series,
@@ -127,10 +144,11 @@ app.post("/sign_up", async (req, res) => {
           filtered_comments)
       
       VALUES ($1,0,0,0,0,0,0)`,
-      [moderatorId]
-    );
+        [moderatorId]
+      );
+      res.json("Moderator created successfully");
+    }
 
-    res.json("Moderator created successfully");
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
@@ -160,10 +178,9 @@ app.post("/auth", async (req, res) => {
   try {
     const { user, pwd } = req.body;
     console.log(user, pwd);
-    const person = await pool.query(
-      "SELECT * FROM PERSON where EMAIL = $1",
-      [user]
-    );
+    const person = await pool.query("SELECT * FROM PERSON where EMAIL = $1", [
+      user,
+    ]);
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
     console.log(person.rows);
@@ -215,16 +232,16 @@ app.put("/moderatorDash", async (req, res) => {
   try {
     const { newUsername, email } = req.body;
     console.log(newUsername, email);
-    await pool.query(
-      `UPDATE person SET user_name = $1 WHERE email = $2`,
-      [newUsername, email]
-    );
+    await pool.query(`UPDATE person SET user_name = $1 WHERE email = $2`, [
+      newUsername,
+      email,
+    ]);
 
     const person = await pool.query(
       `SELECT user_name
       FROM person
-      WHERE email = $1`
-      ,[email]
+      WHERE email = $1`,
+      [email]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
