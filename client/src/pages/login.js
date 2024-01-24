@@ -59,6 +59,7 @@ const Login = () => {
         //navigate("/Home", { state: { user, email } });
         localStorage.setItem("user", user);
         localStorage.setItem("email", email);
+        localStorage.setItem("userRole", role);
 
     // Redirect to home page with user information
         navigate("/Home");

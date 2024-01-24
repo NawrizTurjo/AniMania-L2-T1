@@ -224,23 +224,27 @@ export default function Home({ forceRerender, toggleRerender }) {
             )}
 
             {user && (
-              <h3 className="d-flex">
-                <b>User Name:</b> {user}
-              </h3>
+              <div>
+                <h3 className="d-flex">
+                  <b>User Name:</b> {user}
+                </h3>
+              </div>
             )}
             {email && (
-              <h3>
-                <b>Email:</b> {email}
-              </h3>
+              <div>
+                <h3>
+                  <b>Email:</b> {email}
+                </h3>
+              </div>
             )}
-            {user !== "" && userRole === "U" && (
+            {userRole === "U" && (
               <div>
                 <h3>User Content</h3>
                 {/* Render additional content for User */}
               </div>
             )}
 
-            {user !== "" && userRole === "M" && (
+            {userRole === "M" && (
               <div>
                 <h3>Moderator Content</h3>
                 {/* Render additional content for Moderator */}
