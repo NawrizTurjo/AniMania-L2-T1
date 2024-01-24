@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import GenreAnimes from './genre_id';
 import GenrePage from './genrePage';
 import Test from './test';
+import Loader from "./loader.js";
 
 const Genre = () => {
   const [loading, setLoading] = useState(true);
@@ -12,7 +13,7 @@ const Genre = () => {
   useEffect(() => {
     axios.get(`http://localhost:3000/genre`)
       .then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         setGenre(res.data);
         setLoading(false);
       })
@@ -20,6 +21,10 @@ const Genre = () => {
         console.log(err);
       });
   }, []);
+  if(loading)
+  {
+    return <Loader/>
+  }
 
   return (
     <div>

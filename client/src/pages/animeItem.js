@@ -15,6 +15,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Loader from "./loader.js";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const AnimeListItem = ({
   title,
@@ -71,7 +75,18 @@ const AnimeListItem = ({
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
+    // toast.success('🦄 Wow so easy!', {
+    //   position: "top-right",
+    //   autoClose: 5000,
+    //   hideProgressBar: false,
+    //   closeOnClick: true,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   progress: undefined,
+    //   theme: "dark",
+    //   // transition: Bounce,
+    //   });
   };
 
   const handleClose = () => {
@@ -88,6 +103,14 @@ const AnimeListItem = ({
 
   const handleAgree = async () => {
     toggleRerender();
+  };
+
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
   };
 
   const Open = Boolean(anchorEl);
@@ -142,18 +165,42 @@ const AnimeListItem = ({
           aria-describedby={pop_id}
           variant="contained"
           onClick={handleClick}
+          aria-owns={Open ? 'mouse-over-popover' : undefined}
+          aria-haspopup="true"
+          onMouseEnter={handlePopoverOpen}
+          onMouseLeave={handlePopoverClose}
         >
           <InfoIcon />
         </Button>
         <Popover
-          pop_id={pop_id}
+          // pop_id={pop_id}
+          // open={Open}
+          // anchorEl={anchorEl}
+          // onClose={handleClose}
+          // anchorOrigin={{
+          //   vertical: "bottom",
+          //   horizontal: "left",
+          // }}
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: 'none',
+          }}
           open={Open}
           anchorEl={anchorEl}
-          onClose={handleClose}
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          onClose={handlePopoverClose}
+          disableRestoreFocus
+          // style={{
+          //   maxWidth: "50%",
+          //   maxHeight: "1000px",
+          // }}
         >
           <Typography sx={{ p: 2 }}>{description}</Typography>
         </Popover>
@@ -188,13 +235,14 @@ const AnimeListItem = ({
           </DialogActions>
         </Dialog>
       </Stack>
+      <ToastContainer />
     </li>
   );
 };
 
 const AnimeItem = ({ currentanimes, loading, forceRerender,toggleRerender }) => {
   if (loading) {
-    return <h2>Loading...</h2>;
+    return <Loader />;
   }
 
   return (

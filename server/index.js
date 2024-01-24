@@ -305,6 +305,35 @@ app.get("/home", async (req, res) => {
   }
 });
 
+app.get("/watch/anime/episodes/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const anime = await pool.query(
+      `SELECT
+      a.*,
+      string_agg(DISTINCT(g.genre_name),',') AS genres,
+      string_agg(DISTINCT(s.studio_name),',') AS studios,
+      string_agg(DISTINCT(t.tag_name),',') AS tags
+  
+      FROM anime a
+      LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
+      LEFT JOIN studio s ON s.studio_id = ast.studio_id
+      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+      LEFT JOIN genres g ON g.genre_id = ga.genre_id
+      LEFT JOIN tag_id_table ti on (ti.anime_id = a.anime_id)
+      LEFT JOIN tags t on (t.tag_id = ti.tag_id)
+  
+      WHERE a.anime_id = $1
+      GROUP BY a.anime_id`,
+      [id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(anime.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
 app.put("/home", async (req, res) => {
   try {
     const { sort } = req.body;
