@@ -129,8 +129,8 @@ app.post("/sign_up", async (req, res) => {
           
           VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)`,
         [userId]
-        );
-        res.json("user created successfully");
+      );
+      res.json("user created successfully");
     } else {
       const moderatorId = newModerator.rows[0].id;
       await pool.query(
@@ -148,7 +148,6 @@ app.post("/sign_up", async (req, res) => {
       );
       res.json("Moderator created successfully");
     }
-
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
@@ -181,11 +180,33 @@ app.post("/auth", async (req, res) => {
     const person = await pool.query("SELECT * FROM PERSON where EMAIL = $1", [
       user,
     ]);
+    if (person.rows.length > 0) {
+      const userRole = person.rows[0].role;
+      console.log(userRole);
+
+      if (userRole === "U") {
+        const userId = person.rows[0].id;
+        const user = await pool.query(
+          `
+          UPDATE "USER"
+          SET 
+            LAST_ACCESS = CURRENT_TIMESTAMP,
+            ACTIVE_TIME = CURRENT_TIMESTAMP - FIRST_ACCESS
+          WHERE USER_ID = $1;
+      `,
+          [userId]
+        );
+        // res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+        // res.json(user.rows);
+        console.log(user.rows);
+        console.log("user");
+      }
+    }
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
     console.log(person.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 

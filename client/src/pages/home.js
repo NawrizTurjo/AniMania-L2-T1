@@ -159,8 +159,10 @@ export default function Home({ forceRerender, toggleRerender }) {
     //   );
     localStorage.removeItem("user");
     localStorage.removeItem("email");
+    localStorage.removeItem("userRole");
     setUser("");
     setEmail("");
+    setUserRole("");
 
     // navigate("/login");
     // } catch (err) {
