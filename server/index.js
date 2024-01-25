@@ -20,97 +20,97 @@ app.listen(PORT, () => {
 
 //--------------------------------------creating user
 
-app.post("/users", async (req, res) => {
-  try {
-    const {
-      user_name,
-      password,
-      email,
-      role,
-      bio,
-      most_favourite_anime,
-      first_access,
-      last_access,
-      active_time,
-    } = req.body;
+// app.post("/users", async (req, res) => {
+//   try {
+//     const {
+//       user_name,
+//       password,
+//       email,
+//       role,
+//       bio,
+//       most_favourite_anime,
+//       first_access,
+//       last_access,
+//       active_time,
+//     } = req.body;
 
-    const newUser = await pool.query(
-      "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-      [user_name, password, email, role]
-    );
+//     const newUser = await pool.query(
+//       "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
+//       [user_name, password, email, role]
+//     );
 
-    const userId = newUser.rows[0].id;
+//     const userId = newUser.rows[0].id;
 
-    await pool.query(
-      "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
-      [
-        userId,
-        bio,
-        most_favourite_anime,
-        first_access,
-        last_access,
-        active_time,
-      ]
-    );
+//     await pool.query(
+//       "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
+//       [
+//         userId,
+//         bio,
+//         most_favourite_anime,
+//         first_access,
+//         last_access,
+//         active_time,
+//       ]
+//     );
 
-    res.json("User created successfully");
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
+//     res.json("User created successfully");
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 //---------------------------------------------creating moderator
 
-app.post("/moderators", async (req, res) => {
-  try {
-    const {
-      user_name,
-      password,
-      email,
-      role,
-      added_series,
-      deleted_series,
-      added_episodes,
-      deleted_episodes,
-      review_verifications,
-      filtered_comments,
-    } = req.body;
+// app.post("/moderators", async (req, res) => {
+//   try {
+//     const {
+//       user_name,
+//       password,
+//       email,
+//       role,
+//       added_series,
+//       deleted_series,
+//       added_episodes,
+//       deleted_episodes,
+//       review_verifications,
+//       filtered_comments,
+//     } = req.body;
 
-    const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-      [user_name, password, email, role]
-    );
+//     const newModerator = await pool.query(
+//       "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
+//       [user_name, password, email, role]
+//     );
 
-    const moderatorId = newModerator.rows[0].id;
+//     const moderatorId = newModerator.rows[0].id;
 
-    await pool.query(
-      "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [
-        moderatorId,
-        added_series,
-        deleted_series,
-        added_episodes,
-        deleted_episodes,
-        review_verifications,
-        filtered_comments,
-      ]
-    );
+//     await pool.query(
+//       "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+//       [
+//         moderatorId,
+//         added_series,
+//         deleted_series,
+//         added_episodes,
+//         deleted_episodes,
+//         review_verifications,
+//         filtered_comments,
+//       ]
+//     );
 
-    res.json("Moderator created successfully");
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
+//     res.json("Moderator created successfully");
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 app.post("/sign_up", async (req, res) => {
   try {
-    const { user, pwd, email, userRole } = req.body;
+    const { user, pwd, email, userRole,img_url } = req.body;
 
     const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2, $3, $4) RETURNING id",
-      [user, pwd, email, userRole]
+      "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
+      [user, pwd, email, userRole,img_url]
     );
     console.log(1);
 
@@ -127,7 +127,7 @@ app.post("/sign_up", async (req, res) => {
           active_time
         )
           
-          VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)`,
+          VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP-CURRENT_TIMESTAMP)`,
         [userId]
       );
       res.json("user created successfully");
@@ -193,6 +193,7 @@ app.post("/auth", async (req, res) => {
             LAST_ACCESS = CURRENT_TIMESTAMP,
             ACTIVE_TIME = CURRENT_TIMESTAMP - FIRST_ACCESS
           WHERE USER_ID = $1;
+
       `,
           [userId]
         );
@@ -226,7 +227,7 @@ app.post("/moderatorDash", async (req, res) => {
     res.json(person.rows);
     console.log(person.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -245,7 +246,7 @@ app.post("/home", async (req, res) => {
     res.json(genres.rows);
     console.log(genres.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -268,7 +269,62 @@ app.put("/moderatorDash", async (req, res) => {
     res.json(person.rows);
     console.log(person.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
+  }
+});
+
+app.post("/userDash", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const person = await pool.query(
+      `
+      SELECT 
+        p.user_name as name, 
+        p.img_url as img_url, 
+        u.bio as bio, 
+        u.most_favourite_anime as most_favourite_anime,
+        u.first_access as first_access,
+        u.last_access as last_access,
+        u.active_time as active_time
+      FROM person P JOIN "USER" u ON (P.ID = u.user_id)
+      WHERE P.email = $1
+      `,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/userDash", async (req, res) => {
+  try {
+    const { url, email } = req.body;
+    console.log(url, email);
+    await pool.query(
+      `
+    UPDATE person
+	SET
+		img_url = $1
+	WHERE email = $2
+    `,
+      [url, email]
+    );
+
+    const person = await pool.query(
+      `SELECT img_url
+      FROM person
+      WHERE email = $1`,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
   }
 });
 

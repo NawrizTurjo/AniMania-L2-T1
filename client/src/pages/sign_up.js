@@ -10,6 +10,10 @@ import axios from "axios";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import Dropdown from "react-bootstrap/Dropdown";
+import Button from "@mui/material/Button";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import IconButton from "@mui/material/IconButton";
+import { uploadImage } from "./userDashboard";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -27,20 +31,22 @@ const SignUp = () => {
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
   const [pwdFocus, setPwdFocus] = useState(false);
-
+  
   const [matchPwd, setMatchPwd] = useState("");
   const [validMatch, setValidMatch] = useState(false);
   const [matchFocus, setMatchFocus] = useState(false);
-
+  
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
-
+  
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
   
   const [userRole, setUserRole] = useState(""); // State to store user role
-
+  const [img_url, setImgUrl] = useState(""); // State to store user role
+  
+  const [selectedFile, setSelectedFile] = useState(null);
   const handleRoleChange = (role) => {
     setUserRole(role);
   };
@@ -68,23 +74,23 @@ const SignUp = () => {
     setErrMsg("");
   }, [user, pwd, matchPwd]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate user input
-    if (!validName || !validPwd || !validMatch || !userRole ) {
+    if (!validName || !validPwd || !validMatch || !userRole) {
       setErrMsg("Invalid Entry");
       return;
     }
     const hashedPwd = bcrypt.hashSync(pwd, 10);
     console.log("Pwd", pwd);
+    console.log("img_url inside submit", img_url);
 
     try {
       // setPwd(hashedPwd);
       const response = await axios.post(
         `http://localhost:3000/sign_up`,
-        JSON.stringify({ user, pwd: hashedPwd, email,userRole }),
+        JSON.stringify({ user, pwd: hashedPwd, email, userRole,img_url }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -101,11 +107,14 @@ const SignUp = () => {
       localStorage.setItem("user", user);
       localStorage.setItem("email", email);
       localStorage.setItem("userRole", userRole);
+      localStorage.setItem("img_url", img_url);
       navigate("/Home");
       setUser("");
       setPwd("");
       setMatchPwd("");
       setEmail("");
+      setUserRole("");
+      setImgUrl("");
     } catch (err) {
       if (!err?.response) {
         setErrMsg("No Server Response");
@@ -119,6 +128,23 @@ const SignUp = () => {
       errRef.current.focus();
     }
   };
+
+
+  const handleImageChange = async(event) => {
+    if (event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+      try {
+        const imageUrl = await uploadImage(selectedFile);
+        console.log("Uploaded image URL:", imageUrl);
+        setImgUrl(imageUrl);
+        console.log("img_url", img_url);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
+  // const classes = useStyles();
 
   return (
     <>
@@ -280,6 +306,26 @@ const SignUp = () => {
               <FontAwesomeIcon icon={faInfoCircle} />
               Must match the first password input field.
             </p>
+            <p>
+              <label><b>Upload image</b></label>
+              <input type="file"  onChange={handleImageChange}/>
+              {/* <button onClick={handleImageChange}>Submit</button> */}
+              {/* <IconButton
+                color="primary"
+                aria-label="Upload image"
+                component="label"
+              >
+                <FileUploadIcon>
+                  <input
+                    type="file"
+                    hidden
+                    onChange={handleImageChange}
+                    accept="image/*" 
+                  />
+                </FileUploadIcon>
+                <label>Upload image</label>
+              </IconButton> */}
+            </p>
 
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -296,7 +342,11 @@ const SignUp = () => {
               </Dropdown.Menu>
             </Dropdown>
             <button
-              disabled={!validName || !validPwd || !validMatch ||!userRole ? true : false}
+              disabled={
+                !validName || !validPwd || !validMatch || !userRole
+                  ? true
+                  : false
+              }
             >
               Sign Up
             </button>

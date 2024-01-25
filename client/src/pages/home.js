@@ -27,6 +27,7 @@ export default function Home({ forceRerender, toggleRerender }) {
     user: routeUser,
     email: routeEmail,
     userRole: routeUserRole,
+    img_url: routeImgUrl,
   } = location.state || {};
 
   // Use local state to store user information
@@ -40,6 +41,11 @@ export default function Home({ forceRerender, toggleRerender }) {
   const [userRole, setUserRole] = useState(
     routeUserRole || localStorage.getItem("userRole") || ""
   );
+
+  const [img_url, setImgUrl] = useState(
+    routeImgUrl || localStorage.getItem("img_url") || ""
+  );
+
   //const { username } = useParams();
   const [animes, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,7 +126,8 @@ export default function Home({ forceRerender, toggleRerender }) {
     localStorage.setItem("user", user);
     localStorage.setItem("email", email);
     localStorage.setItem("userRole", userRole);
-  }, [user, email, userRole]);
+    localStorage.setItem("img_url", img_url);
+  }, [user, email, userRole, img_url]);
   const indexOfLastAnime = currentPage * animePerPage;
   const indexOfFirstAnime = indexOfLastAnime - animePerPage;
   const currentanimes = animes.slice(indexOfFirstAnime, indexOfLastAnime);
@@ -142,7 +149,8 @@ export default function Home({ forceRerender, toggleRerender }) {
   const navigate = useNavigate();
 
   const handleClick = (event) => {
-    if (user !== "") navigate("/moderatorDash", { state: { user, email } });
+    if (user !== "" && userRole==="M") navigate("/moderatorDash", { state: { user, email } });
+    else if (user !== "" && userRole==="U") navigate("/userDash", { state: { user, email } });
     else navigate("/login");
   };
 

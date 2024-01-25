@@ -83,7 +83,7 @@ export default function ModeratorDash() {
   useEffect(() => {
     getPerson();
     // setNewUsername(person.name);
-  }, []);
+  }, [user]);
   useEffect(() => {
     setUser(newUsername);
     console.log(user);
@@ -112,7 +112,8 @@ export default function ModeratorDash() {
       let name = response.data[0].user_name;
       console.log(name);
       setUser(name);
-      // localStorage.setItem("user", user);
+      localStorage.setItem("user", name);
+      console.log(name);
     } catch (err) {
       console.error(err.message);
     }
