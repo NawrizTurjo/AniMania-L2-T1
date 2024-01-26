@@ -20,104 +20,121 @@ app.listen(PORT, () => {
 
 //--------------------------------------creating user
 
-app.post("/users", async (req, res) => {
-  try {
-    const {
-      user_name,
-      password,
-      email,
-      role,
-      bio,
-      most_favourite_anime,
-      first_access,
-      last_access,
-      active_time,
-    } = req.body;
+// app.post("/users", async (req, res) => {
+//   try {
+//     const {
+//       user_name,
+//       password,
+//       email,
+//       role,
+//       bio,
+//       most_favourite_anime,
+//       first_access,
+//       last_access,
+//       active_time,
+//     } = req.body;
 
-    const newUser = await pool.query(
-      "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-      [user_name, password, email, role]
-    );
+//     const newUser = await pool.query(
+//       "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
+//       [user_name, password, email, role]
+//     );
 
-    const userId = newUser.rows[0].id;
+//     const userId = newUser.rows[0].id;
 
-    await pool.query(
-      "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
-      [
-        userId,
-        bio,
-        most_favourite_anime,
-        first_access,
-        last_access,
-        active_time,
-      ]
-    );
+//     await pool.query(
+//       "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
+//       [
+//         userId,
+//         bio,
+//         most_favourite_anime,
+//         first_access,
+//         last_access,
+//         active_time,
+//       ]
+//     );
 
-    res.json("User created successfully");
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
+//     res.json("User created successfully");
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 //---------------------------------------------creating moderator
 
-app.post("/moderators", async (req, res) => {
-  try {
-    const {
-      user_name,
-      password,
-      email,
-      role,
-      added_series,
-      deleted_series,
-      added_episodes,
-      deleted_episodes,
-      review_verifications,
-      filtered_comments,
-    } = req.body;
+// app.post("/moderators", async (req, res) => {
+//   try {
+//     const {
+//       user_name,
+//       password,
+//       email,
+//       role,
+//       added_series,
+//       deleted_series,
+//       added_episodes,
+//       deleted_episodes,
+//       review_verifications,
+//       filtered_comments,
+//     } = req.body;
 
-    const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-      [user_name, password, email, role]
-    );
+//     const newModerator = await pool.query(
+//       "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
+//       [user_name, password, email, role]
+//     );
 
-    const moderatorId = newModerator.rows[0].id;
+//     const moderatorId = newModerator.rows[0].id;
 
-    await pool.query(
-      "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-      [
-        moderatorId,
-        added_series,
-        deleted_series,
-        added_episodes,
-        deleted_episodes,
-        review_verifications,
-        filtered_comments,
-      ]
-    );
+//     await pool.query(
+//       "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+//       [
+//         moderatorId,
+//         added_series,
+//         deleted_series,
+//         added_episodes,
+//         deleted_episodes,
+//         review_verifications,
+//         filtered_comments,
+//       ]
+//     );
 
-    res.json("Moderator created successfully");
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
+//     res.json("Moderator created successfully");
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 
 app.post("/sign_up", async (req, res) => {
   try {
-    const { user, pwd, email } = req.body;
+    const { user, pwd, email, userRole, img_url } = req.body;
 
     const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role) VALUES ($1, $2, $3,'M') RETURNING id",
-      [user, pwd, email]
+      "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
+      [user, pwd, email, userRole, img_url]
     );
     console.log(1);
 
-    const moderatorId = newModerator.rows[0].id;
-
-    await pool.query(
-      `INSERT INTO moderator 
+    if (userRole === "U") {
+      const userId = newModerator.rows[0].id;
+      await pool.query(
+        `INSERT INTO "USER" 
+        ( 
+          user_id,
+          bio,
+          most_favourite_anime,
+          first_access,
+          last_access,
+          active_time
+        )
+          
+          VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP-CURRENT_TIMESTAMP)`,
+        [userId]
+      );
+      res.json("user created successfully");
+    } else {
+      const moderatorId = newModerator.rows[0].id;
+      await pool.query(
+        `INSERT INTO moderator 
         ( moderator_id,
           added_series,
           deleted_series,
@@ -127,10 +144,10 @@ app.post("/sign_up", async (req, res) => {
           filtered_comments)
       
       VALUES ($1,0,0,0,0,0,0)`,
-      [moderatorId]
-    );
-
-    res.json("Moderator created successfully");
+        [moderatorId]
+      );
+      res.json("Moderator created successfully");
+    }
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
@@ -160,15 +177,37 @@ app.post("/auth", async (req, res) => {
   try {
     const { user, pwd } = req.body;
     console.log(user, pwd);
-    const person = await pool.query(
-      "SELECT * FROM PERSON where EMAIL = $1",
-      [user]
-    );
+    const person = await pool.query("SELECT * FROM PERSON where EMAIL = $1", [
+      user,
+    ]);
+    if (person.rows.length > 0) {
+      const userRole = person.rows[0].role;
+      console.log(userRole);
+
+      if (userRole === "U") {
+        const userId = person.rows[0].id;
+        const user = await pool.query(
+          `
+          UPDATE "USER"
+          SET 
+            LAST_ACCESS = CURRENT_TIMESTAMP,
+            ACTIVE_TIME = CURRENT_TIMESTAMP - FIRST_ACCESS
+          WHERE USER_ID = $1;
+
+      `,
+          [userId]
+        );
+        // res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+        // res.json(user.rows);
+        console.log(user.rows);
+        console.log("user");
+      }
+    }
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
     console.log(person.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -178,7 +217,8 @@ app.post("/moderatorDash", async (req, res) => {
     console.log(email);
     const person = await pool.query(
       `SELECT p.user_name as name, M.added_series AS added_series,
-      M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments
+      M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments,
+      p.img_url as img_url
       FROM person P JOIN moderator M ON (P.ID = M.moderator_id)
       WHERE P.email = $1
       `,
@@ -188,7 +228,7 @@ app.post("/moderatorDash", async (req, res) => {
     res.json(person.rows);
     console.log(person.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -207,30 +247,86 @@ app.post("/home", async (req, res) => {
     res.json(genres.rows);
     console.log(genres.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
 app.put("/moderatorDash", async (req, res) => {
   try {
-    const { newUsername, email } = req.body;
-    console.log(newUsername, email);
-    await pool.query(
-      `UPDATE person SET user_name = $1 WHERE email = $2`,
-      [newUsername, email]
-    );
+    const { newUsername,img_url, email } = req.body;
+    console.log(newUsername,img_url, email);
+    await pool.query(`UPDATE person SET user_name = $1,img_url=$2 WHERE email = $3`, [
+      newUsername,
+      img_url,
+      email,
+    ]);
 
     const person = await pool.query(
       `SELECT user_name
       FROM person
-      WHERE email = $1`
-      ,[email]
+      WHERE email = $1`,
+      [email]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
     console.log(person.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
+  }
+});
+
+app.post("/userDash", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const person = await pool.query(
+      `
+      SELECT 
+        p.user_name as name, 
+        p.img_url as img_url, 
+        u.bio as bio, 
+        u.most_favourite_anime as most_favourite_anime,
+        u.first_access as first_access,
+        u.last_access as last_access,
+        u.active_time as active_time
+      FROM person P JOIN "USER" u ON (P.ID = u.user_id)
+      WHERE P.email = $1
+      `,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/userDash", async (req, res) => {
+  try {
+    const { url, email } = req.body;
+    console.log(url, email);
+    await pool.query(
+      `
+    UPDATE person
+	SET
+		img_url = $1
+	WHERE email = $2
+    `,
+      [url, email]
+    );
+
+    const person = await pool.query(
+      `SELECT img_url
+      FROM person
+      WHERE email = $1`,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(person.rows);
+    console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
   }
 });
 
@@ -305,6 +401,41 @@ app.get("/home", async (req, res) => {
   }
 });
 
+app.get("/watch/anime/episodes/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const anime = await pool.query(
+      `
+      SELECT
+    a.*,
+    string_agg(DISTINCT(g.genre_name),',') AS genres,
+    string_agg(DISTINCT(s.studio_name),',') AS studios,
+		string_agg(DISTINCT(t.tag_name),',') AS tags
+    ,
+		string_agg(DISTINCT(c.character_name),',') AS "characters"
+
+    FROM anime a
+    LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
+    LEFT JOIN studio s ON s.studio_id = ast.studio_id
+    LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+    LEFT JOIN genres g ON g.genre_id = ga.genre_id
+    LEFT JOIN tag_id_table ti on (ti.anime_id = a.anime_id)
+    LEFT JOIN tags t on (t.tag_id = ti.tag_id)
+    LEFT JOIN character_anime_relationship ca on (a.anime_id=ca.anime_id)
+    LEFT JOIN "characters" c on (ca.character_id=c.character_id)
+
+    WHERE a.anime_id = $1
+    GROUP BY a.anime_id
+      `,
+      [id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(anime.rows);
+  } catch (error) {
+    console.error(err.message);
+  }
+});
+
 app.put("/home", async (req, res) => {
   try {
     const { sort } = req.body;
@@ -367,7 +498,7 @@ app.get("/genre/:id", async (req, res) => {
       FROM genres G JOIN genre_anime_relationship GA ON (G.genre_id = GA.genre_id)
       JOIN anime A ON (GA.anime_id = A.anime_id)
       WHERE G.genre_id = $1
-      ORDER BY A.anime_id
+      ORDER BY A.mal_score DESC
       `,
       [genreId]
     );
