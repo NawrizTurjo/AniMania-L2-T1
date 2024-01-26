@@ -18,6 +18,7 @@ import { useLocation } from "react-router-dom";
 import ModeratorDash from "./pages/moderatorDash";
 import Episodes from "./pages/episodePage";
 import UserDash from "./pages/userDashboard";
+import Episode from "./pages/eachEpisodePage";
 function App(){ 
   const navigate = useNavigate();
   // State to force rerender in Home component
