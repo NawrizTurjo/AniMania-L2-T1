@@ -18,12 +18,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "./loader.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useLocation } from "react-router";
+import { json, useLocation } from "react-router";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import { IconButton } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const AnimeListItem = ({
+  anime_id,
   title,
   ep,
   anime_type,
@@ -35,51 +36,16 @@ const AnimeListItem = ({
   id,
   rating,
   description,
+  genres,
+  is_favorite,
+  user_id,
   forceRerender,
   toggleRerender,
 }) => {
-  const [genres, setGenres] = useState([]);
-  const [concatenatedString, setConcatenatedString] = useState("");
+  // const [genres, setGenres] = useState([]);
+  // const [concatenatedString, setConcatenatedString] = useState("");
   const [open, setOpen] = React.useState(false);
-  const [fav, setFav] = useState(() => {
-    // Initialize fav state from local storage or default to false
-    return localStorage.getItem(`fav-${id}`) === "true" ? true : false;
-  });
-  const getGenres = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/home",
-        JSON.stringify({ id }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-
-      console.log(response.data);
-      setGenres(response.data);
-      const newconcatenatedString = genres
-        .map((genre) => genre.genre_name)
-        .join(", ");
-      setConcatenatedString(newconcatenatedString);
-      // console.log(genres);
-      //   console.log(concatenatedString);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    getGenres();
-  }, [id,fav]);
-
-  useEffect(() => {
-    const newConcatenatedString = genres
-      .map((genre) => genre.genre_name)
-      .join(", ");
-    setConcatenatedString(newConcatenatedString);
-  }, [genres]);
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [fav, setFav] = useState(false);
 
   const location = useLocation();
   //const { user, email } = location.state || {};
@@ -106,8 +72,74 @@ const AnimeListItem = ({
     routeImgUrl || localStorage.getItem("img_url") || ""
   );
 
-
+  console.log(user);
+  console.log(email);
   console.log(userRole);
+  console.log(img_url);
+
+  useEffect(() => {
+    const favString = JSON.stringify(fav);
+    console.log(favString);
+    const payload = {
+      email: email,
+      favString: favString,
+      anime_id: anime_id,
+    };
+    console.log(payload);
+
+    // Send the API request
+    axios
+      .put("http://localhost:3000/home", payload)
+      .then((response) => {
+        console.log("API request successful", response.data);
+        // Handle response data if needed
+      })
+      .catch((error) => {
+        console.error("Error making API request", error);
+        // Handle errors if needed
+      });
+
+      setFav(fav);
+  }, [fav]);
+
+  console.log(title, fav);
+  console.log(user_id);
+
+  // const getGenres = async () => {
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:3000/home",
+  //       JSON.stringify({ id,email }),
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         withCredentials: true,
+  //       }
+  //     );
+
+  //     console.log(response.data);
+  //     setGenres(response.data);
+  //     const newconcatenatedString = genres
+  //       .map((genre) => genre.genre_name)
+  //       .join(", ");
+  //     setConcatenatedString(newconcatenatedString);
+  //     // console.log(genres);
+  //     //   console.log(concatenatedString);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getGenres();
+  // }, [id]);
+
+  // useEffect(() => {
+  //   const newConcatenatedString = genres
+  //     .map((genre) => genre.genre_name)
+  //     .join(", ");
+  //   setConcatenatedString(newConcatenatedString);
+  // }, [genres]);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleClick = (event) => {
     window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
@@ -154,12 +186,7 @@ const AnimeListItem = ({
 
   const handleFavorite = async (e) => {
     e.preventDefault();
-    setFav((prevFav) => {
-      const newFav = !prevFav;
-      // Save fav state to local storage
-      localStorage.setItem(`fav-${id}`, newFav);
-      return newFav;
-    });
+    setFav(!fav);
     if (fav) {
       toast.error(`Removed ${title} from favorites`);
     } else {
@@ -194,9 +221,7 @@ const AnimeListItem = ({
         Season: {season != null ? season : "N/A"} | Year:{" "}
         {yr != null ? yr : "N/A"}
       </p>
-      <p style={{ height: "70px" }}>
-        Genre: {concatenatedString != null ? concatenatedString : "N/A"}
-      </p>
+      <p style={{ height: "70px" }}>Genre: {genres != null ? genres : "N/A"}</p>
       <Stack direction="row" spacing={7}>
         <Rating
           name="customized-10"
@@ -209,117 +234,116 @@ const AnimeListItem = ({
         <h4>{rating}</h4>
       </Stack>
       <div className="d-flex justify-content-center align-items-center">
+        <Stack className="mt-2" direction="row" spacing={10}>
+          {userRole === "M" && (
+            <a href={`http://localhost:3001/anime/${id}`}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<EditIcon />}
+              >
+                Edit
+              </Button>
+            </a>
+          )}
 
-      
-      <Stack className="mt-2" direction="row" spacing={10}>
-        {userRole === "M" && (
-          <a href={`http://localhost:3001/anime/${id}`}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<EditIcon />}
+          {userRole === "U" && (
+            <a
+              href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
             >
-              Edit
-            </Button>
-          </a>
-        )}
-
-        {userRole === "U" && (
-          <a
-            href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
-          >
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<PlayCircleFilledIcon />}
-            >
-              Play
-            </Button>
-          </a>
-        )}
-        <Button
-          color="secondary"
-          aria-describedby={pop_id}
-          variant="contained"
-          onClick={handleClick}
-          aria-owns={Open ? "mouse-over-popover" : undefined}
-          aria-haspopup="true"
-          onMouseEnter={handlePopoverOpen}
-          onMouseLeave={handlePopoverClose}
-        >
-          <InfoIcon />
-        </Button>
-        <Popover
-          // pop_id={pop_id}
-          // open={Open}
-          // anchorEl={anchorEl}
-          // onClose={handleClose}
-          // anchorOrigin={{
-          //   vertical: "bottom",
-          //   horizontal: "left",
-          // }}
-          id="mouse-over-popover"
-          sx={{
-            pointerEvents: "none",
-          }}
-          open={Open}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
-          onClose={handlePopoverClose}
-          disableRestoreFocus
-          // style={{
-          //   maxWidth: "50%",
-          //   maxHeight: "1000px",
-          // }}
-        >
-          <Typography sx={{ p: 2 }}>{description}</Typography>
-        </Popover>
-        {/* <Button  color="secondary" ><FavoriteIcon /></Button> */}
-        {userRole === "M" && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                startIcon={<PlayCircleFilledIcon />}
+              >
+                Play
+              </Button>
+            </a>
+          )}
           <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={handleClickOpen}
+            color="secondary"
+            aria-describedby={pop_id}
+            variant="contained"
+            onClick={handleClick}
+            aria-owns={Open ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+            onMouseEnter={handlePopoverOpen}
+            onMouseLeave={handlePopoverClose}
           >
-            Delete
+            <InfoIcon />
           </Button>
-        )}
-
-        {userRole === "U" && (
-          <IconButton color="error" onClick={handleFavorite}>
-            {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-          </IconButton>
-        )}
-        <Dialog
-          open={open}
-          onClose={handleCloseDelete}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Are you sure you want to delete this anime?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              This action will delete all about this anime from the database.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDelete}>Disagree</Button>
-            <Button onClick={handleAgree} autoFocus>
-              Agree
+          <Popover
+            // pop_id={pop_id}
+            // open={Open}
+            // anchorEl={anchorEl}
+            // onClose={handleClose}
+            // anchorOrigin={{
+            //   vertical: "bottom",
+            //   horizontal: "left",
+            // }}
+            id="mouse-over-popover"
+            sx={{
+              pointerEvents: "none",
+            }}
+            open={Open}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            onClose={handlePopoverClose}
+            disableRestoreFocus
+            // style={{
+            //   maxWidth: "50%",
+            //   maxHeight: "1000px",
+            // }}
+          >
+            <Typography sx={{ p: 2 }}>{description}</Typography>
+          </Popover>
+          {/* <Button  color="secondary" ><FavoriteIcon /></Button> */}
+          {userRole === "M" && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleClickOpen}
+            >
+              Delete
             </Button>
-          </DialogActions>
-        </Dialog>
-      </Stack>
+          )}
+
+          {userRole === "U" && (
+            <IconButton color="error" onClick={handleFavorite}>
+              {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+              
+            </IconButton>
+          )}
+          <Dialog
+            open={open}
+            onClose={handleCloseDelete}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Are you sure you want to delete this anime?"}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                This action will delete all about this anime from the database.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDelete}>Disagree</Button>
+              <Button onClick={handleAgree} autoFocus>
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Stack>
       </div>
       <ToastContainer />
     </li>
@@ -341,6 +365,7 @@ const AnimeItem = ({
       {currentanimes.map((anime, index) => (
         <AnimeListItem
           key={index}
+          anime_id={anime.anime_id}
           title={anime.anime_name}
           ep={anime.number_of_episodes}
           anime_type={anime.anime_type}
@@ -352,6 +377,9 @@ const AnimeItem = ({
           id={anime.anime_id}
           rating={anime.mal_score}
           description={anime.description}
+          genres={anime.genres}
+          is_favorite={anime.is_favorite}
+          user_id={anime.user_id}
           forceRerender={forceRerender}
           toggleRerender={toggleRerender}
         />

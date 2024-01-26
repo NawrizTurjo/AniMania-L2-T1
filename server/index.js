@@ -234,32 +234,42 @@ app.post("/moderatorDash", async (req, res) => {
 
 app.post("/home", async (req, res) => {
   try {
-    const { id } = req.body;
-    console.log(id);
-    const genres = await pool.query(
-      `SELECT DISTINCT(G.genre_name) AS genre_name
-      FROM ANIME A JOIN genre_anime_relationship GA ON (A.anime_id = GA.anime_id)
-      JOIN genres G ON (GA.genre_id = G.genre_id)
-      WHERE A.anime_ID = $1`,
-      [id]
+    const { userEmail } = req.body;
+
+    const allAnimes = await pool.query(
+      `
+      SELECT
+      a.*,
+      string_agg(DISTINCT g.genre_name, ',') AS genres,
+      ua.user_id AS user_id,
+      CASE WHEN ua.user_id IS NOT NULL THEN true ELSE false END AS is_favorite
+      FROM anime a
+      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+      LEFT JOIN genres g ON g.genre_id = ga.genre_id
+      LEFT JOIN users_anime_list ua ON ua.anime_id = a.anime_id
+      LEFT JOIN person p ON p.email = $1
+      GROUP BY a.anime_id, ua.user_id
+      ORDER BY a.mal_score DESC
+      `,
+      [userEmail]
     );
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    res.json(genres.rows);
-    console.log(genres.rows);
+    res.json(allAnimes.rows);
   } catch (error) {
     console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 app.put("/moderatorDash", async (req, res) => {
   try {
-    const { newUsername,img_url, email } = req.body;
-    console.log(newUsername,img_url, email);
-    await pool.query(`UPDATE person SET user_name = $1,img_url=$2 WHERE email = $3`, [
-      newUsername,
-      img_url,
-      email,
-    ]);
+    const { newUsername, img_url, email } = req.body;
+    console.log(newUsername, img_url, email);
+    await pool.query(
+      `UPDATE person SET user_name = $1,img_url=$2 WHERE email = $3`,
+      [newUsername, img_url, email]
+    );
 
     const person = await pool.query(
       `SELECT user_name
@@ -392,7 +402,18 @@ app.put("/moderators/:id", async (req, res) => {
 app.get("/home", async (req, res) => {
   try {
     const allAnimes = await pool.query(
-      "SELECT * FROM ANIME ORDER BY MAL_SCORE DESC"
+      `
+      SELECT
+      a.*,
+      string_agg(DISTINCT(g.genre_name),',') AS genres
+
+      FROM anime a
+
+      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+      LEFT JOIN genres g ON g.genre_id = ga.genre_id
+      GROUP BY a.anime_id
+      ORDER BY a.mal_score desc
+      `
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
@@ -438,16 +459,27 @@ app.get("/watch/anime/episodes/:id", async (req, res) => {
 
 app.put("/home", async (req, res) => {
   try {
-    const { sort } = req.body;
-    console.log(sort);
-    const animes = await pool.query(`SELECT * FROM ANIME ORDER BY $1 DESC`, [
-      sort,
-    ]);
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    res.json(animes.rows);
+    const { email, favString, anime_id } = req.body;
+    console.log(email, favString, anime_id);
+    const userId = await pool.query(
+      `SELECT id FROM person WHERE email = $1`,
+      [email]
+    );
+    console.log(userId.rows[0].id);
+    if (favString === "true") {
+      await pool.query(
+        `INSERT INTO users_anime_list (user_id, anime_id) VALUES ($1, $2)`,
+        [userId.rows[0].id, anime_id] // Replace anime_id with the actual anime ID
+      );
+    } else {
+      await pool.query(
+        `DELETE FROM users_anime_list WHERE user_id = $1 AND anime_id = $2`,
+        [userId.rows[0].id, anime_id] // Replace anime_id with the actual anime ID
+      );
+    }
     // console.log(animes.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
