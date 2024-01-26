@@ -106,11 +106,11 @@ app.listen(PORT, () => {
 
 app.post("/sign_up", async (req, res) => {
   try {
-    const { user, pwd, email, userRole,img_url } = req.body;
+    const { user, pwd, email, userRole, img_url } = req.body;
 
     const newModerator = await pool.query(
       "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
-      [user, pwd, email, userRole,img_url]
+      [user, pwd, email, userRole, img_url]
     );
     console.log(1);
 
@@ -217,7 +217,8 @@ app.post("/moderatorDash", async (req, res) => {
     console.log(email);
     const person = await pool.query(
       `SELECT p.user_name as name, M.added_series AS added_series,
-      M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments
+      M.deleted_series,M.added_episodes,M.deleted_episodes,M.review_verifications,M.filtered_comments,
+      p.img_url as img_url
       FROM person P JOIN moderator M ON (P.ID = M.moderator_id)
       WHERE P.email = $1
       `,
@@ -252,10 +253,11 @@ app.post("/home", async (req, res) => {
 
 app.put("/moderatorDash", async (req, res) => {
   try {
-    const { newUsername, email } = req.body;
-    console.log(newUsername, email);
-    await pool.query(`UPDATE person SET user_name = $1 WHERE email = $2`, [
+    const { newUsername,img_url, email } = req.body;
+    console.log(newUsername,img_url, email);
+    await pool.query(`UPDATE person SET user_name = $1,img_url=$2 WHERE email = $3`, [
       newUsername,
+      img_url,
       email,
     ]);
 
@@ -403,22 +405,28 @@ app.get("/watch/anime/episodes/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const anime = await pool.query(
-      `SELECT
-      a.*,
-      string_agg(DISTINCT(g.genre_name),',') AS genres,
-      string_agg(DISTINCT(s.studio_name),',') AS studios,
-      string_agg(DISTINCT(t.tag_name),',') AS tags
-  
-      FROM anime a
-      LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
-      LEFT JOIN studio s ON s.studio_id = ast.studio_id
-      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
-      LEFT JOIN genres g ON g.genre_id = ga.genre_id
-      LEFT JOIN tag_id_table ti on (ti.anime_id = a.anime_id)
-      LEFT JOIN tags t on (t.tag_id = ti.tag_id)
-  
-      WHERE a.anime_id = $1
-      GROUP BY a.anime_id`,
+      `
+      SELECT
+    a.*,
+    string_agg(DISTINCT(g.genre_name),',') AS genres,
+    string_agg(DISTINCT(s.studio_name),',') AS studios,
+		string_agg(DISTINCT(t.tag_name),',') AS tags
+    ,
+		string_agg(DISTINCT(c.character_name),',') AS "characters"
+
+    FROM anime a
+    LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
+    LEFT JOIN studio s ON s.studio_id = ast.studio_id
+    LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+    LEFT JOIN genres g ON g.genre_id = ga.genre_id
+    LEFT JOIN tag_id_table ti on (ti.anime_id = a.anime_id)
+    LEFT JOIN tags t on (t.tag_id = ti.tag_id)
+    LEFT JOIN character_anime_relationship ca on (a.anime_id=ca.anime_id)
+    LEFT JOIN "characters" c on (ca.character_id=c.character_id)
+
+    WHERE a.anime_id = $1
+    GROUP BY a.anime_id
+      `,
       [id]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
@@ -490,7 +498,7 @@ app.get("/genre/:id", async (req, res) => {
       FROM genres G JOIN genre_anime_relationship GA ON (G.genre_id = GA.genre_id)
       JOIN anime A ON (GA.anime_id = A.anime_id)
       WHERE G.genre_id = $1
-      ORDER BY A.anime_id
+      ORDER BY A.mal_score DESC
       `,
       [genreId]
     );

@@ -134,10 +134,11 @@ const SignUp = () => {
     if (event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
       try {
-        const imageUrl = await uploadImage(selectedFile);
+        const imageUrl = await uploadImage(event.target.files[0]);
         console.log("Uploaded image URL:", imageUrl);
         setImgUrl(imageUrl);
         console.log("img_url", img_url);
+        console.log("img_url", imageUrl);
       } catch (error) {
         console.error("Error uploading image:", error);
       }

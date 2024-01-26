@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Button from "@mui/material/Button";
+import { Box, Button } from "@mui/material";
 import Stack from "@mui/material/Stack";
-
+import Avatar from "@mui/material/Avatar";
+import { uploadImage } from "./userDashboard";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -18,6 +19,7 @@ export default function ModeratorDash() {
   let state = location.state;
 
   let [user, setUser] = useState("");
+  let [img_url, setImgUrl] = useState("");
 
   user = state && state.user;
   let email = state && state.email;
@@ -59,14 +61,15 @@ export default function ModeratorDash() {
         deleted_episodes: personData?.deleted_episodes || 0,
         review_verifications: personData?.review_verifications || 0,
         filtered_comments: personData?.filtered_comments || 0,
+        img_url: personData?.img_url || "",
       };
 
       setPerson(personData);
 
-        // a = person.added_series;
-        // console.log(person);
-        // console.log(person.added_series);
-        // console.log(response.data);
+      // a = person.added_series;
+      // console.log(person);
+      // console.log(person.added_series);
+      // console.log(response.data);
       setNewUsername(person.name);
 
       setAddedSeries(person.added_series);
@@ -75,6 +78,8 @@ export default function ModeratorDash() {
       setDeletedEpisodes(person.deleted_episodes);
       setReviewVerifications(person.review_verifications);
       setFileteredComments(person.filtered_comments);
+      setImgUrl(person.img_url);
+      console.log(person);
       setLoading(false);
     } catch (err) {
       console.error(err.message);
@@ -102,7 +107,7 @@ export default function ModeratorDash() {
     try {
       let response = await axios.put(
         `http://localhost:3000/moderatorDash`,
-        JSON.stringify({ newUsername, email }),
+        JSON.stringify({ newUsername, img_url, email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -113,9 +118,25 @@ export default function ModeratorDash() {
       console.log(name);
       setUser(name);
       localStorage.setItem("user", name);
+      localStorage.setItem("img_url", img_url);
       console.log(name);
     } catch (err) {
       console.error(err.message);
+    }
+  };
+
+  const handleImageChange = async (event) => {
+    if (event.target.files[0]) {
+      // setSelectedFile(event.target.files[0]);
+      try {
+        const imageUrl = await uploadImage(event.target.files[0]);
+        console.log("Uploaded image URL:", imageUrl);
+        setImgUrl(imageUrl);
+        console.log("img_url", img_url);
+        console.log("img_url", imageUrl);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 
@@ -128,6 +149,23 @@ export default function ModeratorDash() {
           <h1>Welcome to the Moderator Dashboard</h1>
           {email && <p>Email: {email}</p>}
           <form>
+            <div className="mb-4">
+              <Box display="flex"  flexDirection="column" alignItems="flex-start">
+                <Avatar src={img_url} sx={{ width: 150, height: 150 }} />
+                <Box marginLeft={2}>
+                  <input type="file" onChange={handleImageChange} />
+                  <Button
+                    variant="contained"
+                    disableElevation
+                    onClick={handleUpdate}
+                    size="small"
+                    // href="/home"
+                  >
+                    Update Image
+                  </Button>
+                </Box>
+              </Box>
+            </div>
             <div>
               <label>
                 Name
