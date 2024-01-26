@@ -356,6 +356,25 @@ app.get("/home", async (req, res) => {
   }
 });
 
+app.get("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const id2 = parseInt(req.params.id2);
+    const anime = await pool.query(
+      `
+     SELECT * FROM
+     EPISODES E JOIN ANIME A ON E.ANIME_ID=A.ANIME_ID
+     WHERE E.ANIME_ID=$1 AND E.EPISODE_NO=$2
+      `,
+      [id,id2]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(anime.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.get("/watch/anime/episodes/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);

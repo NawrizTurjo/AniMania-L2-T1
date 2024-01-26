@@ -18,6 +18,7 @@ import { useLocation } from "react-router-dom";
 import ModeratorDash from "./pages/moderatorDash";
 import Episodes from "./pages/episodePage";
 import UserDash from "./pages/userDashboard";
+import Episode from "./pages/eachEpisodePage";
 function App(){ 
   const navigate = useNavigate();
   // State to force rerender in Home component
@@ -60,6 +61,7 @@ function App(){
           <Route path="/moderatorDash" element={<ModeratorDash/>}></Route>
           <Route path="/userDash" element={<UserDash/>}></Route>
           <Route path="/watch/anime/episodes/:id" element={<Episodes/>}></Route>
+          <Route path="/watch/anime/episodes/:id/episode/:id2" element={<Episode/>}></Route>
         </Routes>
       </div>
       <Footer />
