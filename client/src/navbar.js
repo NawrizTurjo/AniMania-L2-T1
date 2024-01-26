@@ -5,11 +5,12 @@ import { Link, useNavigate,useLocation, useMatch, useResolvedPath } from "react-
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const imgLogo = "https://firebasestorage.googleapis.com/v0/b/animania-88956.appspot.com/o/files%2F681761d0-b158-4aca-adc1-c1165722c1fb?alt=media&token=4d6ca537-9c18-4120-879b-5bc854a96e55";
   const isSearchAnimePage = location.pathname === "/searchAnime";
   return (
     <nav className="nav">
       <Link to="/" className="site-title">
-        <img src= "./images/AniMania.png" alt="AniMania Logo" className="logo" width='93px' height ='62 px'/>
+        <img src= {imgLogo} alt="AniMania Logo" className="logo" width='150px' height ='60px'/>
       </Link>
       <ul>
         <CustomLink to="/home" className="home-link">
