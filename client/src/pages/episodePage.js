@@ -1,119 +1,250 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router";
+import KeyboardArrowUpSharpIcon from "@mui/icons-material/KeyboardArrowUpSharp";
+import Button from "@mui/material/Button";
 
-export default function Episodes() {
-    const {id} = useParams();
-    const [anime,setAnime] = useState([]);
-    const [loading,setLoading] = useState(true);
-    //let [source,setsource]=useState("");
-    const [review, setReview] = useState("");
+export default function Episodes({ toggleRerender }) {
+  const { id } = useParams();
+  const [anime, setAnime] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [reviewloading, setReviewLoading] = useState(true);
+  //let [source,setsource]=useState("");
+  const [stat, setStat] = useState(false);
+  const [review, setReview] = useState("");
+  const [reviews, setReviews] = useState([]);
+  const location = useLocation();
+  //const { user, email } = location.state || {};
+  const {
+    user: routeUser,
+    email: routeEmail,
+    userRole: routeUserRole,
+    img_url: routeImgUrl,
+  } = location.state || {};
 
+  // Use local state to store user information
+  const [user, setUser] = useState(
+    routeUser || localStorage.getItem("user") || ""
+  );
+  const [email, setEmail] = useState(
+    routeEmail || localStorage.getItem("email") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    routeUserRole || localStorage.getItem("userRole") || ""
+  );
+
+  const [img_url, setImgUrl] = useState(
+    routeImgUrl || localStorage.getItem("img_url") || ""
+  );
+
+  //   console.log(user, email, img_url, userRole);
+  let [cleanedText, setCleanedText] = useState("");
+
+  const getAnime = async () => {
+    try {
+      setLoading(true);
+      //   console.log(1);
+      const res = await axios.get(
+        `http://localhost:3000/watch/anime/episodes/${id}`
+      );
+      setAnime(res.data[0]);
+      //console.log(res.data.age_rating);
+      setLoading(false);
+      setCleanedText(
+        res.data[0].description.replace("[Written by MAL Rewrite]", "")
+      );
+      //   console.log(res.data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  const handleSubmitReview = (event) => {
+    event.preventDefault();
+    console.log("Review:", review, "by ", user);
+    try {
+      axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
+        id: id,
+        review: review,
+        // user: user,
+        email: email,
+      });
+    } catch (err) {
+      console.log(err.message);
+    }
+    setReview("");
+    // setStat((prev) => !prev);
+    toggleRerender();
+  };
+
+  const getReview = async () => {
+    try {
+        setReviewLoading(true);
+      const res = await axios.get(
+        `http://localhost:3000/watch/anime/episodes/${id}/reviews`
+      );
+    //   setAnime(res.data[0]);
+      //console.log(res.data.age_rating);
+      // setStat((prev)=>(!prev));
+      console.log(stat);
+      setReviews(res.data);
+      console.log(reviews);
+      console.log(res.data);
+      setReviewLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  useEffect(() => {
     
-    const getAnime = async () => {
-        try {
-          setLoading(true);
-          console.log(1);
-          const res = await axios.get(`http://localhost:3000/watch/anime/episodes/${id}`);
-          setAnime(res.data[0]);
-          //console.log(res.data.age_rating);
-          setLoading(false);
-        //   console.log(res.data);
-        } catch (err) {
-          console.error(err.message);
-        }
-      };
-      useEffect(() => {
-        getAnime();
-      }, []);
-      const handleSubmitReview = (event) => {
-        event.preventDefault();
-        console.log("Review:", review);
-        // Add your logic to submit the review here
-        // For example, you can make an API call to send the review data to your backend
-    };
-      useEffect(() => {
-        console.log(anime);
-        // console.log(anime.age_rating);
-        // console.log(anime.age_rating);
-        // console.log(anime.age_rating);
-        // setsource(anime.SOURCE);
-        //console.log(anime.id);
-      }, [anime]);
-      if(loading){
-        return <h1>Loading...</h1>
-      }
-      return (
-        <div>
-            <div className="row justify-content-center">
-                <div className="col-lg-4">
-                    {/* Larger title screen */}
-                    <img
-                        src={anime.title_screen}
-                        alt={anime.anime_name}
-                        style={{ width: '100%', maxHeight: '500px', objectFit: 'cover' }}
-                    />
-                    {/* Add a button below the title screen */}
-                    <a href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}>
-                        <button className="btn btn-danger btn-lg btn-block mt-3">Watch Now</button>
-                    </a>
-                </div>
-                <div className="col-lg-8">
-                    {/* Anime details */}
-                    <div className="card shadow-lg">
-                        <div className="card-body">
-                            <h2 className="card-title text-center">{anime.anime_name}</h2>
-                            <p className="card-text">{anime.description}</p>
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item"><strong>Genre:</strong> {anime.genres}</li>
-                                        <li className="list-group-item"><strong>Year:</strong> {anime.year}</li>
-                                        <li className="list-group-item"><strong>Source:</strong> {anime.SOURCE}</li>
-                                        <li className="list-group-item"><strong>Type:</strong> {anime.TYPE}</li>
-                                        <li className="list-group-item"><strong>Tags:</strong> {anime.tags}</li>
-                                    </ul>
-                                </div>
-                                <div className="col-md-6">
-                                    <ul className="list-group list-group-flush">
-                                        <li className="list-group-item"><strong>Age Rating:</strong> {anime.age_rating}</li>
-                                        <li className="list-group-item"><strong>Anime ID:</strong> {anime.anime_id}</li>
-                                        <li className="list-group-item"><strong>Demographic:</strong> {anime.demographic}</li>
-                                        <li className="list-group-item"><strong>MAL Score:</strong> {anime.mal_score}</li>
-                                        <li className="list-group-item"><strong>Number of Episodes:</strong> {anime.number_of_episodes}</li>
-                                        <li className="list-group-item"><strong>Season:</strong> {anime.season}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/* Review box */}
-            <div className="row justify-content-center mt-5">
-                <div className="col-lg-8">
-                    <div className="card border-primary">
-                        <div className="card-body">
-                            <form onSubmit={handleSubmitReview}>
-                                <div className="form-group">
-                                    <strong><label htmlFor="review">Your Review:</label></strong>
-                                    <textarea
-                                        className="form-control"
-                                        id="review"
-                                        rows="3"
-                                        value={review}
-                                        onChange={(e) => setReview(e.target.value)}
-                                        style={{ resize: 'none' }}
-                                    ></textarea>
-                                </div>
-                                <button type="submit" className="btn btn-primary">Submit Review</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      
+    getReview();
+}, [toggleRerender]);
+useEffect(() => {
+    console.log(reviews); // Log updated reviews state
+}, [reviews]); // Log reviews whenever it changes
+
+useEffect(() => {
+    getAnime();
+    console.log(anime);
+}, []); // Log reviews whenever it changes
+  if (loading || reviewloading) {
+    return <h1>Loading...</h1>;
+  }
+  return (
+    <div>
+      <div className="row justify-content-center">
+        <div className="col-lg-4">
+          {/* Larger title screen */}
+          <img
+            src={anime.title_screen}
+            alt={anime.anime_name}
+            style={{ width: "100%", maxHeight: "500px", objectFit: "cover" }}
+          />
+          {/* Add a button below the title screen */}
+          {userRole === "U" ? (
+            <a
+              href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
+            >
+              <button className="btn btn-danger btn-lg btn-block mt-3">
+                Watch Now
+              </button>
+            </a>
+          ) : (
+            <a href="http://localhost:3001/login">
+              <button className="btn btn-primary btn-lg btn-block mt-3">
+                Login to Watch
+              </button>
+            </a>
+          )}
         </div>
-    )
+        <div className="col-lg-8">
+          {/* Anime details */}
+          <div className="card shadow-lg">
+            <div className="card-body">
+              <h2 className="card-title text-center">{anime.anime_name}</h2>
+              <p className="card-text">{cleanedText}</p>
+              <div className="row">
+                <div className="col-md-6">
+                  <ul className="list-group list-group-flush">
+                    <li className="list-group-item">
+                      <strong>Genre:</strong> {anime.genres}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Year:</strong> {anime.year}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Source:</strong> {anime.SOURCE}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Type:</strong> {anime.TYPE}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Tags:</strong> {anime.tags}
+                    </li>
+                  </ul>
+                </div>
+                <div className="col-md-6">
+                  <ul className="list-group list-group-flush">
+                    <li className="list-group-item">
+                      <strong>Age Rating:</strong> {anime.age_rating}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Anime ID:</strong> {anime.anime_id}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Demographic:</strong> {anime.demographic}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>MAL Score:</strong> {anime.mal_score}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Number of Episodes:</strong>{" "}
+                      {anime.number_of_episodes}
+                    </li>
+                    <li className="list-group-item">
+                      <strong>Season:</strong> {anime.season}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Review box */}
+      {userRole === "U" && (
+        <div className="row justify-content-center mt-5">
+          <div className="col-lg-8">
+            <div className="card border-primary">
+              <div className="card-body">
+                <form onSubmit={handleSubmitReview}>
+                  <div className="form-group">
+                    <strong>
+                      <label htmlFor="review">Your Review:</label>
+                    </strong>
+                    <textarea
+                      className="form-control"
+                      id="review"
+                      rows="3"
+                      value={review}
+                      onChange={(e) => setReview(e.target.value)}
+                      style={{ resize: "none" }}
+                    ></textarea>
+                  </div>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    endIcon={<KeyboardArrowUpSharpIcon />}
+                  >
+                    Submit Review
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+        <div>
+    {reviews ? (
+      // Render content using the updated reviews state
+      <div>
+        {reviews.map((review, index) => (
+          <div key={index}>
+            {/* Render each review */}
+            <p>User: {review.user_id}</p>
+            <p>Review: {review.review_text}</p>
+          </div>
+        ))}
+      </div>
+    ) : (
+      // Render a loading indicator or placeholder if reviews is null
+      <p>Loading reviews...</p>
+    )}
+  </div>
+    </div>
+  );
 }
 
 // const styles = {

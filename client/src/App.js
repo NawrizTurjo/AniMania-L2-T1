@@ -59,7 +59,7 @@ function App(){
           />
           <Route path="/moderatorDash" element={<ModeratorDash/>}></Route>
           <Route path="/userDash" element={<UserDash/>}></Route>
-          <Route path="/watch/anime/episodes/:id" element={<Episodes/>}></Route>
+          <Route path="/watch/anime/episodes/:id" element={<Episodes toggleRerender={toggleRerender}/>}></Route>
         </Routes>
       </div>
       <Footer />

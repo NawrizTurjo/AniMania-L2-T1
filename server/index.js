@@ -196,6 +196,60 @@ app.post("/home", async (req, res) => {
   }
 });
 
+app.post("/watch/anime/episodes/:id", async (req, res) => {
+  try {
+    // const id = parseInt(req.params.id);
+    const { id,review,email } = req.body;
+    console.log(id,review,email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,[email]
+    );
+
+    // console.log(userID.rows[0].id);
+
+    const allAnimes = await pool.query(
+      `
+      INSERT INTO review ( anime_id, user_id, review_text, review_time, status, review_role )
+      VALUES
+      ( $1, $2, $3, CURRENT_TIMESTAMP, 'pending', 'U' );
+      `,
+      [id,userID.rows[0].id,review]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    // res.json(allAnimes.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    const allReviews = await pool.query(
+      `
+      SELECT *
+      FROM review
+      WHERE anime_id = $1;
+      `,[id]
+    );
+
+    
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allReviews.rows);
+    // Redirect after sending JSON response
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.put("/moderatorDash", async (req, res) => {
   try {
     const { newUsername, img_url, email } = req.body;
