@@ -45,7 +45,7 @@ const AnimeListItem = ({
   // const [genres, setGenres] = useState([]);
   // const [concatenatedString, setConcatenatedString] = useState("");
   const [open, setOpen] = React.useState(false);
-  const [fav, setFav] = useState(false);
+  const [fav, setFav] = useState(is_favorite);
 
   const location = useLocation();
   //const { user, email } = location.state || {};
@@ -72,35 +72,39 @@ const AnimeListItem = ({
     routeImgUrl || localStorage.getItem("img_url") || ""
   );
 
-  console.log(user);
-  console.log(email);
-  console.log(userRole);
-  console.log(img_url);
+  // console.log(user);
+  // console.log(email);
+  // console.log(userRole);
+  // console.log(img_url);
 
-  useEffect(() => {
-    const favString = JSON.stringify(fav);
-    console.log(favString);
-    const payload = {
-      email: email,
-      favString: favString,
-      anime_id: anime_id,
-    };
-    console.log(payload);
+  // useEffect(() => {
+  //   const favString = JSON.stringify(fav);
+  //   console.log(favString);
+  //   const payload = {
+  //     email: email,
+  //     favString: favString,
+  //     anime_id: anime_id,
+  //   };
+  //   console.log(payload);
 
-    // Send the API request
-    axios
-      .put("http://localhost:3000/home", payload)
-      .then((response) => {
-        console.log("API request successful", response.data);
-        // Handle response data if needed
-      })
-      .catch((error) => {
-        console.error("Error making API request", error);
-        // Handle errors if needed
-      });
+  //   // Send the API request
+  //   axios
+  //     .put("http://localhost:3000/home", payload)
+  //     .then((response) => {
+  //       console.log("API request successful", response.data);
+  //       // Handle response data if needed
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error making API request", error);
+  //       // Handle errors if needed
+  //     });
 
-      setFav(fav);
-  }, [fav]);
+  //     setFav(fav);
+  // }, [fav]);
+
+  // useEffect(() => {
+  //   setFav(is_favorite);
+  // },[]);
 
   console.log(title, fav);
   console.log(user_id);
@@ -184,15 +188,38 @@ const AnimeListItem = ({
     window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
   };
 
-  const handleFavorite = async (e) => {
-    e.preventDefault();
-    setFav(!fav);
-    if (fav) {
-      toast.error(`Removed ${title} from favorites`);
-    } else {
-      toast.success(`Added ${title} to favorites`);
+  // const handleFavorite = async (e) => {
+  //   e.preventDefault();
+  //   setFav(!fav);
+  //   if (fav) {
+  //     toast.error(`Removed ${title} from favorites`);
+  //   } else {
+  //     toast.success(`Added ${title} to favorites`);
+  //   }
+  // };
+  const handleFavorite = async () => {
+    try {
+      const response = await axios.put("http://localhost:3000/home", {
+        email: email,
+        favString: JSON.stringify(!fav),
+        anime_id: anime_id,
+      });
+
+      
+      console.log("This is fav state: ",fav);
+      if (response.status === 200) {
+        setFav(!fav);
+        is_favorite = fav;
+        toast.success(`Anime ${title} ${!fav ? "added to" : "removed from"} favorites`);
+      } else {
+        toast.error("Failed to update favorite status");
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
     }
   };
+
 
   const Open = Boolean(anchorEl);
   const pop_id = Open ? "simple-popover" : undefined;

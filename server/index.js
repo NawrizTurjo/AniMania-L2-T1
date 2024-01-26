@@ -18,92 +18,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-//--------------------------------------creating user
-
-// app.post("/users", async (req, res) => {
-//   try {
-//     const {
-//       user_name,
-//       password,
-//       email,
-//       role,
-//       bio,
-//       most_favourite_anime,
-//       first_access,
-//       last_access,
-//       active_time,
-//     } = req.body;
-
-//     const newUser = await pool.query(
-//       "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-//       [user_name, password, email, role]
-//     );
-
-//     const userId = newUser.rows[0].id;
-
-//     await pool.query(
-//       "INSERT INTO user (user_id, bio, most_favourite_anime, first_access, last_access, active_time) VALUES ($1, $2, $3, $4, $5, $6)",
-//       [
-//         userId,
-//         bio,
-//         most_favourite_anime,
-//         first_access,
-//         last_access,
-//         active_time,
-//       ]
-//     );
-
-//     res.json("User created successfully");
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
-
-//---------------------------------------------creating moderator
-
-// app.post("/moderators", async (req, res) => {
-//   try {
-//     const {
-//       user_name,
-//       password,
-//       email,
-//       role,
-//       added_series,
-//       deleted_series,
-//       added_episodes,
-//       deleted_episodes,
-//       review_verifications,
-//       filtered_comments,
-//     } = req.body;
-
-//     const newModerator = await pool.query(
-//       "INSERT INTO person (user_name, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id",
-//       [user_name, password, email, role]
-//     );
-
-//     const moderatorId = newModerator.rows[0].id;
-
-//     await pool.query(
-//       "INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-//       [
-//         moderatorId,
-//         added_series,
-//         deleted_series,
-//         added_episodes,
-//         deleted_episodes,
-//         review_verifications,
-//         filtered_comments,
-//       ]
-//     );
-
-//     res.json("Moderator created successfully");
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).send("Internal Server Error");
-//   }
-// });
-
 app.post("/sign_up", async (req, res) => {
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
@@ -169,7 +83,7 @@ app.post("/sign_up", async (req, res) => {
 //     res.json(person.rows);
 //     console.log(person.rows);
 //   } catch (error) {
-//     console.error(err.message);
+//     console.error(error.message);
 //   }
 // });
 
@@ -418,7 +332,7 @@ app.get("/home", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -453,7 +367,7 @@ app.get("/watch/anime/episodes/:id", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(anime.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -465,6 +379,7 @@ app.put("/home", async (req, res) => {
       `SELECT id FROM person WHERE email = $1`,
       [email]
     );
+    console.log(favString);
     console.log(userId.rows[0].id);
     if (favString === "true") {
       await pool.query(
@@ -477,6 +392,8 @@ app.put("/home", async (req, res) => {
         [userId.rows[0].id, anime_id] // Replace anime_id with the actual anime ID
       );
     }
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json("Anime added to user's list");
     // console.log(animes.rows);
   } catch (error) {
     console.error(error.message);
@@ -495,7 +412,7 @@ app.get("/genre", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(ALLGENRES.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -513,7 +430,7 @@ app.get("/genre", async (req, res) => {
 //     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
 //     res.json(allAnimes.rows);
 //   } catch (error) {
-//     console.error(err.message);
+//     console.error(error.message);
 //   }
 // });
 
@@ -537,7 +454,7 @@ app.get("/genre/:id", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(allAnimes.rows);
   } catch (error) {
-    console.error(error.message); // <-- Corrected from `err.message`
+    console.error(error.message); // <-- Corrected from `error.message`
   }
 });
 
@@ -550,7 +467,7 @@ app.get("/anime/:id", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(idAnime.rows);
   } catch (error) {
-    console.error(err.message);
+    console.error(error.message);
   }
 });
 
@@ -653,8 +570,8 @@ app.put("/anime/:id", async (req, res) => {
 
 //         );
 //         res.json(new_anime.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -669,8 +586,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [TAG_ID,TAG_NAME]
 //         );
 //         res.json(new_tag.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -685,8 +602,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,TAG_ID]
 //         );
 //         res.json(new_tag_id_table.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -701,8 +618,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,GENRE_NAME]
 //         );
 //         res.json(new_genre.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -735,8 +652,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,STAFF_ID,NAME,ROLE,PROFILE_PICTURE,GENDER,DATE_OF_BIRTH,SALARY,SPECIALIZATION]
 //         );
 //         res.json(new_staff.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -762,8 +679,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,CHARACTER_ID,CHARACTER_NAME,ROLE,GENDER,PROFILE_PICTURE]
 //         );
 //         res.json(new_character.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -789,8 +706,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [STUDIO_ID,STUDIO_NAME,BUDGET,REVENUE,NO_OF_EMPLOYEES,COUNTRY]
 //         );
 //         res.json(new_studio.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -808,8 +725,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,STUDIO_ID]
 //         );
 //         res.json(new_anime_studio_relationship.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -840,8 +757,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,EPISODE_NO,EPISODE_TITLE,THUMBNAIL,LENGTH,RELEASE_DATE,AVAILABILITY,STREAMING_SITES]
 //         );
 //         res.json(new_episode.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -867,8 +784,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,EPISODE_NO,SUBTITLE_ID,LANGUAGE,CREATOR,URL]
 //         );
 //         res.json(new_subtitle.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -893,8 +810,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,MUSIC_ID,TITLE,BAND]
 //         );
 //         res.json(new_sound_track.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
@@ -915,8 +832,8 @@ app.put("/anime/:id", async (req, res) => {
 //                 [ANIME_ID,MUSIC_ID,GENRE]
 //         );
 //         res.json(new_music_genre.rows[0]);
-//     } catch (err) {
-//         console.error(err.message);
+//     } catch (error) {
+//         console.error(error.message);
 //     }
 // });
 
