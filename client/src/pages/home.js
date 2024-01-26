@@ -98,16 +98,20 @@ export default function Home({ forceRerender, toggleRerender }) {
     try {
       setLoading(true);
       console.log(1);
-      const res = await axios.get(`http://localhost:3000/home`);
+  
+      const userEmail = email;
+      const res = await axios.post("http://localhost:3000/home", { userEmail });
       setAnime(res.data);
       setLoading(false);
     } catch (err) {
       console.error(err.message);
     }
   };
+  
   useEffect(() => {
     getAnime();
   }, [forceRerender]);
+  
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
@@ -170,9 +174,12 @@ export default function Home({ forceRerender, toggleRerender }) {
     localStorage.removeItem("user");
     localStorage.removeItem("email");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("img_url");
     setUser("");
     setEmail("");
     setUserRole("");
+    setImgUrl("");
+    toggleRerender();
 
     // navigate("/login");
     // } catch (err) {
@@ -378,6 +385,7 @@ export default function Home({ forceRerender, toggleRerender }) {
                   animePerPage={animePerPage}
                   totalAnimes={animes.length}
                   paginate={paginate}
+                  toggleRerender={toggleRerender}
                 />
               </section>
               {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>
