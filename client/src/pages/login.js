@@ -55,11 +55,13 @@ const Login = () => {
         const role = response?.data[0]?.role;
         const email = response?.data[0]?.email;
         const user=response?.data[0]?.user_name;
+        const img_url=response?.data[0]?.img_url;
         setAuth({ id, user, pwd: storedHashedPwd, role, email });
         //navigate("/Home", { state: { user, email } });
         localStorage.setItem("user", user);
         localStorage.setItem("email", email);
         localStorage.setItem("userRole", role);
+        localStorage.setItem("img_url", img_url);
 
     // Redirect to home page with user information
         navigate("/Home");

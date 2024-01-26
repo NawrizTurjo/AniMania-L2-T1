@@ -335,7 +335,7 @@ const SignUp = () => {
 
               <Dropdown.Menu>
                 <Dropdown.Item onClick={() => handleRoleChange("M")}>
-                  Manager
+                  Moderator
                 </Dropdown.Item>
                 <Dropdown.Item onClick={() => handleRoleChange("U")}>
                   User
@@ -344,7 +344,7 @@ const SignUp = () => {
             </Dropdown>
             <button
               disabled={
-                !validName || !validPwd || !validMatch || !userRole
+                !validName || !validPwd || !validMatch || !userRole || !img_url
                   ? true
                   : false
               }

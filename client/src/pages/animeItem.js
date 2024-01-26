@@ -16,9 +16,12 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "./loader.js";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router";
+import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
+import { IconButton } from "@mui/material";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const AnimeListItem = ({
   title,
@@ -38,6 +41,7 @@ const AnimeListItem = ({
   const [genres, setGenres] = useState([]);
   const [concatenatedString, setConcatenatedString] = useState("");
   const [open, setOpen] = React.useState(false);
+  const [fav,setFav]=useState(false);
   const getGenres = async () => {
     try {
       const response = await axios.post(
@@ -63,7 +67,7 @@ const AnimeListItem = ({
   };
   useEffect(() => {
     getGenres();
-  }, [id]);
+  }, [id,fav]);
 
   useEffect(() => {
     const newConcatenatedString = genres
@@ -73,6 +77,34 @@ const AnimeListItem = ({
   }, [genres]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const location = useLocation();
+  //const { user, email } = location.state || {};
+  const {
+    user: routeUser,
+    email: routeEmail,
+    userRole: routeUserRole,
+    img_url: routeImgUrl,
+  } = location.state || {};
+
+  // Use local state to store user information
+  const [user, setUser] = useState(
+    routeUser || localStorage.getItem("user") || ""
+  );
+  const [email, setEmail] = useState(
+    routeEmail || localStorage.getItem("email") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    routeUserRole || localStorage.getItem("userRole") || ""
+  );
+
+  const [img_url, setImgUrl] = useState(
+    routeImgUrl || localStorage.getItem("img_url") || ""
+  );
+
+
+  console.log(userRole);
 
   const handleClick = (event) => {
     window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
@@ -111,6 +143,20 @@ const AnimeListItem = ({
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleWatch = () => {
+    window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
+  };
+
+  const handleFavorite = async (e) => {
+    e.preventDefault();
+    setFav(!fav);
+    if (fav) {
+      toast.error(`Removed ${title} from favorites`);
+    } else {
+      toast.success(`Added ${title} to favorites`);
+    }
   };
 
   const Open = Boolean(anchorEl);
@@ -154,18 +200,41 @@ const AnimeListItem = ({
         />
         <h4>{rating}</h4>
       </Stack>
-      <Stack direction="row" spacing={10}>
-        <a href={`http://localhost:3001/anime/${id}`}>
-          <Button variant="outlined" color="secondary" startIcon={<EditIcon />}>
-            Edit
-          </Button>
-        </a>
+      <div className="d-flex justify-content-center align-items-center">
+
+      
+      <Stack className="mt-2" direction="row" spacing={10}>
+        {userRole === "M" && (
+          <a href={`http://localhost:3001/anime/${id}`}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={<EditIcon />}
+            >
+              Edit
+            </Button>
+          </a>
+        )}
+
+        {userRole === "U" && (
+          <a
+            href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
+          >
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={<PlayCircleFilledIcon />}
+            >
+              Play
+            </Button>
+          </a>
+        )}
         <Button
           color="secondary"
           aria-describedby={pop_id}
           variant="contained"
           onClick={handleClick}
-          aria-owns={Open ? 'mouse-over-popover' : undefined}
+          aria-owns={Open ? "mouse-over-popover" : undefined}
           aria-haspopup="true"
           onMouseEnter={handlePopoverOpen}
           onMouseLeave={handlePopoverClose}
@@ -183,17 +252,17 @@ const AnimeListItem = ({
           // }}
           id="mouse-over-popover"
           sx={{
-            pointerEvents: 'none',
+            pointerEvents: "none",
           }}
           open={Open}
           anchorEl={anchorEl}
           anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
+            vertical: "bottom",
+            horizontal: "left",
           }}
           transformOrigin={{
-            vertical: 'top',
-            horizontal: 'left',
+            vertical: "top",
+            horizontal: "left",
           }}
           onClose={handlePopoverClose}
           disableRestoreFocus
@@ -205,14 +274,23 @@ const AnimeListItem = ({
           <Typography sx={{ p: 2 }}>{description}</Typography>
         </Popover>
         {/* <Button  color="secondary" ><FavoriteIcon /></Button> */}
-        <Button
-          variant="outlined"
-          color="error"
-          startIcon={<DeleteIcon />}
-          onClick={handleClickOpen}
-        >
-          Delete
-        </Button>
+        {userRole === "M" && (
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleClickOpen}
+          >
+            Delete
+          </Button>
+        )}
+
+        {userRole === "U" && (
+          <IconButton color="error" onClick={handleFavorite}>
+            {fav === true && (<FavoriteIcon />)}
+            {fav === false && (<FavoriteBorderIcon />)}
+          </IconButton>
+        )}
         <Dialog
           open={open}
           onClose={handleCloseDelete}
@@ -235,12 +313,18 @@ const AnimeListItem = ({
           </DialogActions>
         </Dialog>
       </Stack>
+      </div>
       <ToastContainer />
     </li>
   );
 };
 
-const AnimeItem = ({ currentanimes, loading, forceRerender,toggleRerender }) => {
+const AnimeItem = ({
+  currentanimes,
+  loading,
+  forceRerender,
+  toggleRerender,
+}) => {
   if (loading) {
     return <Loader />;
   }

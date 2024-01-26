@@ -5,6 +5,8 @@ import { Box, Button } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import { uploadImage } from "./userDashboard";
+import { styled } from "@mui/material/styles";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -120,6 +122,7 @@ export default function ModeratorDash() {
       localStorage.setItem("user", name);
       localStorage.setItem("img_url", img_url);
       console.log(name);
+      console.log(img_url);
     } catch (err) {
       console.error(err.message);
     }
@@ -132,6 +135,7 @@ export default function ModeratorDash() {
         const imageUrl = await uploadImage(event.target.files[0]);
         console.log("Uploaded image URL:", imageUrl);
         setImgUrl(imageUrl);
+        // localStorage.setItem("img_url", imageUrl);
         console.log("img_url", img_url);
         console.log("img_url", imageUrl);
       } catch (error) {
@@ -139,6 +143,18 @@ export default function ModeratorDash() {
       }
     }
   };
+
+  const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+  });
 
   return (
     <div>
@@ -150,19 +166,43 @@ export default function ModeratorDash() {
           {email && <p>Email: {email}</p>}
           <form>
             <div className="mb-4">
-              <Box display="flex"  flexDirection="column" alignItems="flex-start">
-                <Avatar src={img_url} sx={{ width: 150, height: 150 }} />
-                <Box marginLeft={2}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="flex-start"
+              >
+                <Avatar
+                  className="mb-2"
+                  src={img_url}
+                  sx={{ width: 150, height: 150 }}
+                />
+                <Box marginBottom={2}>
                   <input type="file" onChange={handleImageChange} />
                   <Button
                     variant="contained"
                     disableElevation
                     onClick={handleUpdate}
                     size="small"
+                    startIcon={<CloudUploadIcon />}
                     // href="/home"
                   >
                     Update Image
                   </Button>
+                  {/* <Button
+                    component="label"
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<CloudUploadIcon />}
+                    onClick={handleUpdate}
+                  >
+                    Update Image
+                    <VisuallyHiddenInput
+                      type="file"
+                      onChange={(event) => {
+                        handleImageChange(event).then(() => handleUpdate());
+                      }}
+                    />
+                  </Button> */}
                 </Box>
               </Box>
             </div>

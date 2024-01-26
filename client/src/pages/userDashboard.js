@@ -19,6 +19,7 @@ function UserDashboard() {
 
   user = state && state.user;
   let email = state && state.email;
+  let [img_url, setImgUrl] = useState("");
 
 //   console.log(user);
 //   console.log(email);
@@ -78,9 +79,9 @@ const formatActiveTime = (activeTime) => {
     getPerson();
   }, []);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async(e) => {
     if (e.target.files[0]) {
-      setImage(e.target.files[0]);
+      await setImage(e.target.files[0]);
     }
   };
 
@@ -93,6 +94,7 @@ const formatActiveTime = (activeTime) => {
             setUrl(url);
             console.log(url);
             updateImg({url});
+            setImgUrl(url);
           })
           .catch((error) => {
             console.log(error.message, "error getting the image url");
@@ -121,6 +123,7 @@ const formatActiveTime = (activeTime) => {
       let updatedImageUrl = response.data[0].img_url;
       setUrl(updatedImageUrl); // Update img_url in state
       console.log(updatedImageUrl);
+      localStorage.setItem("img_url", updatedImageUrl);
     //   setUser(name);
     //   localStorage.setItem("user", name);
     //   console.log(name);
