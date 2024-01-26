@@ -41,7 +41,10 @@ const AnimeListItem = ({
   const [genres, setGenres] = useState([]);
   const [concatenatedString, setConcatenatedString] = useState("");
   const [open, setOpen] = React.useState(false);
-  const [fav,setFav]=useState(false);
+  const [fav, setFav] = useState(() => {
+    // Initialize fav state from local storage or default to false
+    return localStorage.getItem(`fav-${id}`) === "true" ? true : false;
+  });
   const getGenres = async () => {
     try {
       const response = await axios.post(
@@ -151,7 +154,12 @@ const AnimeListItem = ({
 
   const handleFavorite = async (e) => {
     e.preventDefault();
-    setFav(!fav);
+    setFav((prevFav) => {
+      const newFav = !prevFav;
+      // Save fav state to local storage
+      localStorage.setItem(`fav-${id}`, newFav);
+      return newFav;
+    });
     if (fav) {
       toast.error(`Removed ${title} from favorites`);
     } else {
@@ -287,8 +295,7 @@ const AnimeListItem = ({
 
         {userRole === "U" && (
           <IconButton color="error" onClick={handleFavorite}>
-            {fav === true && (<FavoriteIcon />)}
-            {fav === false && (<FavoriteBorderIcon />)}
+            {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           </IconButton>
         )}
         <Dialog
