@@ -179,6 +179,7 @@ export default function Home({ forceRerender, toggleRerender }) {
     setEmail("");
     setUserRole("");
     setImgUrl("");
+    toggleRerender();
 
     // navigate("/login");
     // } catch (err) {

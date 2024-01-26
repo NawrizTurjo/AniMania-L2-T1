@@ -149,21 +149,41 @@ app.post("/moderatorDash", async (req, res) => {
 app.post("/home", async (req, res) => {
   try {
     const { userEmail } = req.body;
+    console.log(userEmail);
 
     const allAnimes = await pool.query(
       `
-      SELECT
-      a.*,
-      string_agg(DISTINCT g.genre_name, ',') AS genres,
-      ua.user_id AS user_id,
-      CASE WHEN ua.user_id IS NOT NULL THEN true ELSE false END AS is_favorite
-      FROM anime a
-      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
-      LEFT JOIN genres g ON g.genre_id = ga.genre_id
-      LEFT JOIN users_anime_list ua ON ua.anime_id = a.anime_id
-      LEFT JOIN person p ON p.email = $1
-      GROUP BY a.anime_id, ua.user_id
-      ORDER BY a.mal_score DESC
+      with T AS(
+        SELECT DISTINCT (anime_id),user_id
+        FROM users_anime_list ua
+        where user_id = (
+          SELECT "id"
+          FROM person
+          WHERE email = $1
+        )
+        )
+        
+        (
+        SELECT
+            a.*
+            ,
+            string_agg(DISTINCT g.genre_name, ',') AS genres,
+            ta.user_id AS user_id
+            ,
+            CASE WHEN ta.user_id IS NOT NULL THEN true ELSE false END AS is_favorite
+        FROM 
+            anime a
+        LEFT JOIN 
+            genre_anime_relationship ga ON ga.anime_id = a.anime_id
+        LEFT JOIN 
+            genres g ON g.genre_id = ga.genre_id
+        LEFT JOIN 
+            T ta on ta.anime_id = a.anime_id
+        GROUP BY 
+            a.anime_id,ta.user_id
+        ORDER BY 
+            a.mal_score DESC
+            )
       `,
       [userEmail]
     );
