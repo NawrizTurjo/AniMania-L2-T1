@@ -384,6 +384,7 @@ export default function Home({ forceRerender, toggleRerender }) {
                   animePerPage={animePerPage}
                   totalAnimes={animes.length}
                   paginate={paginate}
+                  toggleRerender={toggleRerender}
                 />
               </section>
               {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>

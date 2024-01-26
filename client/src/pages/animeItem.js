@@ -45,7 +45,7 @@ const AnimeListItem = ({
   // const [genres, setGenres] = useState([]);
   // const [concatenatedString, setConcatenatedString] = useState("");
   const [open, setOpen] = React.useState(false);
-  const [fav, setFav] = useState(is_favorite);
+  const [fav, setFav] = useState(false);
 
   const location = useLocation();
   //const { user, email } = location.state || {};
@@ -71,6 +71,10 @@ const AnimeListItem = ({
   const [img_url, setImgUrl] = useState(
     routeImgUrl || localStorage.getItem("img_url") || ""
   );
+
+  useEffect(() => {
+    setFav(is_favorite);
+  },[id]);
 
   // console.log(user);
   // console.log(email);
@@ -210,6 +214,7 @@ const AnimeListItem = ({
       if (response.status === 200) {
         setFav(!fav);
         is_favorite = fav;
+        console.log("This is is_fav state: ",is_favorite);
         toast.success(`Anime ${title} ${!fav ? "added to" : "removed from"} favorites`);
       } else {
         toast.error("Failed to update favorite status");

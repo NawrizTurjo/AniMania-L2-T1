@@ -2,11 +2,12 @@ import React from 'react';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
-const MaterialPagination = ({ animePerPage, totalAnimes, paginate }) => {
+const MaterialPagination = ({ animePerPage, totalAnimes, paginate,toggleRerender }) => {
   const pageCount = Math.ceil(totalAnimes / animePerPage);
 
   const handleChange = (event, value) => {
     paginate(value);
+    toggleRerender();
   };
 
   return (
