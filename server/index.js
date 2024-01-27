@@ -235,9 +235,15 @@ app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
 
     const allReviews = await pool.query(
       `
-      SELECT *
-      FROM review
-      WHERE anime_id = $1;
+      SELECT *,
+      (SELECT user_name
+      FROM person PE
+      WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT img_url
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS img_src
+      FROM review R
+      WHERE R.anime_id = $1
       `,[id]
     );
 

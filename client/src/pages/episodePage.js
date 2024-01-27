@@ -3,6 +3,16 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import KeyboardArrowUpSharpIcon from "@mui/icons-material/KeyboardArrowUpSharp";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Input from "@mui/material/Input";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import FormControl from "@mui/material/FormControl";
+import TextField from "@mui/material/TextField";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 
 export default function Episodes({ toggleRerender }) {
   const { id } = useParams();
@@ -79,11 +89,11 @@ export default function Episodes({ toggleRerender }) {
 
   const getReview = async () => {
     try {
-        setReviewLoading(true);
+      setReviewLoading(true);
       const res = await axios.get(
         `http://localhost:3000/watch/anime/episodes/${id}/reviews`
       );
-    //   setAnime(res.data[0]);
+      //   setAnime(res.data[0]);
       //console.log(res.data.age_rating);
       // setStat((prev)=>(!prev));
       console.log(stat);
@@ -96,18 +106,16 @@ export default function Episodes({ toggleRerender }) {
     }
   };
   useEffect(() => {
-    
-      
     getReview();
-}, [toggleRerender]);
-useEffect(() => {
+  }, [toggleRerender]);
+  useEffect(() => {
     console.log(reviews); // Log updated reviews state
-}, [reviews]); // Log reviews whenever it changes
+  }, [reviews]); // Log reviews whenever it changes
 
-useEffect(() => {
+  useEffect(() => {
     getAnime();
     console.log(anime);
-}, []); // Log reviews whenever it changes
+  }, []); // Log reviews whenever it changes
   if (loading || reviewloading) {
     return <h1>Loading...</h1>;
   }
@@ -226,23 +234,36 @@ useEffect(() => {
           </div>
         </div>
       )}
-        <div>
-    {reviews ? (
-      // Render content using the updated reviews state
       <div>
-        {reviews.map((review, index) => (
-          <div key={index}>
-            {/* Render each review */}
-            <p>User: {review.user_id}</p>
-            <p>Review: {review.review_text}</p>
+        {reviews ? (
+          // Render content using the updated reviews state
+          <div>
+      {reviews.map((review, index) => (
+        <div key={index}>
+          <Box sx={{ mt: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar alt={review.reviewer} src={review.img_src} />
+              <Typography variant="body1">{review.reviewer}</Typography>
+            </Stack>
+          </Box>
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <textarea
+              className="form-control-disabled"
+              id={`review-${index}`}
+              rows="6"
+              value={review.review_text}
+              style={{ resize: 'none', width: '100%' }}
+              readOnly
+            />
+          </Box>
+        </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          // Render a loading indicator or placeholder if reviews is null
+          <p>Loading reviews...</p>
+        )}
       </div>
-    ) : (
-      // Render a loading indicator or placeholder if reviews is null
-      <p>Loading reviews...</p>
-    )}
-  </div>
     </div>
   );
 }
