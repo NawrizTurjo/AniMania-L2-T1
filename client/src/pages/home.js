@@ -332,7 +332,7 @@ export default function Home({ forceRerender, toggleRerender }) {
               <img
                 src="./images/AniMania.png"
                 alt="AniMania Logo"
-                className="logo img-fluid"
+                className="logo_big img-fluid"
               />
             </div>
             {/* </li> */}

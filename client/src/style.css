@@ -50,8 +50,83 @@ body{
     background-color: #555;
 }
 
-.nav li:hover{
+/* .nav li:hover{
+    font-family: 'Nunito';
     background-color: #777;
+    font-display: swap;
+    transition: background-color 0.5s ease;
+    font-weight: bold;
+  } */
+
+  .nav li {
+    transition: background-color 0.5s ease; /* Apply transition to all list items */
+  }
+  
+  .nav li:hover {
+    background-color: #777;
+    font-weight: bold;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+  }
+  
+  
+  .search-bar input[type="text"] {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    transition: background-color 0.5s ease;
+    /* transition: border 0.5s ease; */
+    /* border: 1px solid #ccc; */
+  }
+  
+  .search-bar input:hover {
+    background-color: #efefef;
+    border: 2px solid #007bff;
+  }
+
+  .search-bar input:focus {
+    background-color: #ffffff;
+    outline: none;
+  }
+
+  .search-bar button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-family: 'Nunito';
+    transition: background-color 0.5s ease;
+    /* transition: font-weight 0.5s ease; */
+  }
+  .search-bar button:hover {
+    background-color: #0069d9;
+    /* font-weight: bold; */
+  }
+  
+  /* .nav li a:hover{
+    color: white;
+    transition: color 0.5s ease;
+} */
+.logo {
+  width: 150px;
+  height: 60px;
+  opacity: 0.8;
+  transition: opacity 0.5s ease; /* Apply transition to the opacity property */
+}
+
+.logo:hover {
+  opacity: 1; /* Reduce opacity on hover */
+}
+
+img {
+  transition: transform 0.5s ease; /* Apply transition to the transform property for all images */
+}
+
+img:hover {
+  transform: scale(1.01); /* Enlarge image on hover */
 }
 
 .anime-list {
