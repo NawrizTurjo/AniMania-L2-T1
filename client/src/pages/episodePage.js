@@ -220,14 +220,24 @@ export default function Episodes({ toggleRerender }) {
                       style={{ resize: "none" }}
                     ></textarea>
                   </div>
-                  <Button
+
+                  {review!=="" && <Button
                     type="submit"
                     variant="contained"
                     color="primary"
                     endIcon={<KeyboardArrowUpSharpIcon />}
                   >
                     Submit Review
-                  </Button>
+                  </Button>}
+                  {review==="" && <Button
+                    //type="submit"
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    endIcon={<KeyboardArrowUpSharpIcon />}
+                  >
+                    Submit Review
+                  </Button>}
                 </form>
               </div>
             </div>
