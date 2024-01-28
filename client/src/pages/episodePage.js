@@ -10,9 +10,9 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
 
 export default function Episodes({ toggleRerender }) {
   const { id } = useParams();
@@ -65,20 +65,23 @@ export default function Episodes({ toggleRerender }) {
         res.data[0].description.replace("[Written by MAL Rewrite]", "")
       );
       //   console.log(res.data);
+      // toggleRerender();
     } catch (err) {
       console.error(err.message);
     }
   };
-  const handleSubmitReview = (event) => {
-    event.preventDefault();
+  const handleSubmitReview = async (event) => {
     console.log("Review:", review, "by ", user);
     try {
-      axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
+      // const res =
+      await axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
         id: id,
         review: review,
         // user: user,
         email: email,
       });
+      // setReviews(res.data[0]);
+      // console.log(res.data[0]);
     } catch (err) {
       console.log(err.message);
     }
@@ -87,7 +90,7 @@ export default function Episodes({ toggleRerender }) {
     toggleRerender();
   };
 
-  const getReview = async () => {
+  const getReview = async (event) => {
     try {
       setReviewLoading(true);
       const res = await axios.get(
@@ -107,99 +110,105 @@ export default function Episodes({ toggleRerender }) {
   };
   useEffect(() => {
     getReview();
-  }, [toggleRerender]);
+  }, [toggleRerender()]);
   useEffect(() => {
     console.log(reviews); // Log updated reviews state
   }, [reviews]); // Log reviews whenever it changes
 
   useEffect(() => {
     getAnime();
-    console.log(anime);
+    toggleRerender();
   }, []); // Log reviews whenever it changes
-  if (loading || reviewloading) {
-    return <h1>Loading...</h1>;
-  }
+  // if (loading || reviewloading) {
+  //   return <h1>Loading...</h1>;
+  // }
   return (
     <div>
-      <div className="row justify-content-center">
-        <div className="col-lg-4">
-          {/* Larger title screen */}
-          <img
-            src={anime.title_screen}
-            alt={anime.anime_name}
-            style={{ width: "100%", maxHeight: "500px", objectFit: "cover" }}
-          />
-          {/* Add a button below the title screen */}
-          {userRole === "U" ? (
-            <a
-              href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
-            >
-              <button className="btn btn-danger btn-lg btn-block mt-3">
-                Watch Now
-              </button>
-            </a>
-          ) : (
-            <a href="http://localhost:3001/login">
-              <button className="btn btn-primary btn-lg btn-block mt-3">
-                Login to Watch
-              </button>
-            </a>
-          )}
-        </div>
-        <div className="col-lg-8">
-          {/* Anime details */}
-          <div className="card shadow-lg">
-            <div className="card-body">
-              <h2 className="card-title text-center">{anime.anime_name}</h2>
-              <p className="card-text">{cleanedText}</p>
-              <div className="row">
-                <div className="col-md-6">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item">
-                      <strong>Genre:</strong> {anime.genres}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Year:</strong> {anime.year}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Source:</strong> {anime.SOURCE}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Type:</strong> {anime.TYPE}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Tags:</strong> {anime.tags}
-                    </li>
-                  </ul>
-                </div>
-                <div className="col-md-6">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item">
-                      <strong>Age Rating:</strong> {anime.age_rating}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Anime ID:</strong> {anime.anime_id}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Demographic:</strong> {anime.demographic}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>MAL Score:</strong> {anime.mal_score}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Number of Episodes:</strong>{" "}
-                      {anime.number_of_episodes}
-                    </li>
-                    <li className="list-group-item">
-                      <strong>Season:</strong> {anime.season}
-                    </li>
-                  </ul>
+      {!loading ? (
+        <div className="row justify-content-center">
+          <div className="col-lg-4">
+            {/* Larger title screen */}
+            <img
+              src={anime.title_screen}
+              alt={anime.anime_name}
+              style={{ width: "100%", maxHeight: "500px", objectFit: "cover" }}
+            />
+            {/* Add a button below the title screen */}
+            {userRole === "U" ? (
+              <a
+                href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
+              >
+                <button className="btn btn-danger btn-lg btn-block mt-3">
+                  Watch Now
+                </button>
+              </a>
+            ) : (
+              <a href="http://localhost:3001/login">
+                <button className="btn btn-primary btn-lg btn-block mt-3">
+                  Login to Watch
+                </button>
+              </a>
+            )}
+          </div>
+          <div className="col-lg-8">
+            {/* Anime details */}
+            <div className="card shadow-lg">
+              <div className="card-body">
+                <h2 className="card-title text-center">{anime.anime_name}</h2>
+                <p className="card-text">{cleanedText}</p>
+                <div className="row">
+                  <div className="col-md-6">
+                    <ul className="list-group list-group-flush">
+                      <li className="list-group-item">
+                        <strong>Genre:</strong> {anime.genres}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Year:</strong> {anime.year}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Source:</strong> {anime.SOURCE}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Type:</strong> {anime.TYPE}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Tags:</strong> {anime.tags}
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="col-md-6">
+                    <ul className="list-group list-group-flush">
+                      <li className="list-group-item">
+                        <strong>Age Rating:</strong> {anime.age_rating}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Anime ID:</strong> {anime.anime_id}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Demographic:</strong> {anime.demographic}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>MAL Score:</strong> {anime.mal_score}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Number of Episodes:</strong>{" "}
+                        {anime.number_of_episodes}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Season:</strong> {anime.season}
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div>
+          <h1>Anime is Loading</h1>
+        </div>
+      )}
       {/* Review box */}
       {userRole === "U" && (
         <div className="row justify-content-center mt-5">
@@ -245,33 +254,44 @@ export default function Episodes({ toggleRerender }) {
         </div>
       )}
       <div>
-        {reviews ? (
-          // Render content using the updated reviews state
+        {/* Render reviews */}
+        {!reviewloading ? (
           <div>
-      {reviews.map((review, index) => (
-        <div key={index}>
-          <Box sx={{ mt: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Avatar alt={review.reviewer} src={review.img_src} />
-              <Typography variant="body1">{review.reviewer}</Typography>
-            </Stack>
-          </Box>
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <textarea
-              className="form-control-disabled"
-              id={`review-${index}`}
-              rows="6"
-              value={review.review_text}
-              style={{ resize: 'none', width: '100%' }}
-              readOnly
-            />
-          </Box>
-        </div>
+            {reviews.map((review, index) => (
+              <div key={index}>
+                <Box
+                  sx={{
+                    mt: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar alt={review.reviewer} src={review.img_src} />
+                    <Typography variant="body1">{review.reviewer}</Typography>
+                  </Stack>
+                </Box>
+                <Box sx={{ mt: 2, textAlign: "center" }}>
+                  <textarea
+                    className="form-control-disabled"
+                    id={`review-${index}`}
+                    rows={
+                      review.review_text.length / 500 > 1
+                        ? review.review_text.length / 500
+                        : 3
+                    }
+                    value={review.review_text}
+                    style={{ resize: "none", width: "100%" }}
+                    readOnly
+                  />
+                </Box>
+              </div>
             ))}
           </div>
         ) : (
           // Render a loading indicator or placeholder if reviews is null
-          <p>Loading reviews...</p>
+          <h3>Loading reviews...</h3>
         )}
       </div>
     </div>

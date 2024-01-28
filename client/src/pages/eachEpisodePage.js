@@ -178,7 +178,7 @@ export default function Episode() {
                                 <li className="list-group-item"><strong>Release Date:</strong> {anime.release_date}</li>
                                 <li className="list-group-item"><strong>Availability:</strong> {anime.availability}</li>
                                 <li className="list-group-item"><strong>Anime ID:</strong> {anime.anime_id}</li>
-                                <li className="list-group-item"><strong>Streaming Sites:</strong> {anime.streaming_sites}</li>
+                                <li className="list-group-item"><a href={anime.streaming_sites}><strong>Streaming Sites</strong></a></li>
                                 <li className="list-group-item"><strong>Length:</strong> {anime.LENGTH}</li>
                             </ul>
                             <div className="d-flex flex-wrap justify-content-center mt-3">
