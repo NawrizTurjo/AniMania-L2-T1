@@ -6,6 +6,12 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
 import { useLocation } from "react-router";
 import axios from "axios";
+import { Box, Button, Paper, TextField } from "@mui/material";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Typography from "@mui/material/Typography";
+// import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+// import Button from "@mui/material/Button";
+// import Paper from "@mui/material/Paper";
 
 function UserDashboard() {
   const [image, setImage] = useState(null);
@@ -16,6 +22,13 @@ function UserDashboard() {
   let [user, setUser] = useState("");
   let [person, setPerson] = useState({});
   let [loading, setLoading] = useState(true);
+  let [name,setName]=useState("");
+  let [bio,setBio]=useState("");
+  let [most_favourite_anime,setMostFavouriteAnime]=useState("");
+  let [first_access,setFirstAccess]=useState("");
+  let [last_access,setLastAccess]=useState("");
+  let [active_time,setActiveTime]=useState("");
+
 
   user = state && state.user;
   let email = state && state.email;
@@ -67,6 +80,12 @@ const formatActiveTime = (activeTime) => {
       console.log(person);
       console.log(person.img_url);
       setPerson(person);
+      setActiveTime(person.activeTime);
+      setBio(person.bio);
+      setFirstAccess(person.first_access);
+      setLastAccess(person.last_access);
+      setMostFavouriteAnime(person.most_favourite_anime);
+      setName(person.name);
       setLoading(false);
       setUrl(personData?.img_url || "");
       console.log(url);
@@ -142,17 +161,71 @@ const formatActiveTime = (activeTime) => {
 
   
 
-  return (
-    <div className="App">
-        {loading ? (
-        <h2>Loading...</h2>
-      ) : (<>
-      <Avatar src={url} sx={{ width: 150, height: 150 }} />
-      <input type="file" onChange={handleImageChange} />
-      <button onClick={handleSubmit}>Submit</button></>
-      )}
-    </div>
-  );
+return (
+  <div style={{ display: "flex", justifyContent: "flex-start" }}>
+    {loading ? (
+      <h2>Loading...</h2>
+    ) : (
+      <>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "20px" }}>
+          <Avatar src={url} sx={{ width: 120, height: 120, marginBottom: "8px" }} />
+          <input type="file" onChange={handleImageChange} />
+          <Button variant="contained" disableElevation onClick={handleSubmit} size="small" startIcon={<CloudUploadIcon />} style={{ marginTop: "8px" }}>
+            Update Image
+          </Button>
+          <Paper elevation={3} style={{ width: "400px", padding: "20px", border: "0.5px solid #cccccc", marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+  <Typography variant="h5" component="h2" style={{ fontWeight: "bold", marginBottom: "15px" }}>
+    {user}'s Anime List
+  </Typography>
+  {/* Other content */}
+</Paper>          <div style={{ border: "0.5px solid #cccccc", width: "400px", height: "500px", marginTop: "10px", marginRight: "auto", overflow: "auto" }}>
+            {/* Content of the box */}
+          </div>
+        </div>
+
+        {/* First Vertical Line */}
+        <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
+
+        {/* Box on the left of the first vertical line */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "60px" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+  <h1 style={{ marginTop: "0px" }}>Welcome to the User Dashboard</h1>
+  <h1 style={{ marginTop: "10px" }}>Hello!!!  {name}</h1>
+</div>
+
+          <Paper elevation={3} style={{ width: "500px", padding: "20px", border: "0.5px solid #cccccc", marginTop: "60px" }}>
+            <h2>{name}'s Profile</h2>
+            
+            <p><strong>Bio:</strong> {bio}</p>
+            <p><strong>Most Favourite Anime:</strong> {most_favourite_anime}</p>
+            <p><strong>First Access:</strong> {first_access}</p>
+            <p><strong>Last Access:</strong> {last_access}</p>
+            <p><strong>Active Time:</strong> {active_time}</p>
+          </Paper>
+        </div>
+
+        {/* Second Vertical Line */}
+        <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
+
+        {/* Box below the Update Profile button */}
+        
+        <div style={{ position: "relative" }}>
+  <Paper elevation={3} style={{ position: "absolute", top: "230px", left: "50%", transform: "translateX(-50%)", zIndex: 1, width: "400px", padding: "20px", border: "0.5px solid #cccccc", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+    <Typography variant="h5" component="h2" style={{ fontWeight: "bold", marginBottom: "15px" }}>
+      {user}'s Watch History
+    </Typography>
+    {/* Other content */}
+  </Paper>
+
+  <div style={{ border: "0.5px solid #cccccc", width: "400px", height: "500px", marginTop: "330px", marginLeft: "auto", overflow: "auto" }}>
+    {/* Content of the box */}
+  </div>
+</div>
+
+      </>
+    )}
+  </div>
+);
 }
 
 export default UserDashboard;
