@@ -137,7 +137,7 @@ export default function ModeratorDash() {
                     <Button variant="contained" disableElevation onClick={handleUpdate} size="small" startIcon={<CloudUploadIcon />} style={{ marginTop: "8px" }}>
                         Update Image
                     </Button>
-                    <div style={{ border: "1px solid black", width: "400px", height: "500px", marginTop: "10px", marginRight: "auto",overflow: "auto" }}>
+                    <div style={{ border: "0.5px solid #cccccc", width: "400px", height: "500px", marginTop: "10px", marginRight: "auto",overflow: "auto" }}>
                     {/* Content of the box */}
                 </div>
                 <div style={{ position: "absolute", right: "0", bottom: "0", marginBottom: "-80px", marginRight: "1215px" }}>
@@ -150,7 +150,8 @@ export default function ModeratorDash() {
                 
 
                 {/* First Vertical Line */}
-                <div style={{ borderLeft: "1px solid black", height: "800px", margin: "10px" }}></div>
+                <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
+
 
                 {/* Box on the left of the first vertical line */}
                
@@ -163,7 +164,7 @@ export default function ModeratorDash() {
                         <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
                             <label>
                                 <strong>Name:</strong>
-                                <input id="newUsername" type="text" name="newUsername" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} style={{ marginLeft: "8px" }} />
+                                <input id="newUsername" type="text" name="newUsername" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} style={{ border:"0.5px solid #cccccc",marginLeft: "8px" }} />
                             </label>
                         </div>
                         <div style={{ marginBottom: "20px",marginLeft:"80px"}}>
@@ -228,10 +229,10 @@ export default function ModeratorDash() {
                 </div>
 
                 {/* Second Vertical Line */}
-                <div style={{ borderLeft: "1px solid black", height: "800px", margin: "10px" }}></div>
+                <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
 
                 {/* Box below the Update Profile button */}
-                <div style={{ border: "1px solid black", width: "600px", height: "500px", marginTop: "225px", marginLeft: "auto",overflow: "auto" }}>
+                <div style={{ border: "0.5px solid #cccccc", width: "600px", height: "500px", marginTop: "225px", marginLeft: "auto",overflow: "auto" }}>
                     {/* Content of the box */}
                 </div>
 
