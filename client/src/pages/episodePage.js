@@ -21,6 +21,7 @@ export default function Episodes({ toggleRerender }) {
   const [reviewloading, setReviewLoading] = useState(true);
   //let [source,setsource]=useState("");
   const [stat, setStat] = useState(false);
+  const [animeStat, setAnimeStat] = useState(false);
   const [review, setReview] = useState("");
   const [reviews, setReviews] = useState([]);
   const location = useLocation();
@@ -64,6 +65,7 @@ export default function Episodes({ toggleRerender }) {
       setCleanedText(
         res.data[0].description.replace("[Written by MAL Rewrite]", "")
       );
+      setAnimeStat((prev) => !prev);
       //   console.log(res.data);
       // toggleRerender();
     } catch (err) {
@@ -71,9 +73,9 @@ export default function Episodes({ toggleRerender }) {
     }
   };
   const handleSubmitReview = async (event) => {
+    event.preventDefault();
     console.log("Review:", review, "by ", user);
     try {
-      // const res =
       await axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
         id: id,
         review: review,
@@ -82,12 +84,14 @@ export default function Episodes({ toggleRerender }) {
       });
       // setReviews(res.data[0]);
       // console.log(res.data[0]);
+      // setReviews([...reviews, response.data]);
+      // console.log(response.data[0]);
+      setReview("");
+      setStat((prev) => !prev);
     } catch (err) {
       console.log(err.message);
     }
-    setReview("");
-    // setStat((prev) => !prev);
-    toggleRerender();
+    // toggleRerender();
   };
 
   const getReview = async (event) => {
@@ -110,14 +114,14 @@ export default function Episodes({ toggleRerender }) {
   };
   useEffect(() => {
     getReview();
-  }, [toggleRerender()]);
+  }, [stat,animeStat]);
   useEffect(() => {
     console.log(reviews); // Log updated reviews state
   }, [reviews]); // Log reviews whenever it changes
 
   useEffect(() => {
     getAnime();
-    toggleRerender();
+    // toggleRerender();
   }, []); // Log reviews whenever it changes
   // if (loading || reviewloading) {
   //   return <h1>Loading...</h1>;
@@ -229,14 +233,24 @@ export default function Episodes({ toggleRerender }) {
                       style={{ resize: "none" }}
                     ></textarea>
                   </div>
-                  <Button
+
+                  {review!=="" && <Button
                     type="submit"
                     variant="contained"
                     color="primary"
                     endIcon={<KeyboardArrowUpSharpIcon />}
                   >
                     Submit Review
-                  </Button>
+                  </Button>}
+                  {review==="" && <Button
+                    //type="submit"
+                    disabled
+                    variant="contained"
+                    color="primary"
+                    endIcon={<KeyboardArrowUpSharpIcon />}
+                  >
+                    Submit Review
+                  </Button>}
                 </form>
               </div>
             </div>
