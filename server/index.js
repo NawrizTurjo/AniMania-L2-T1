@@ -259,6 +259,9 @@ app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
       (SELECT user_name
       FROM person PE
       WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT email
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS email,
       (SELECT img_url
         FROM person PE
         WHERE PE."id" = R.user_id) AS img_src

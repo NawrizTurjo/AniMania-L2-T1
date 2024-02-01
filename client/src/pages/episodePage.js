@@ -25,6 +25,8 @@ export default function Episodes({ toggleRerender }) {
   const [review, setReview] = useState("");
   const [reviews, setReviews] = useState([]);
   const location = useLocation();
+  const [editMode, setEditMode] = useState(false);
+  const [editableReviewIndex, setEditableReviewIndex] = useState(null);
   //const { user, email } = location.state || {};
   const {
     user: routeUser,
@@ -126,6 +128,33 @@ export default function Episodes({ toggleRerender }) {
   // if (loading || reviewloading) {
   //   return <h1>Loading...</h1>;
   // }
+
+  // Function to handle editing of a review
+  const handleEditReview = (index) => {
+    setEditableReviewIndex(index);
+    setEditMode(true);
+  };
+
+  // Function to save edited review
+  const saveEditedReview = async (editedReview, index) => {
+    try {
+      // Send edited review to the server to update
+      await axios.put(`http://localhost:3000/watch/anime/episodes/${id}/reviews/${reviews[index].review_id}`, {
+        review_text: editedReview
+      });
+      // Update reviews state with the edited review
+      const updatedReviews = [...reviews];
+      updatedReviews[index].review_text = editedReview;
+      setReviews(updatedReviews);
+      // Exit edit mode
+      setEditMode(false);
+      setEditableReviewIndex(null);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  
   return (
     <div>
       {!loading ? (
@@ -280,10 +309,17 @@ export default function Episodes({ toggleRerender }) {
                   <textarea
                     className="form-control-disabled"
                     id={`review-${index}`}
+                    // rows={
+                    //   review.review_text.length / 200 > 1
+                    //     ? review.review_text.length / 200 + 2
+                    //     : 3
+                    // }
+
                     rows={
-                      review.review_text.length / 500 > 1
-                        ? review.review_text.length / 500
-                        : 3
+                      Math.min(
+                        Math.ceil(review.review_text.length / 200) + 2,
+                        25 // Maximum of 20 rows
+                      )
                     }
                     value={review.review_text}
                     style={{ resize: "none", width: "100%" }}
@@ -340,3 +376,78 @@ export default function Episodes({ toggleRerender }) {
 //       fontWeight: 'bold',
 //   },
 // };
+
+
+// editable review
+
+// <div>
+//   {/* Render reviews */}
+//   {!reviewloading ? (
+//     <div>
+//       {reviews.map((review, index) => (
+//         <div key={index}>
+//           <Box
+//             sx={{
+//               mt: 4,
+//               display: "flex",
+//               alignItems: "center",
+//               justifyContent: "center",
+//             }}
+//           >
+//             <Stack direction="row" spacing={2} alignItems="center">
+//               <Avatar alt={review.reviewer} src={review.img_src} />
+//               <Typography variant="body1">{review.reviewer}</Typography>
+//             </Stack>
+//           </Box>
+//           {/* Render editable textarea if user's email matches review email */}
+//           {email === review.email ? (
+//             <Box sx={{ mt: 2, textAlign: "center" }}>
+//               <textarea
+//                 className="form-control"
+//                 id={`review-${index}`}
+//                 rows={
+//                   review.review_text.length / 500 > 1
+//                     ? review.review_text.length / 500
+//                     : 3
+//                 }
+//                 value={review.review_text}
+//                 style={{ resize: "none", width: "100%" }}
+//                 onChange={(e) => {
+//                   const updatedReviews = [...reviews];
+//                   updatedReviews[index].review_text = e.target.value;
+//                   setReviews(updatedReviews);
+//                 }}
+//               />
+//               <Button
+//                 variant="contained"
+//                 color="primary"
+//                 onClick={() => saveEditedReview(review.review_text, index)}
+//               >
+//                 Save
+//               </Button>
+//             </Box>
+//           ) : (
+//             // Render read-only textarea for other reviews
+//             <Box sx={{ mt: 2, textAlign: "center" }}>
+//               <textarea
+//                 className="form-control-disabled"
+//                 id={`review-${index}`}
+//                 rows={
+//                   review.review_text.length / 500 > 1
+//                     ? review.review_text.length / 500
+//                     : 3
+//                 }
+//                 value={review.review_text}
+//                 style={{ resize: "none", width: "100%" }}
+//                 readOnly
+//               />
+//             </Box>
+//           )}
+//         </div>
+//       ))}
+//     </div>
+//   ) : (
+//     // Render a loading indicator or placeholder if reviews is null
+//     <h3>Loading reviews...</h3>
+//   )}
+// </div>
