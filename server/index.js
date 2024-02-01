@@ -225,24 +225,24 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
       [id,userID.rows[0].id,review]
     );
 
-    // const allReviews = await pool.query(
-    //   `
-    //   SELECT *,
-    //   (SELECT user_name
-    //   FROM person PE
-    //   WHERE PE."id" = R.user_id) AS reviewer,
-    //   (SELECT img_url
-    //     FROM person PE
-    //     WHERE PE."id" = R.user_id) AS img_src
-    //   FROM review R
-    //   WHERE R.anime_id = $1
-    //   `,[id]
-    // );
+    const allReviews = await pool.query(
+      `
+      SELECT *,
+      (SELECT user_name
+      FROM person PE
+      WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT img_url
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS img_src
+      FROM review R
+      WHERE R.anime_id = $1
+      `,[id]
+    );
 
     // console.log(allReviews.rows);
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    // res.json(allReviews.rows);
+    res.json(allReviews.rows);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -259,6 +259,9 @@ app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
       (SELECT user_name
       FROM person PE
       WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT email
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS email,
       (SELECT img_url
         FROM person PE
         WHERE PE."id" = R.user_id) AS img_src

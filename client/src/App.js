@@ -19,15 +19,18 @@ import ModeratorDash from "./pages/moderatorDash";
 import Episodes from "./pages/episodePage";
 import UserDash from "./pages/userDashboard";
 import Episode from "./pages/eachEpisodePage";
+import LoadingBar from 'react-top-loading-bar';
 function App(){ 
   const navigate = useNavigate();
   // State to force rerender in Home component
   const [forceRerender, setForceRerender] = useState(false);
-
+  const [progress, setProgress] = useState(0); // State for top loading bar progress
   // Function to toggle forceRerender state
   const toggleRerender = () => {
     setForceRerender((prev) => !(prev));
   };
+
+  
 
   // Effect to log whenever forceRerender changes
   useEffect(() => {
@@ -37,9 +40,13 @@ function App(){
   return (
     <>
       <Navbar />
+      {/* <LoadingBar
+        color='#f11946'
+        progress={progress}
+/> */}
       <div className="container">
         <Routes>
-          <Route path="/" element={<Landing toggleRerender={toggleRerender}/>} />
+          <Route path="/" element={<Landing toggleRerender={toggleRerender} />} />
           <Route path="/Home" element={<Home forceRerender={forceRerender} toggleRerender={toggleRerender}/>} />
           <Route path="/about" element={<About />} />
           <Route path="/season" element={<Season />} />

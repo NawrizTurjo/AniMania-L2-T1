@@ -17,6 +17,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "./loader.js";
 import { ToastContainer, toast } from "react-toastify";
+import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { json, useLocation } from "react-router";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
@@ -215,7 +216,35 @@ const AnimeListItem = ({
         setFav(!fav);
         is_favorite = fav;
         console.log("This is is_fav state: ",is_favorite);
-        toast.success(`Anime ${title} ${!fav ? "added to" : "removed from"} favorites`);
+        // toast.success(`Anime ${title} ${!fav ? "added to" : "removed from"} favorites`);
+        if(!fav){
+          // toast.success(``);
+          toast.success(`Anime ${title} added to favorites`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Zoom,
+            });
+        }
+        else{
+          // toast.error(``);
+          toast.error(`Anime ${title} removed from favorites`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Zoom,
+            });
+        }
       } else {
         toast.error("Failed to update favorite status");
       }
