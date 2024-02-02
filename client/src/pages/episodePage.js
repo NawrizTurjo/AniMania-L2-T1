@@ -27,6 +27,7 @@ export default function Episodes({ toggleRerender }) {
   const location = useLocation();
   const [editMode, setEditMode] = useState(false);
   const [editableReviewIndex, setEditableReviewIndex] = useState(null);
+  const [editedText,setEditedText] = useState("");
   //const { user, email } = location.state || {};
   const {
     user: routeUser,
@@ -129,29 +130,26 @@ export default function Episodes({ toggleRerender }) {
   //   return <h1>Loading...</h1>;
   // }
 
-  // Function to handle editing of a review
-  const handleEditReview = (index) => {
-    setEditableReviewIndex(index);
-    setEditMode(true);
-  };
-
-  // Function to save edited review
-  const saveEditedReview = async (editedReview, index) => {
+  const handleUpdateReview = async (reviewId,reviewText) => {
+    
+    console.log("Review:", review, "by ", user);
     try {
-      // Send edited review to the server to update
-      await axios.put(`http://localhost:3000/watch/anime/episodes/${id}/reviews/${reviews[index].review_id}`, {
-        review_text: editedReview
+      await axios.put(`http://localhost:3000/updateReview`, {
+        review_id: reviewId,
+        review_text:reviewText
       });
-      // Update reviews state with the edited review
-      const updatedReviews = [...reviews];
-      updatedReviews[index].review_text = editedReview;
-      setReviews(updatedReviews);
-      // Exit edit mode
-      setEditMode(false);
-      setEditableReviewIndex(null);
-    } catch (error) {
-      console.error(error.message);
+      setEditedText("");
+
+      // setReviews(res.data[0]);
+      // console.log(res.data[0]);
+      // setReviews([...reviews, response.data]);
+      // console.log(response.data[0]);
+      // setReview("");
+      setStat((prev) => !prev);
+    } catch (err) {
+      console.log(err.message);
     }
+    // toggleRerender();
   };
 
   
@@ -287,53 +285,77 @@ export default function Episodes({ toggleRerender }) {
         </div>
       )}
       <div>
-        {/* Render reviews */}
-        {!reviewloading ? (
-          <div>
-            {reviews.map((review, index) => (
-              <div key={index}>
-                <Box
-                  sx={{
-                    mt: 4,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar alt={review.reviewer} src={review.img_src} />
-                    <Typography variant="body1">{review.reviewer}</Typography>
-                  </Stack>
-                </Box>
-                <Box sx={{ mt: 2, textAlign: "center" }}>
-                  <textarea
-                    className="form-control-disabled"
-                    id={`review-${index}`}
-                    // rows={
-                    //   review.review_text.length / 200 > 1
-                    //     ? review.review_text.length / 200 + 2
-                    //     : 3
-                    // }
-
-                    rows={
-                      Math.min(
-                        Math.ceil(review.review_text.length / 200) + 2,
-                        25 // Maximum of 20 rows
-                      )
-                    }
-                    value={review.review_text}
-                    style={{ resize: "none", width: "100%" }}
-                    readOnly
-                  />
-                </Box>
-              </div>
-            ))}
-          </div>
-        ) : (
-          // Render a loading indicator or placeholder if reviews is null
-          <h3>Loading reviews...</h3>
-        )}
-      </div>
+  {/* Render reviews */}
+  {!reviewloading ? (
+    <div>
+      {reviews.map((review, index) => (
+        <div key={index}>
+          <Box
+            sx={{
+              mt: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar alt={review.reviewer} src={review.img_src} />
+              <Typography variant="body1">{review.reviewer}</Typography>
+            </Stack>
+          </Box>
+          {/* Render editable textarea if user's email matches review email */}
+          {email === review.email ? (
+            <Box sx={{ mt: 2, textAlign: "center" }}>
+              <textarea
+                className="form-control"
+                id={`review-${index}`}
+                rows={
+                  Math.min(
+                    Math.ceil(review.review_text.length / 200) + 2,
+                    25 // Maximum of 20 rows
+                  )
+                }
+                value={review.review_text}
+                style={{ resize: "none", width: "100%" }}
+                onChange={(e) => {
+                  setEditedText(e.target.value);
+                  review.review_text = e.target.value;
+                }}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleUpdateReview(review.review_id,editedText)}
+              >
+                Save
+              </Button>
+            </Box>
+          ) : (
+            // Render read-only textarea for other reviews
+            <Box sx={{ mt: 2, textAlign: "center" }}>
+              <textarea
+                className="form-control-disabled"
+                id={`review-${index}`}
+                rows={
+                  Math.min(
+                    Math.ceil(review.review_text.length / 200) + 2,
+                    25 // Maximum of 20 rows
+                  )
+                }
+                value={review.review_text}
+                style={{ resize: "none", width: "100%" }}
+                readOnly
+              />
+            </Box>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    // Render a loading indicator or placeholder if reviews is null
+    <h3>Loading reviews...</h3>
+  )}
+</div>
     </div>
   );
 }

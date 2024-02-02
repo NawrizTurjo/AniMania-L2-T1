@@ -6,6 +6,7 @@
 
 body{
     margin: 0;
+    background-color: #57f1f9;
 }
 
 .container {
@@ -13,8 +14,17 @@ body{
     text-align: center;
 }
 
+.typewriter{
+  transition: font-weight 0.5s ease;
+}
+
+.typewriter:hover{
+  font-weight:bolder;
+  font-family: 'Times New Roman', Times, serif;
+}
+
 .nav{
-    background-color: #333;
+    background-color: #333333;
     color: white;
     display: flex;
     justify-content: space-between;

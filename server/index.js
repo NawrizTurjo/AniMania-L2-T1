@@ -199,20 +199,19 @@ app.post("/home", async (req, res) => {
 app.post("/watch/anime/episodes/:id", async (req, res) => {
   try {
     // const id = parseInt(req.params.id);
-    const { id,review,email } = req.body;
-    console.log(id,review,email);
+    const { id, review, email } = req.body;
+    console.log(id, review, email);
 
     const userID = await pool.query(
       `
       SELECT "id"
       from person
       where email = $1
-      `,[email]
+      `,
+      [email]
     );
 
     console.log(userID.rows[0].id);
-
-    
 
     // console.log(userID.rows[0].id);
 
@@ -222,30 +221,121 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
       VALUES
       ( $1, $2, $3, CURRENT_TIMESTAMP, 'pending', 'U' );
       `,
-      [id,userID.rows[0].id,review]
+      [id, userID.rows[0].id, review]
     );
 
-    const allReviews = await pool.query(
-      `
-      SELECT *,
-      (SELECT user_name
-      FROM person PE
-      WHERE PE."id" = R.user_id) AS reviewer,
-      (SELECT img_url
-        FROM person PE
-        WHERE PE."id" = R.user_id) AS img_src
-      FROM review R
-      WHERE R.anime_id = $1
-      `,[id]
-    );
+    // const allReviews = await pool.query(
+    //   `
+    //   SELECT *,
+    //   (SELECT user_name
+    //   FROM person PE
+    //   WHERE PE."id" = R.user_id) AS reviewer,
+    //   (SELECT img_url
+    //     FROM person PE
+    //     WHERE PE."id" = R.user_id) AS img_src
+    //   FROM review R
+    //   WHERE R.anime_id = $1
+    //   `,[id]
+    // );
+
+    // setTimeout(() => {
+    //   // setProgress(100);
+    // }, 1000);
 
     // console.log(allReviews.rows);
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    res.json(allReviews.rows);
+    res.json();
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put("/updateReview", async (req, res) => {
+  try {
+    const { review_id, review_text } = req.body;
+
+    const response = await pool.query(
+      `UPDATE review
+      SET
+        review_text = $1,
+        review_time = CURRENT_TIMESTAMP,
+        status = 'pending'
+      WHERE
+        review_id = $2
+        `,
+      [review_text, review_id]
+    );
+
+    // const { newUsername, img_url, email } = req.body;
+    // console.log(newUsername, img_url, email);
+    // await pool.query(
+    //   `UPDATE person SET user_name = $1,img_url=$2 WHERE email = $3`,
+    //   [newUsername, img_url, email]
+    // );
+
+    // const person = await pool.query(
+    //   `SELECT user_name
+    //   FROM person
+    //   WHERE email = $1`,
+    //   [email]
+    // );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/moderator/reviews", async (req, res) => {
+  try {
+    const allReviews = await pool.query(
+      `
+      SELECT *
+      FROM review
+      WHERE status = 'pending'
+      ORDER BY review_id
+      ;			
+
+      `
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allReviews.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/review/approve", async (req, res) => {
+  try {
+    const { review_id, email } = req.body;
+
+    const moderator_id = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,[email]
+    );
+    const response = await pool.query(
+      `
+      UPDATE review
+      SET
+        status = 'approved',
+        moderator_id = $1
+      WHERE
+        review_id = $2
+      `,
+      [moderator_id, review_id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
   }
 });
 
@@ -267,10 +357,10 @@ app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
         WHERE PE."id" = R.user_id) AS img_src
       FROM review R
       WHERE R.anime_id = $1
-      `,[id]
+      `,
+      [id]
     );
 
-    
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.status(200).json(allReviews.rows);
   } catch (error) {
@@ -448,7 +538,7 @@ app.get("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
      EPISODES E JOIN ANIME A ON E.ANIME_ID=A.ANIME_ID
      WHERE E.ANIME_ID=$1 AND E.EPISODE_NO=$2
       `,
-      [id,id2]
+      [id, id2]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(anime.rows);
@@ -496,10 +586,9 @@ app.put("/home", async (req, res) => {
   try {
     const { email, favString, anime_id } = req.body;
     console.log(email, favString, anime_id);
-    const userId = await pool.query(
-      `SELECT id FROM person WHERE email = $1`,
-      [email]
-    );
+    const userId = await pool.query(`SELECT id FROM person WHERE email = $1`, [
+      email,
+    ]);
     console.log(favString);
     console.log(userId.rows[0].id);
     if (favString === "true") {

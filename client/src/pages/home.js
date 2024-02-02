@@ -19,8 +19,10 @@ import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
+import Typewriter from "typewriter-effect";
+// import { motion } from "framer-motion"
 
-export default function Home({ forceRerender, toggleRerender }) {
+export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const location = useLocation();
   //const { user, email } = location.state || {};
   const {
@@ -98,7 +100,7 @@ export default function Home({ forceRerender, toggleRerender }) {
     try {
       setLoading(true);
       console.log(1);
-  
+
       const userEmail = email;
       const res = await axios.post("http://localhost:3000/home", { userEmail });
       setAnime(res.data);
@@ -107,11 +109,14 @@ export default function Home({ forceRerender, toggleRerender }) {
       console.error(err.message);
     }
   };
-  
+
   useEffect(() => {
+    setProgress(10);
     getAnime();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, [forceRerender]);
-  
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
@@ -127,6 +132,7 @@ export default function Home({ forceRerender, toggleRerender }) {
   // Get current posts
   useEffect(() => {
     // Update local state and local storage when user and email change
+
     localStorage.setItem("user", user);
     localStorage.setItem("email", email);
     localStorage.setItem("userRole", userRole);
@@ -205,139 +211,160 @@ export default function Home({ forceRerender, toggleRerender }) {
           sx={{ width: "100%", height: "100%" }}
         >
           <div className="btn-group my-5"> */}
-            <h4 className="text-center mt-3">
-              Unlock the Magic of Animation - where stories unfold, emotions
-              ignite, and worlds come alive
-            </h4>
-            <div className="flex-row flex-wrap">
-              {/* <h1>Hello {user}!</h1>
+      {/* <h4 className="text-center mt-3">
+        Unlock the Magic of Animation - where stories unfold, emotions ignite,
+        and worlds come alive
+      </h4> */}
+      <div className="typewriter">
+      <h4>
+        {" "}
+        <Typewriter
+        
+          options={{
+            strings: [
+              "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
+            ],
+            autoStart: true,
+            loop: true,
+            delay: 50,
+            deleteSpeed: 20,
+            pauseFor: 2000,
+            skipAddStyles: true,
+            // cursor: "_",
+          }}
+          // className=""
+        />
+      </h4>
+      </div>
+      <div className="flex-row flex-wrap">
+        {/* <h1>Hello {user}!</h1>
       <h1>Email: {email}</h1> */}
-              <Button
-                color="action"
-                // aria-describedby={pop_id}
-                variant="contained"
-                onClick={handleClick}
-                style={{ float: "right" }}
-                aria-owns={open ? "mouse-over-popover" : undefined}
-                aria-haspopup="true"
-                onMouseEnter={handlePopoverOpen}
-                onMouseLeave={handlePopoverClose}
-              >
-                <PermIdentityIcon />
-              </Button>
-              <Popover
-                id="mouse-over-popover"
-                sx={{
-                  pointerEvents: "none",
-                }}
-                open={open}
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                onClose={handlePopoverClose}
-                disableRestoreFocus
-              >
-                <Typography sx={{ p: 1 }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  {user === "" ? (
-                    <p>You are not logged in</p>
-                  ) : (
-                    // <img
-                    //   src={imgsrc}
-                    //   alt="You are not logged in"
-                    //   className="d-flex align-items-center"
-                    //   width={"100px"}
-                    //   height={"100px"}
-                    // />
-                    <Avatar alt={imgsrc} src={img_url}/>
-                  )}
+        <Button
+          color="action"
+          // aria-describedby={pop_id}
+          variant="contained"
+          onClick={handleClick}
+          style={{ float: "right" }}
+          aria-owns={open ? "mouse-over-popover" : undefined}
+          aria-haspopup="true"
+          onMouseEnter={handlePopoverOpen}
+          onMouseLeave={handlePopoverClose}
+        >
+          <PermIdentityIcon />
+        </Button>
+        <Popover
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: "none",
+          }}
+          open={open}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          onClose={handlePopoverClose}
+          disableRestoreFocus
+        >
+          <Typography sx={{ p: 1 }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {user === "" ? (
+                <p>You are not logged in</p>
+              ) : (
+                // <img
+                //   src={imgsrc}
+                //   alt="You are not logged in"
+                //   className="d-flex align-items-center"
+                //   width={"100px"}
+                //   height={"100px"}
+                // />
+                <Avatar alt={imgsrc} src={img_url} />
+              )}
 
-                  {user && (
-                    <div>
-                      <h3 className="d-flex ml-4">
-                        <b></b> {user}
-                      </h3>
-                    </div>
-                  )}
-                  </div>
-                  {email && (
-                    <div>
-                      <h3>
-                        <b>Email:</b> {email}
-                      </h3>
-                    </div>
-                  )}
-                  {userRole === "U" && (
-                    <div>
-                      <h3>User Content</h3>
-                      {/* Render additional content for User */}
-                    </div>
-                  )}
-
-                  {userRole === "M" && (
-                    <div>
-                      <h3>Moderator Content</h3>
-                      {/* Render additional content for Moderator */}
-                    </div>
-                  )}
-                </Typography>
-              </Popover>
-              <Button
-                color="action"
-                // aria-describedby={pop_id}
-                variant="contained"
-                onClick={handleLogout}
-                style={{ float: "right" }}
-                onMouseEnter={(event) => {
-                  setAnchorE2(event.currentTarget);
-                }}
-                onMouseLeave={() => {
-                  setAnchorE2(null);
-                }}
-              >
-                <LogoutIcon />
-              </Button>
-              <Popover
-                id="mouse-over-popover"
-                sx={{
-                  pointerEvents: "none",
-                }}
-                open={open2}
-                anchorEl={anchorE2}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                onClose={() => {
-                  setAnchorE2(null);
-                }}
-                disableRestoreFocus
-              >
-                <Typography sx={{ p: 1 }}>Logout</Typography>
-              </Popover>
-
-              {/* //<h1>Welcome, {username}!</h1> */}
-              {/* <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
-      <li className="list-group-item align-items-center flex-wrap"> */}
-              <img
-                src="./images/AniMania.png"
-                alt="AniMania Logo"
-                className="logo_big img-fluid"
-              />
+              {user && (
+                <div>
+                  <h3 className="d-flex ml-4">
+                    <b></b> {user}
+                  </h3>
+                </div>
+              )}
             </div>
-            {/* </li> */}
-            {/* <li className="list-group-item align-items-center flex-wrap"> */}
-            {/* <Box sx={{ width: 120, marginLeft: "auto"}}>
+            {email && (
+              <div>
+                <h3>
+                  <b>Email:</b> {email}
+                </h3>
+              </div>
+            )}
+            {userRole === "U" && (
+              <div>
+                <h3>User Content</h3>
+                {/* Render additional content for User */}
+              </div>
+            )}
+
+            {userRole === "M" && (
+              <div>
+                <h3>Moderator Content</h3>
+                {/* Render additional content for Moderator */}
+              </div>
+            )}
+          </Typography>
+        </Popover>
+        <Button
+          color="action"
+          // aria-describedby={pop_id}
+          variant="contained"
+          onClick={handleLogout}
+          style={{ float: "right" }}
+          onMouseEnter={(event) => {
+            setAnchorE2(event.currentTarget);
+          }}
+          onMouseLeave={() => {
+            setAnchorE2(null);
+          }}
+        >
+          <LogoutIcon />
+        </Button>
+        <Popover
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: "none",
+          }}
+          open={open2}
+          anchorEl={anchorE2}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          onClose={() => {
+            setAnchorE2(null);
+          }}
+          disableRestoreFocus
+        >
+          <Typography sx={{ p: 1 }}>Logout</Typography>
+        </Popover>
+
+        {/* //<h1>Welcome, {username}!</h1> */}
+        {/* <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
+      <li className="list-group-item align-items-center flex-wrap"> */}
+        <img
+          src="./images/AniMania.png"
+          alt="AniMania Logo"
+          className="logo_big img-fluid"
+        />
+      </div>
+      {/* </li> */}
+      {/* <li className="list-group-item align-items-center flex-wrap"> */}
+      {/* <Box sx={{ width: 120, marginLeft: "auto"}}>
       <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
         <Select
@@ -357,10 +384,10 @@ export default function Home({ forceRerender, toggleRerender }) {
         </Select>
       </FormControl>
     </Box> */}
-            {/* </li> */}
-            {/* </ul> */}
-            <div className="row">
-              {/* <section className="col-md-6 upper-part">
+      {/* </li> */}
+      {/* </ul> */}
+      <div className="row">
+        {/* <section className="col-md-6 upper-part">
           <div className="card-container">
             {[...Array(4)].map((_, index) => (
               <div key={index} className="card bg-light p-3 mt-3">
@@ -370,25 +397,25 @@ export default function Home({ forceRerender, toggleRerender }) {
             ))}
           </div>
         </section> */}
-              <section>
-                <div className="anime-list-container">
-                  <AnimeItem
-                    currentanimes={currentanimes}
-                    loading={loading}
-                    forceRerender={forceRerender}
-                    toggleRerender={toggleRerender}
-                  />
-                </div>
-              </section>
-              <section className="pagination-container">
-                <Pagination
-                  animePerPage={animePerPage}
-                  totalAnimes={animes.length}
-                  paginate={paginate}
-                  toggleRerender={toggleRerender}
-                />
-              </section>
-              {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>
+        <section>
+          <div className="anime-list-container">
+            <AnimeItem
+              currentanimes={currentanimes}
+              loading={loading}
+              forceRerender={forceRerender}
+              toggleRerender={toggleRerender}
+            />
+          </div>
+        </section>
+        <section className="pagination-container">
+          <Pagination
+            animePerPage={animePerPage}
+            totalAnimes={animes.length}
+            paginate={paginate}
+            toggleRerender={toggleRerender}
+          />
+        </section>
+        {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>
           <div className="watch-history-container">
             <ul className="anime-list">
               {[...Array(10)].map((_, index) => (
@@ -397,8 +424,8 @@ export default function Home({ forceRerender, toggleRerender }) {
             </ul>
           </div>
         </section> */}
-            </div>
-          {/* </div>
+      </div>
+      {/* </div>
         </Box>
       </Box> */}
     </div>

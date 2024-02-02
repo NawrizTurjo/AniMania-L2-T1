@@ -22,6 +22,10 @@ export default function ModeratorDash() {
 
   let [user, setUser] = useState("");
   let [img_url, setImgUrl] = useState("");
+  let [stat, setStat] = useState(false);
+  const [updatedId, setUpdatedId] = useState(0);
+
+  let [pendingReviews, setPendingReviews] = useState([]);
 
   user = state && state.user;
   let email = state && state.email;
@@ -72,6 +76,7 @@ export default function ModeratorDash() {
       setFileteredComments(person.filtered_comments);
       setImgUrl(person.img_url);
       setLoading(false);
+      setStat((prev) => !prev);
     } catch (err) {
       console.error(err.message);
     }
@@ -111,6 +116,43 @@ export default function ModeratorDash() {
     }
   };
 
+  const handleApprove = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/review/approve`,
+        JSON.stringify({ updatedId, email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      setStat((prev) => !prev);
+      setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
+  const getReviews = async (event) => {
+    try {
+      // event.preventDefault();
+      let response = await axios.get(`http://localhost:3000/moderator/reviews`);
+      // console.log(response.data);
+      // setTimeout(()=>{
+
+      // },500);
+      setPendingReviews(response.data);
+      console.log(pendingReviews);
+    } catch (error) {
+      console.error("Error fetching Reviews");
+    }
+  };
+
+  useEffect(() => {
+    getReviews();
+  }, [stat]);
+
   const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
     clipPath: "inset(50%)",
@@ -123,132 +165,227 @@ export default function ModeratorDash() {
     width: 1,
   });
 
-  
   return (
     <div style={{ display: "flex", justifyContent: "flex-start" }}>
-        {loading ? (
-            <h2>Loading...</h2>
-        ) : (
-            <>
-            
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "20px" }}>
-                    <Avatar src={img_url} sx={{ width: 120, height: 120, marginBottom: "8px" }} />
-                    <input type="file" onChange={handleImageChange} />
-                    <Button variant="contained" disableElevation onClick={handleUpdate} size="small" startIcon={<CloudUploadIcon />} style={{ marginTop: "8px" }}>
-                        Update Image
-                    </Button>
-                    <div style={{ border: "0.5px solid #cccccc", width: "400px", height: "500px", marginTop: "10px", marginRight: "auto",overflow: "auto" }}>
-                    {/* Content of the box */}
-                </div>
-                <div style={{ position: "absolute", right: "0", bottom: "0", marginBottom: "-80px", marginRight: "1215px" }}>
-                    <Button variant="contained" color="primary">
-                        Filter Comment
-                    </Button>
-                </div>
-                </div>
+      {loading ? (
+        <h2>Loading...</h2>
+      ) : (
+        <>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              marginTop: "20px",
+            }}
+          >
+            <Avatar
+              src={img_url}
+              sx={{ width: 120, height: 120, marginBottom: "8px" }}
+            />
+            <input type="file" onChange={handleImageChange} />
+            <Button
+              variant="contained"
+              disableElevation
+              onClick={handleUpdate}
+              size="small"
+              startIcon={<CloudUploadIcon />}
+              style={{ marginTop: "8px" }}
+            >
+              Update Image
+            </Button>
+            <div
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "400px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                right: "0",
+                bottom: "0",
+                marginBottom: "-80px",
+                marginRight: "1215px",
+              }}
+            >
+              <Button variant="contained" color="primary">
+                Filter Comment
+              </Button>
+            </div>
+          </div>
 
-                
+          {/* First Vertical Line */}
+          <div
+            style={{
+              borderLeft: "0.5px solid #cccccc",
+              height: "800px",
+              margin: "10px",
+            }}
+          ></div>
 
-                {/* First Vertical Line */}
-                <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
+          {/* Box on the left of the first vertical line */}
 
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              marginTop: "20px",
+            }}
+          >
+            <h1 style={{ textAlign: "center", marginTop: 0 }}>
+              Welcome to the Moderator Dashboard
+            </h1>
+            {/* Rest of your code */}
+            {/* {email && <p><strong>Email:</strong> {email}</p>} */}
+            <form>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Name:</strong>
+                  <input
+                    id="newUsername"
+                    type="text"
+                    name="newUsername"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    style={{ border: "0.5px solid #cccccc", marginLeft: "8px" }}
+                  />
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <Button
+                  variant="contained"
+                  disableElevation
+                  onClick={handleUpdate}
+                  size="small"
+                >
+                  Update Username
+                </Button>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>E-mail:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {email}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Anime Added:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {person.added_series}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Anime Deleted:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {deleted_series}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Episodes Added:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {added_episodes}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Episodes Deleted:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {deleted_episodes}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "70px" }}>
+                <label>
+                  <strong>Comments Filtered:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {filtered_comments}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Review Verified:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {review_verifications}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Karma:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {review_verifications * 2 +
+                      filtered_comments +
+                      added_episodes * 3 -
+                      deleted_episodes * 2 +
+                      added_series * 5 -
+                      deleted_series * 4}
+                  </span>
+                </label>
+              </div>
+              <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <Button variant="contained" color="success" href="/home">
+                  Edit and delete anime
+                </Button>
+              </div>
+            </form>
+          </div>
 
-                {/* Box on the left of the first vertical line */}
-               
+          {/* Second Vertical Line */}
+          <div
+            style={{
+              borderLeft: "0.5px solid #cccccc",
+              height: "800px",
+              margin: "10px",
+            }}
+          ></div>
 
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "20px" }}>
-                    <h1 style={{ textAlign: "center", marginTop: 0 }}>Welcome to the Moderator Dashboard</h1>
-                    {/* Rest of your code */}
-                    {/* {email && <p><strong>Email:</strong> {email}</p>} */}
-                    <form>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Name:</strong>
-                                <input id="newUsername" type="text" name="newUsername" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} style={{ border:"0.5px solid #cccccc",marginLeft: "8px" }} />
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px"}}>
-                            <Button variant="contained" disableElevation onClick={handleUpdate} size="small">
-                                Update Username
-                            </Button>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>E-mail:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{email}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Anime Added:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{person.added_series}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Anime Deleted:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{deleted_series}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Episodes Added:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{added_episodes}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Episodes Deleted:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{deleted_episodes}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"70px" }}>
-                            <label>
-                                <strong>Comments Filtered:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{filtered_comments}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Review Verified:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{review_verifications}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <label>
-                                <strong>Karma:</strong>
-                                <span style={{ marginLeft: "20px", fontWeight: "bold" }}>{review_verifications*2+filtered_comments+added_episodes*3-deleted_episodes*2+added_series*5-deleted_series*4}</span>
-                            </label>
-                        </div>
-                        <div style={{ marginBottom: "20px",marginLeft:"80px" }}>
-                            <Button variant="contained" color="success" href="/home">
-                                Edit and delete anime
-                            </Button>
-                        </div>
-                    </form>
-                </div>
+          {/* Box below the Update Profile button */}
+          <div
+            style={{
+              border: "0.5px solid #cccccc",
+              width: "600px",
+              height: "500px",
+              marginTop: "225px",
+              marginLeft: "auto",
+              overflow: "auto",
+            }}
+          >
+            {/* Content of the box */}
+          </div>
 
-                {/* Second Vertical Line */}
-                <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
-
-                {/* Box below the Update Profile button */}
-                <div style={{ border: "0.5px solid #cccccc", width: "600px", height: "500px", marginTop: "225px", marginLeft: "auto",overflow: "auto" }}>
-                    {/* Content of the box */}
-                </div>
-
-                {/* Button in the bottom right corner */}
-                <div style={{ position: "absolute", right: "0", bottom: "0", marginBottom: "-80px", marginRight: "315px" }}>
-                    <Button variant="contained" color="primary">
-                        Approve Review
-                    </Button>
-                </div>
-            </>
-        )}
+          {/* Button in the bottom right corner */}
+          <div
+            style={{
+              display: "flex",
+              position: "absolute",
+              right: "0",
+              bottom: "0",
+              marginBottom: "-80px",
+              marginRight: "315px",
+            }}
+          >
+            <Button variant="contained" color="primary">
+              Approve Review
+            </Button>
+          </div>
+        </>
+      )}
     </div>
-);
-
-
-
-
-
+  );
 }
