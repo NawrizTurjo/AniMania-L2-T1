@@ -5,7 +5,9 @@ import AuthContext from "../context/AuthProvider";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
-
+import { ToastContainer, toast } from "react-toastify";
+import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 const LOGIN_URL = "/auth";
 
@@ -64,10 +66,25 @@ const Login = () => {
         localStorage.setItem("img_url", img_url);
 
         // Redirect to home page with user information
-        navigate("/Home");
         setUser("");
         setPwd("");
-        setSuccess(true);
+        toast.success(`You are now logged in...`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Zoom,
+        });
+        setTimeout(() => {
+          navigate("/Home");
+      }
+      , 2000);
+      setSuccess(true);
+
       } else {
         setErrMsg("Invalid Username or Password");
       }
@@ -94,10 +111,7 @@ const Login = () => {
       {success ? (
         <section>
           <h1>You are logged in!</h1>
-          <br />
-          <p>
-            <Link to="/Home">Anime Page</Link>
-          </p>
+          <ToastContainer/>
         </section>
       ) : (
         <section>
