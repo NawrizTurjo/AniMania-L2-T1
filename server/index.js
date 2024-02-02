@@ -252,21 +252,102 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
   }
 });
 
-app.put("/updateReview", async (req, res) => {
+
+app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
   try {
-    const { review_id, review_text } = req.body;
+    // const id = parseInt(req.params.id);
+    const { id, id2 ,comment, email } = req.body;
+    //console.log(id, review, email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(userID.rows[0].id);
+
+    // console.log(userID.rows[0].id);
+
+    await pool.query(
+      `
+      INSERT INTO comments ( anime_id,episode_no, user_id, text, comment_time, status, comment_role )
+      VALUES
+      ( $1, $2, $3, $4,CURRENT_TIMESTAMP, 'pending', 'U' );
+      `,
+      [id, id2, userID.rows[0].id, comment]
+    );
+
+    // const allReviews = await pool.query(
+    //   `
+    //   SELECT *,
+    //   (SELECT user_name
+    //   FROM person PE
+    //   WHERE PE."id" = R.user_id) AS reviewer,
+    //   (SELECT img_url
+    //     FROM person PE
+    //     WHERE PE."id" = R.user_id) AS img_src
+    //   FROM review R
+    //   WHERE R.anime_id = $1
+    //   `,[id]
+    // );
+
+    // setTimeout(() => {
+    //   // setProgress(100);
+    // }, 1000);
+
+    // console.log(allReviews.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put("/updateComment", async (req, res) => {
+  try {
+    const { comment_id, comment_text } = req.body;
 
     const response = await pool.query(
-      `UPDATE review
+      `UPDATE comments
       SET
-        review_text = $1,
-        review_time = CURRENT_TIMESTAMP,
+        comment_text = $1,
+        comment_time = CURRENT_TIMESTAMP,
         status = 'pending'
       WHERE
-        review_id = $2
+        comment_id = $2
         `,
-      [review_text, review_id]
-    );
+      [comment_text, comment_id]
+  );
+  res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+    app.put("/updateReview", async (req, res) => {
+      try {
+        const { review_id, review_text } = req.body;
+    
+        const response = await pool.query(
+          `UPDATE review
+          SET
+            review_text = $1,
+            review_time = CURRENT_TIMESTAMP,
+            status = 'pending'
+          WHERE
+            review_id = $2
+            `,
+          [review_text, review_id]
+        );
+
 
     // const { newUsername, img_url, email } = req.body;
     // console.log(newUsername, img_url, email);
@@ -361,6 +442,38 @@ app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
       [id]
     );
 
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allReviews.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+
+app.get("/watch/anime/episodes/:id/episode/:id2/comments", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const id2 = parseInt(req.params.id2);
+
+    const allReviews = await pool.query(
+      `
+      SELECT *,
+      (SELECT user_name
+      FROM person PE
+      WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT email
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS email,
+      (SELECT img_url
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS img_src
+      FROM comments R
+      WHERE R.anime_id = $1 AND R.episode_no=$2
+      `,
+      [id,id2]
+    );
+        //console.log(1);
+        //console.log(allReviews);
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.status(200).json(allReviews.rows);
   } catch (error) {

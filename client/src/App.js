@@ -99,7 +99,7 @@ function App() {
           ></Route>
           <Route
             path="/watch/anime/episodes/:id/episode/:id2"
-            element={<Episode />}
+            element={<Episode toggleRerender={toggleRerender} setProgress={setProgress}/>}
           ></Route>
         </Routes>
         </AnimatePresence>
