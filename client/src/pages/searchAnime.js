@@ -4,6 +4,10 @@ import Pagination from "./pagination2";
 import AnimeItem from "./animeItem";
 //import { useParams } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
+import { motion } from "framer-motion/dist/framer-motion";
+import Typewriter from "typewriter-effect";
+
+
 
 
 export default function SearchAnime({forceRerender}) {
@@ -80,14 +84,51 @@ export default function SearchAnime({forceRerender}) {
   // );
 
   return (
-    <div className="Home-div container-fluid">
-      <h4 className="text-center mt-3">
-        Unlock the Magic of Animation - where stories unfold, emotions ignite,
-        and worlds come alive
+    <motion.div className="Home-div container-fluid"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
+      <h4>
+        {" "}
+        <Typewriter
+        
+          options={{
+            strings: [
+              "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
+            ],
+            autoStart: true,
+            loop: true,
+            delay: 50,
+            deleteSpeed: 20,
+            pauseFor: 2000,
+            skipAddStyles: true,
+            // cursor: "_",
+          }}
+          // className=""
+        />
       </h4>
       {/* <h1>Hello {user}!</h1>
       <h1>Email: {email}</h1> */}
-      <h1>Showing Results For:  {searchTerm}</h1>
+      <h1>
+        {"Search Results for:"}
+        <Typewriter
+        
+          options={{
+            strings: [
+              searchTerm,
+            ],
+            autoStart: true,
+            loop: true,
+            delay: 100,
+            deleteSpeed: 200,
+            pauseFor: 2000,
+            skipAddStyles: true,
+            
+            // cursor: "_",
+          }}
+          // className=""
+        />
+      </h1>
       <img
         src="./images/AniMania.png"
         alt="AniMania Logo"
@@ -126,6 +167,6 @@ export default function SearchAnime({forceRerender}) {
           </div>
         </section> */}
       </div>
-    </div>
+    </motion.div>
   );
 }

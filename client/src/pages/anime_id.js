@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams,useNavigate  } from "react-router-dom";
+import { motion } from "framer-motion/dist/framer-motion";
+
 
 const AnimePage = ({toggleRerender}) => {
   const [anime, setAnime] = useState({
@@ -22,6 +24,9 @@ const AnimePage = ({toggleRerender}) => {
   const getAnime = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/anime/${id}`);
+      // setTimeout(() => {
+      //   setLoading(false);
+      // }, 1000);
       setAnime(res.data[0]);
       setLoading(false);
       console.log(res.data);
@@ -65,7 +70,10 @@ const AnimePage = ({toggleRerender}) => {
   
 
   return (
-    <div>
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
       {loading ? (
         <h2>Loading...</h2>
       ) : (
@@ -74,7 +82,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="anime_name"
-            value={anime.anime_name}
+            value={anime.anime_name  || ""}
             onChange={handleChange}
           />
           <br />
@@ -83,7 +91,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="number_of_episodes"
-            value={anime.number_of_episodes}
+            value={anime.number_of_episodes || 0}
             onChange={handleChange}
           />
 
@@ -92,7 +100,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="anime_type"
-            value={anime.anime_type}
+            value={anime.anime_type || ""}
             onChange={handleChange}
           />
 
@@ -101,7 +109,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="age_rating"
-            value={anime.age_rating}
+            value={anime.age_rating || ""}
             onChange={handleChange}
           />
 
@@ -110,7 +118,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="demographic"
-            value={anime.demographic}
+            value={anime.demographic || ""}
             onChange={handleChange}
           />
 
@@ -119,7 +127,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="season"
-            value={anime.season}
+            value={anime.season || ""}
             onChange={handleChange}
           />
 
@@ -128,7 +136,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="year"
-            value={anime.year}
+            value={anime.year || 0}
             onChange={handleChange}
           />
 
@@ -137,7 +145,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="anime_source"
-            value={anime.anime_source}
+            value={anime.anime_source   || ""}
             onChange={handleChange}
           />
 
@@ -146,7 +154,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="description"
-            value={anime.description}
+            value={anime.description || ""}
             onChange={handleChange}
           />
 
@@ -155,7 +163,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="title_screen"
-            value={anime.title_screen}
+            value={anime.title_screen || ""}
             onChange={handleChange}
           />
 
@@ -164,7 +172,7 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="next_season"
-            value={anime.next_season}
+            value={anime.next_season || ""}
             onChange={handleChange}
           />
 
@@ -173,14 +181,14 @@ const AnimePage = ({toggleRerender}) => {
           <input
             anime_type="text"
             name="previous_season"
-            value={anime.previous_season}
+            value={anime.previous_season || ""  }
             onChange={handleChange}
           />
           <br />
           <input type="submit" value="Submit" onClick={handleSubmit}/>
         </form>
       )}
-    </div>
+    </motion.div>
   );
 };
 

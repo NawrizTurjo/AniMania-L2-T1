@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import AuthContext from "../context/AuthProvider";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion/dist/framer-motion";
 
 import axios from "axios";
 const LOGIN_URL = "/auth";
 
 const Login = () => {
-
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
@@ -35,7 +35,7 @@ const Login = () => {
         `http://localhost:3000/auth`,
         JSON.stringify({ user, pwd }),
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
@@ -54,8 +54,8 @@ const Login = () => {
         const id = response?.data[0]?.id;
         const role = response?.data[0]?.role;
         const email = response?.data[0]?.email;
-        const user=response?.data[0]?.user_name;
-        const img_url=response?.data[0]?.img_url;
+        const user = response?.data[0]?.user_name;
+        const img_url = response?.data[0]?.img_url;
         setAuth({ id, user, pwd: storedHashedPwd, role, email });
         //navigate("/Home", { state: { user, email } });
         localStorage.setItem("user", user);
@@ -63,7 +63,7 @@ const Login = () => {
         localStorage.setItem("userRole", role);
         localStorage.setItem("img_url", img_url);
 
-    // Redirect to home page with user information
+        // Redirect to home page with user information
         navigate("/Home");
         setUser("");
         setPwd("");
@@ -86,7 +86,11 @@ const Login = () => {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
       {success ? (
         <section>
           <h1>You are logged in!</h1>
@@ -138,7 +142,7 @@ const Login = () => {
           </p>
         </section>
       )}
-    </>
+    </motion.div>
   );
 };
 

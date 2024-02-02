@@ -7,6 +7,8 @@ import Avatar from "@mui/material/Avatar";
 import { uploadImage } from "./userDashboard";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { motion } from "framer-motion/dist/framer-motion";
+
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -166,7 +168,10 @@ export default function ModeratorDash() {
   });
 
   return (
-    <div style={{ display: "flex", justifyContent: "flex-start" }}>
+    <motion.div style={{ display: "flex", justifyContent: "flex-start" }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
       {loading ? (
         <h2>Loading...</h2>
       ) : (
@@ -386,6 +391,6 @@ export default function ModeratorDash() {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

@@ -20,7 +20,7 @@ import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Typewriter from "typewriter-effect";
-// import { motion } from "framer-motion"
+import { motion } from "framer-motion/dist/framer-motion";
 
 export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const location = useLocation();
@@ -195,7 +195,11 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
   let imgsrc = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
   return (
-    <div className="Home-div container-fluid">
+    <motion.div className="Home-div container-fluid"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}
+    >
       {/* <Box
         className="d-flex flex-column justify-content-center w-100 h-100"
         sx={{
@@ -428,6 +432,6 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       {/* </div>
         </Box>
       </Box> */}
-    </div>
+    </motion.div>
   );
 }

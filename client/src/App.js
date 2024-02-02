@@ -20,11 +20,12 @@ import Episodes from "./pages/episodePage";
 import UserDash from "./pages/userDashboard";
 import Episode from "./pages/eachEpisodePage";
 import LoadingBar from "react-top-loading-bar";
-// import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion/dist/framer-motion";
 
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   // State to force rerender in Home component
   const [forceRerender, setForceRerender] = useState(false);
   const [progress, setProgress] = useState(0)  // Function to toggle forceRerender state
@@ -38,7 +39,8 @@ function App() {
   }, [forceRerender]);
 
   return (
-    <>
+    <div>
+      {/* <Router> */}
       <Navbar />
       <LoadingBar
         color="#57f1f9"
@@ -46,7 +48,8 @@ function App() {
         onLoaderFinished={() => setProgress(0)}
       />
       <div className="container">
-        <Routes>
+        <AnimatePresence>
+        <Routes location={location} key={location.pathname}>
           <Route
             path="/"
             element={<Landing toggleRerender={toggleRerender} setProgress={setProgress}/>}
@@ -63,7 +66,7 @@ function App() {
           />
           <Route path="/about" element={<About />} />
           <Route path="/season" element={<Season />} />
-          <Route path="/genre" element={<Genre />} />
+          <Route path="/genre" element={<Genre setProgress={setProgress}/>} />
           <Route path="/sign_up" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
           <Route
@@ -92,16 +95,18 @@ function App() {
           <Route path="/userDash" element={<UserDash />}></Route>
           <Route
             path="/watch/anime/episodes/:id"
-            element={<Episodes toggleRerender={toggleRerender} />}
+            element={<Episodes toggleRerender={toggleRerender} setProgress={setProgress}/>}
           ></Route>
           <Route
             path="/watch/anime/episodes/:id/episode/:id2"
             element={<Episode />}
           ></Route>
         </Routes>
+        </AnimatePresence>
       </div>
       <Footer />
-    </>
+      {/* </Router> */}
+    </div>
   );
 }
 

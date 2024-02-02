@@ -114,6 +114,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from "framer-motion/dist/framer-motion";
+
 
 export default function Episode() {
     const { id, id2 } = useParams();
@@ -160,7 +162,11 @@ export default function Episode() {
     };
 
     return (
-        <div>
+        <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 ,transition: { duration: 0.5 }}}
+        >
             <div className="row justify-content-center">
                 <div className="col-lg-8">
                     <div className="d-flex justify-content-center mb-4">
@@ -210,7 +216,7 @@ export default function Episode() {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 

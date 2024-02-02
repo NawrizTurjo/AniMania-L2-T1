@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./GenreAnimes.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { motion } from "framer-motion/dist/framer-motion";
+
 
 const GenreAnimes = ({ id, name }) => {
   const [loading, setLoading] = useState(true);
@@ -33,7 +35,10 @@ const GenreAnimes = ({ id, name }) => {
   const groupedAnimeList = chunkArray(animeList, 5);
 
   return (
-    <div>
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1, transition: { duration: 0.5}}}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
       <a href={`http://localhost:3001/genre/${id}`}>
         <h1>{name}</h1>
       </a>
@@ -68,7 +73,7 @@ const GenreAnimes = ({ id, name }) => {
           </li>
         ))}
       </ul>
-    </div>
+    </motion.div>
   );
 };
 

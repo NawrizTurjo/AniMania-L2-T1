@@ -13,8 +13,10 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import { motion } from "framer-motion/dist/framer-motion";
 
-export default function Episodes({ toggleRerender }) {
+
+export default function Episodes({ toggleRerender,setProgress }) {
   const { id } = useParams();
   const [anime, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +59,7 @@ export default function Episodes({ toggleRerender }) {
 
   const getAnime = async () => {
     try {
+      setProgress(10);
       setLoading(true);
       //   console.log(1);
       const res = await axios.get(
@@ -71,6 +74,9 @@ export default function Episodes({ toggleRerender }) {
       setAnimeStat((prev) => !prev);
       //   console.log(res.data);
       // toggleRerender();
+      // setTimeout(() => {
+        setProgress(50);
+      // }, 1000);
     } catch (err) {
       console.error(err.message);
     }
@@ -111,6 +117,10 @@ export default function Episodes({ toggleRerender }) {
       console.log(reviews);
       console.log(res.data);
       setReviewLoading(false);
+      setTimeout(() => {
+        setProgress(100);
+      }, 500);
+        
     } catch (err) {
       console.error(err.message);
     }
@@ -154,7 +164,10 @@ export default function Episodes({ toggleRerender }) {
 
   
   return (
-    <div>
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
       {!loading ? (
         <div className="row justify-content-center">
           <div className="col-lg-4">
@@ -356,7 +369,7 @@ export default function Episodes({ toggleRerender }) {
     <h3>Loading reviews...</h3>
   )}
 </div>
-    </div>
+    </motion.div>
   );
 }
 

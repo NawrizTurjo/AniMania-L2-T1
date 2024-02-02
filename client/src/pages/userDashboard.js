@@ -12,6 +12,8 @@ import Typography from "@mui/material/Typography";
 // import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 // import Button from "@mui/material/Button";
 // import Paper from "@mui/material/Paper";
+import { motion } from "framer-motion/dist/framer-motion";
+
 
 function UserDashboard() {
   const [image, setImage] = useState(null);
@@ -162,7 +164,10 @@ const formatActiveTime = (activeTime) => {
   
 
 return (
-  <div style={{ display: "flex", justifyContent: "flex-start" }}>
+  <motion.div style={{ display: "flex", justifyContent: "flex-start" }}
+  initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
     {loading ? (
       <h2>Loading...</h2>
     ) : (
@@ -224,7 +229,7 @@ return (
 
       </>
     )}
-  </div>
+  </motion.div>
 );
 }
 

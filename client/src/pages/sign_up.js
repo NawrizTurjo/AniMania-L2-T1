@@ -14,6 +14,7 @@ import Button from "@mui/material/Button";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import IconButton from "@mui/material/IconButton";
 import { uploadImage } from "./userDashboard";
+import { motion } from "framer-motion/dist/framer-motion";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
@@ -31,21 +32,21 @@ const SignUp = () => {
   const [pwd, setPwd] = useState("");
   const [validPwd, setValidPwd] = useState(false);
   const [pwdFocus, setPwdFocus] = useState(false);
-  
+
   const [matchPwd, setMatchPwd] = useState("");
   const [validMatch, setValidMatch] = useState(false);
   const [matchFocus, setMatchFocus] = useState(false);
-  
+
   const [errMsg, setErrMsg] = useState("");
   const [success, setSuccess] = useState(false);
-  
+
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(false);
   const [emailFocus, setEmailFocus] = useState(false);
-  
+
   const [userRole, setUserRole] = useState(""); // State to store user role
   const [img_url, setImgUrl] = useState(""); // State to store user role
-  
+
   const [selectedFile, setSelectedFile] = useState(null);
   const handleRoleChange = (role) => {
     setUserRole(role);
@@ -90,7 +91,7 @@ const SignUp = () => {
       // setPwd(hashedPwd);
       const response = await axios.post(
         `http://localhost:3000/sign_up`,
-        JSON.stringify({ user, pwd: hashedPwd, email, userRole,img_url }),
+        JSON.stringify({ user, pwd: hashedPwd, email, userRole, img_url }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -129,8 +130,7 @@ const SignUp = () => {
     }
   };
 
-
-  const handleImageChange = async(event) => {
+  const handleImageChange = async (event) => {
     if (event.target.files[0]) {
       setSelectedFile(event.target.files[0]);
       try {
@@ -148,7 +148,11 @@ const SignUp = () => {
   // const classes = useStyles();
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
       {success ? (
         <section>
           <h1>Success!</h1>
@@ -308,8 +312,10 @@ const SignUp = () => {
               Must match the first password input field.
             </p>
             <p>
-              <label><b>Upload image</b></label>
-              <input type="file"  onChange={handleImageChange}/>
+              <label>
+                <b>Upload image</b>
+              </label>
+              <input type="file" onChange={handleImageChange} />
               {/* <button onClick={handleImageChange}>Submit</button> */}
               {/* <IconButton
                 color="primary"
@@ -361,7 +367,7 @@ const SignUp = () => {
           </p>
         </section>
       )}
-    </>
+    </motion.div>
   );
 };
 

@@ -5,12 +5,16 @@ import GenreAnimes from './genre_id';
 import GenrePage from './genrePage';
 import Test from './test';
 import Loader from "./loader.js";
+import { motion } from "framer-motion/dist/framer-motion";
 
-const Genre = () => {
+
+const Genre = ({setProgress}) => {
   const [loading, setLoading] = useState(true);
   const [genre, setGenre] = useState([]);
 
   useEffect(() => {
+      setProgress(10);
+      
     axios.get(`http://localhost:3000/genre`)
       .then(res => {
         // console.log(res.data);
@@ -20,6 +24,9 @@ const Genre = () => {
       .catch(err => {
         console.log(err);
       });
+      setTimeout(() => {
+        setProgress(100);
+      }, 1000);
   }, []);
   if(loading)
   {
@@ -27,7 +34,10 @@ const Genre = () => {
   }
 
   return (
-    <div>
+    <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
       <h1>Genre</h1>
       <table className="table table-striped d-flex justify-content-center">
         <thead>
@@ -54,7 +64,7 @@ const Genre = () => {
           ))}
         </tbody>
       </table>
-    </div>
+    </motion.div>
   );
 };
 
