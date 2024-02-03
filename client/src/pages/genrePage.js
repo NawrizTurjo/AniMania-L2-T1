@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./GenreAnimes.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "@mui/material";
 
 const columns = [
   {
@@ -110,9 +111,9 @@ export default function GenrePage({ id, name }) {
           <TableHead>
             <TableRow>
               <TableCell align="center" colSpan={9}>
-                <a href={`http://localhost:3001/genre/${id}`}>
+                <Link to={`http://localhost:3001/genre/${id}`}>
                   <h1>{name}</h1>
-                </a>
+                </Link>
               </TableCell>
               {/* <TableCell align="center" colSpan={3}>
                 Details
@@ -141,12 +142,12 @@ export default function GenrePage({ id, name }) {
                         console.log(`${column.id}:`, value);
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.id === 'title_screen' ? (<a
+                          {column.id === 'title_screen' ? (<Link
                             
-                            href={`http://localhost:3001/anime/${anime.anime_id}`}
+                            to={`http://localhost:3001/anime/${anime.anime_id}`}
                             className="list-group-item d-flex align-items-center">
                             <img src={value} alt="Title Screen" style={{ maxWidth: '50px', maxHeight: '75px' }} />
-                            </a>) : (
+                            </Link>) : (
                             column.format && typeof value === 'number' ? column.format(value) : value
                           )}
                         </TableCell>

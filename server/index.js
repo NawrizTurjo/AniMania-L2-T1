@@ -154,7 +154,7 @@ app.post("/home", async (req, res) => {
     const allAnimes = await pool.query(
       `
       with T AS(
-        SELECT DISTINCT (anime_id),user_id
+        SELECT DISTINCT (anime_id),user_id,status
         FROM users_anime_list ua
         where user_id = (
           SELECT "id"
@@ -170,7 +170,8 @@ app.post("/home", async (req, res) => {
             string_agg(DISTINCT g.genre_name, ',') AS genres,
             ta.user_id AS user_id
             ,
-            CASE WHEN ta.user_id IS NOT NULL THEN true ELSE false END AS is_favorite
+            CASE WHEN ta.user_id IS NOT NULL THEN true ELSE false END AS is_favorite,
+						CASE WHEN ta.user_id IS NOT NULL THEN ta.status ELSE NULL END AS status
         FROM 
             anime a
         LEFT JOIN 
@@ -180,10 +181,11 @@ app.post("/home", async (req, res) => {
         LEFT JOIN 
             T ta on ta.anime_id = a.anime_id
         GROUP BY 
-            a.anime_id,ta.user_id
+            a.anime_id,ta.user_id,ta.status
         ORDER BY 
             a.mal_score DESC
             )
+
       `,
       [userEmail]
     );
@@ -252,11 +254,10 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
   }
 });
 
-
 app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
   try {
     // const id = parseInt(req.params.id);
-    const { id, id2 ,comment, email } = req.body;
+    const { id, id2, comment, email } = req.body;
     //console.log(id, review, email);
 
     const userID = await pool.query(
@@ -309,66 +310,6 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
   }
 });
 
-app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
-  try {
-    // const id = parseInt(req.params.id);
-    const { id, id2 ,reply, email, parentId } = req.body;
-    console.log(reply);
-    console.log(parentId);
-    const userID = await pool.query(
-      `
-      SELECT "id"
-      from person
-      where email = $1
-      `,
-      [email]
-    );
-
-    console.log(userID.rows[0].id);
-    console.log(reply);
-    console.log(parentId);
-    console.log(id);
-    console.log(id2);
-
-    // console.log(userID.rows[0].id);
-
-    await pool.query(
-      `
-      INSERT INTO comments ( anime_id,episode_no, user_id, text, comment_time, status, comment_role, parent_id )
-      VALUES
-      ( $1, $2, $3, $4,CURRENT_TIMESTAMP, 'pending', 'U' ,$5);
-      `,
-      [id, id2, userID.rows[0].id, reply, parentId]
-    );
-
-    // const allReviews = await pool.query(
-    //   `
-    //   SELECT *,
-    //   (SELECT user_name
-    //   FROM person PE
-    //   WHERE PE."id" = R.user_id) AS reviewer,
-    //   (SELECT img_url
-    //     FROM person PE
-    //     WHERE PE."id" = R.user_id) AS img_src
-    //   FROM review R
-    //   WHERE R.anime_id = $1
-    //   `,[id]
-    // );
-
-    // setTimeout(() => {
-    //   // setProgress(100);
-    // }, 1000);
-
-    // console.log(allReviews.rows);
-
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    res.json();
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 app.put("/updateComment", async (req, res) => {
   try {
     const { comment_id, comment_text } = req.body;
@@ -383,8 +324,8 @@ app.put("/updateComment", async (req, res) => {
         comment_id = $2
         `,
       [comment_text, comment_id]
-  );
-  res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.body);
     // console.log(person.rows);
   } catch (error) {
@@ -392,12 +333,12 @@ app.put("/updateComment", async (req, res) => {
   }
 });
 
-    app.put("/updateReview", async (req, res) => {
-      try {
-        const { review_id, review_text } = req.body;
-    
-        const response = await pool.query(
-          `UPDATE review
+app.put("/updateReview", async (req, res) => {
+  try {
+    const { review_id, review_text } = req.body;
+
+    const response = await pool.query(
+      `UPDATE review
           SET
             review_text = $1,
             review_time = CURRENT_TIMESTAMP,
@@ -405,9 +346,8 @@ app.put("/updateComment", async (req, res) => {
           WHERE
             review_id = $2
             `,
-          [review_text, review_id]
-        );
-
+      [review_text, review_id]
+    );
 
     // const { newUsername, img_url, email } = req.body;
     // console.log(newUsername, img_url, email);
@@ -459,7 +399,8 @@ app.put("/review/approve", async (req, res) => {
       SELECT "id"
       from person
       where email = $1
-      `,[email]
+      `,
+      [email]
     );
     const response = await pool.query(
       `
@@ -509,7 +450,6 @@ app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
   }
 });
 
-
 app.get("/watch/anime/episodes/:id/episode/:id2/comments", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
@@ -530,10 +470,10 @@ app.get("/watch/anime/episodes/:id/episode/:id2/comments", async (req, res) => {
       FROM comments R
       WHERE R.anime_id = $1 AND R.episode_no=$2
       `,
-      [id,id2]
+      [id, id2]
     );
-        //console.log(1);
-        //console.log(allReviews);
+    //console.log(1);
+    //console.log(allReviews);
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.status(200).json(allReviews.rows);
   } catch (error) {
@@ -803,7 +743,7 @@ app.put("/home", async (req, res) => {
     console.log(userId.rows[0].id);
     if (favString === "true") {
       await pool.query(
-        `INSERT INTO users_anime_list (user_id, anime_id) VALUES ($1, $2)`,
+        `INSERT INTO users_anime_list (user_id, anime_id,status,start_date) VALUES ($1, $2,'Watching',CURRENT_TIMESTAMP)`,
         [userId.rows[0].id, anime_id] // Replace anime_id with the actual anime ID
       );
     } else {
