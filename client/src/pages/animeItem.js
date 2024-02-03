@@ -23,6 +23,7 @@ import { json, useLocation } from "react-router";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import { IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const AnimeListItem = ({
   anime_id,
@@ -39,6 +40,7 @@ const AnimeListItem = ({
   description,
   genres,
   is_favorite,
+  status,
   user_id,
   forceRerender,
   toggleRerender,
@@ -111,8 +113,8 @@ const AnimeListItem = ({
   //   setFav(is_favorite);
   // },[]);
 
-  console.log(title, fav);
-  console.log(user_id);
+  // console.log(title, fav);
+  // console.log(user_id);
 
   // const getGenres = async () => {
   //   try {
@@ -150,8 +152,8 @@ const AnimeListItem = ({
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = (event) => {
-    window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
+  // const handleClick = (event) => {
+  //   window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
     // toast.success('🦄 Wow so easy!', {
     //   position: "top-right",
     //   autoClose: 5000,
@@ -163,7 +165,8 @@ const AnimeListItem = ({
     //   theme: "dark",
     //   // transition: Bounce,
     //   });
-  };
+  // };
+  const [newStatus, setNewStatus] = useState(status || "Watching");
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -189,9 +192,9 @@ const AnimeListItem = ({
     setAnchorEl(null);
   };
 
-  const handleWatch = () => {
-    window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
-  };
+  // const handleWatch = () => {
+  //   window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
+  // };
 
   // const handleFavorite = async (e) => {
   //   e.preventDefault();
@@ -219,7 +222,7 @@ const AnimeListItem = ({
         // toast.success(`Anime ${title} ${!fav ? "added to" : "removed from"} favorites`);
         if(!fav){
           // toast.success(``);
-          toast.success(`Anime ${title} added to favorites`, {
+          toast.success(`${title} anime is added to your list`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -233,7 +236,7 @@ const AnimeListItem = ({
         }
         else{
           // toast.error(``);
-          toast.error(`Anime ${title} removed from favorites`, {
+          toast.error(`${title} anime is removed from your list`, {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -252,6 +255,23 @@ const AnimeListItem = ({
       console.error("Error updating favorite status:", error);
       toast.error("Failed to update favorite status");
     }
+  };
+
+  const handleSelect = async(newStat) => {
+    console.log(newStat);
+    try{
+    const response = await axios.put("http://localhost:3000/updateStatus", {
+        status: newStat,
+        email: email,
+        anime_id: anime_id,
+      });
+      toast.success(`Anime ${title} status updated to ${newStat}`);
+    }
+    catch(error){
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
+    }
+    
   };
 
 
@@ -295,7 +315,7 @@ const AnimeListItem = ({
         <h4>{rating}</h4>
       </Stack>
       <div className="d-flex justify-content-center align-items-center">
-        <Stack className="mt-2" direction="row" spacing={10}>
+        <Stack className="mt-2" direction="row" spacing={6}>
           {userRole === "M" && (
             <a href={`http://localhost:3001/anime/${id}`}>
               <Button
@@ -321,11 +341,12 @@ const AnimeListItem = ({
               </Button>
             </a>
           )}
+          <a href={`http://localhost:3001/anime/${id}`}>
           <Button
             color="secondary"
             aria-describedby={pop_id}
             variant="contained"
-            onClick={handleClick}
+            // onClick={handleClick}
             aria-owns={Open ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
             onMouseEnter={handlePopoverOpen}
@@ -333,6 +354,7 @@ const AnimeListItem = ({
           >
             <InfoIcon />
           </Button>
+          </a>
           <Popover
             // pop_id={pop_id}
             // open={Open}
@@ -379,9 +401,25 @@ const AnimeListItem = ({
 
           {userRole === "U" && (
             <IconButton color="error" onClick={handleFavorite}>
-              {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              
+              {fav ? (<FavoriteIcon />
+              ) : (<FavoriteBorderIcon />)}
             </IconButton>
+          )}
+          {userRole === "U" && fav==true &&
+            (
+            <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic">
+              {newStatus}
+            </Dropdown.Toggle>
+      
+            <Dropdown.Menu>
+            <Dropdown.Item onClick={() => { setNewStatus("Planned"); handleSelect("Planned"); }}>Planned</Dropdown.Item>
+            <Dropdown.Item onClick={() => { setNewStatus("Watching"); handleSelect("Watching"); }}>Watching</Dropdown.Item>
+            <Dropdown.Item onClick={() => { setNewStatus("Dropped"); handleSelect("Dropped"); }}>Dropped</Dropdown.Item>
+            <Dropdown.Item onClick={() => { setNewStatus("Watched"); handleSelect("Watched"); }}>Watched</Dropdown.Item>
+            <Dropdown.Item onClick={() => { setNewStatus("Not interested"); handleSelect("Not interested"); }}>Not Interested</Dropdown.Item>
+          </Dropdown.Menu>
+          </Dropdown> 
           )}
           <Dialog
             open={open}
@@ -440,6 +478,7 @@ const AnimeItem = ({
           description={anime.description}
           genres={anime.genres}
           is_favorite={anime.is_favorite}
+          status={anime.status}
           user_id={anime.user_id}
           forceRerender={forceRerender}
           toggleRerender={toggleRerender}
