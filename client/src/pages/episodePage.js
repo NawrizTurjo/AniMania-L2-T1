@@ -14,6 +14,7 @@ import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { motion } from "framer-motion/dist/framer-motion";
+import { Link } from "react-router-dom";
 
 
 export default function Episodes({ toggleRerender,setProgress }) {
@@ -179,19 +180,19 @@ export default function Episodes({ toggleRerender,setProgress }) {
             />
             {/* Add a button below the title screen */}
             {userRole === "U" ? (
-              <a
-                href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
+              <Link
+                to={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
               >
                 <button className="btn btn-danger btn-lg btn-block mt-3">
                   Watch Now
                 </button>
-              </a>
+              </Link>
             ) : (
-              <a href="http://localhost:3001/login">
+              <Link to="http://localhost:3001/login">
                 <button className="btn btn-primary btn-lg btn-block mt-3">
                   Login to Watch
                 </button>
-              </a>
+              </Link>
             )}
           </div>
           <div className="col-lg-8">

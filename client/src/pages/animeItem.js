@@ -24,6 +24,7 @@ import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import { IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Link } from "react-router-dom";
 
 const AnimeListItem = ({
   anime_id,
@@ -317,7 +318,7 @@ const AnimeListItem = ({
       <div className="d-flex justify-content-center align-items-center">
         <Stack className="mt-2" direction="row" spacing={6}>
           {userRole === "M" && (
-            <a href={`http://localhost:3001/anime/${id}`}>
+            <Link to={`http://localhost:3001/anime/${id}`}>
               <Button
                 variant="outlined"
                 color="secondary"
@@ -325,12 +326,12 @@ const AnimeListItem = ({
               >
                 Edit
               </Button>
-            </a>
+            </Link>
           )}
 
           {userRole === "U" && (
-            <a
-              href={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
+            <Link
+              to={`http://localhost:3001/watch/anime/episodes/${id}/episode/1`}
             >
               <Button
                 variant="outlined"
@@ -339,9 +340,9 @@ const AnimeListItem = ({
               >
                 Play
               </Button>
-            </a>
+            </Link>
           )}
-          <a href={`http://localhost:3001/anime/${id}`}>
+          <Link to={`http://localhost:3001/watch/anime/episodes/${id}`}>
           <Button
             color="secondary"
             aria-describedby={pop_id}
@@ -354,7 +355,7 @@ const AnimeListItem = ({
           >
             <InfoIcon />
           </Button>
-          </a>
+          </Link>
           <Popover
             // pop_id={pop_id}
             // open={Open}

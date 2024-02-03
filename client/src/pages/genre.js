@@ -52,7 +52,7 @@ const Genre = ({setProgress}) => {
               {/* <tr>
                 <td>{genre.genre_id}</td>
                 <td>
-                  <a href={`http://localhost:3001/genre/${genre.genre_id}`}>{genre.genre_name}</a>
+                  <Link to={`http://localhost:3001/genre/${genre.genre_id}`}>{genre.genre_name}</Link>
                 </td>
               </tr> */}
               <tr>
