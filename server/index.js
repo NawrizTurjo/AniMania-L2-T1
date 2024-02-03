@@ -481,11 +481,11 @@ app.get("/watch/anime/episodes/:id/episode/:id2/comments", async (req, res) => {
   }
 });
 
-app.get("/watch/anime/episodes/:id/episode/:id2/comments/:commentId", async (req, res) => {
+app.get("/watch/anime/episodes/:id/episode/:id2/comments/:comment.commentId", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const id2 = parseInt(req.params.id2);
-    const commentId = parseInt(req.params.commentId);
+    const commentId = parseInt(req.params.comment.commentId);
 
     const query = `
       SELECT *,
