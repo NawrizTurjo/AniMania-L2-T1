@@ -91,8 +91,9 @@ export default function Episode({ toggleRerender,setProgress }) {
         // toggleRerender();
       };
 
-      const handleSubmitReplies = async (parentId) => {
-        //event.preventDefault();
+      //# problem
+      const handleSubmitReplies = async (e,parentId) => {
+        e.preventDefault();
         //console.log("Review:", review, "by ", user);
         try {
           await axios.post(`http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}`, {
@@ -116,6 +117,7 @@ export default function Episode({ toggleRerender,setProgress }) {
         }
         // toggleRerender();
       };
+      //# problem
     
       const getReview = async (event) => {
         try {
@@ -126,8 +128,10 @@ export default function Episode({ toggleRerender,setProgress }) {
     
             if (res.status === 200) {
                 const commentsWithReplies = await Promise.all(res.data.map(async (comment) => {
+                    console.log(comment.comment_id)
+                    let cId = comment.comment_id?comment.comment_id:0;
                     const response = await axios.get(
-                        `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/comments/${comment.comment_id}`
+                        `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/comments/${cId}`
                     );
                     comment.replies = response.data;
                     return comment;
@@ -423,7 +427,7 @@ export default function Episode({ toggleRerender,setProgress }) {
                                     )}
     
                                     {/* Reply form */}
-                                    <form onSubmit={() => handleSubmitReplies( comment.comment_id)}>
+                                    <form onSubmit={(e) => handleSubmitReplies( e,comment.comment_id)}>
                                         <div className="form-group">
                                             <strong>
                                                 <label htmlFor={`reply-${index}`}>Your Reply:</label>

@@ -156,7 +156,7 @@ const AnimeListItem = ({
   // const handleClick = (event) => {
   //   window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
     // toast.success('🦄 Wow so easy!', {
-    //   position: "top-right",
+    //   position: "top-left",
     //   autoClose: 5000,
     //   hideProgressBar: false,
     //   closeOnClick: true,
@@ -224,7 +224,7 @@ const AnimeListItem = ({
         if(!fav){
           // toast.success(``);
           toast.success(`${title} anime is added to your list`, {
-            position: "top-right",
+            position: "top-left",
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -238,7 +238,7 @@ const AnimeListItem = ({
         else{
           // toast.error(``);
           toast.error(`${title} anime is removed from your list`, {
-            position: "top-right",
+            position: "top-left",
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -338,7 +338,7 @@ const AnimeListItem = ({
                 color="secondary"
                 startIcon={<PlayCircleFilledIcon />}
               >
-                Play
+                Watch
               </Button>
             </Link>
           )}
@@ -408,19 +408,42 @@ const AnimeListItem = ({
           )}
           {userRole === "U" && fav==true &&
             (
-            <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              {newStatus}
-            </Dropdown.Toggle>
-      
-            <Dropdown.Menu>
-            <Dropdown.Item onClick={() => { setNewStatus("Planned"); handleSelect("Planned"); }}>Planned</Dropdown.Item>
-            <Dropdown.Item onClick={() => { setNewStatus("Watching"); handleSelect("Watching"); }}>Watching</Dropdown.Item>
-            <Dropdown.Item onClick={() => { setNewStatus("Dropped"); handleSelect("Dropped"); }}>Dropped</Dropdown.Item>
-            <Dropdown.Item onClick={() => { setNewStatus("Watched"); handleSelect("Watched"); }}>Watched</Dropdown.Item>
-            <Dropdown.Item onClick={() => { setNewStatus("Not interested"); handleSelect("Not interested"); }}>Not Interested</Dropdown.Item>
-          </Dropdown.Menu>
-          </Dropdown> 
+              <Dropdown>
+              {newStatus === "Planned" && (
+                <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                  {newStatus}
+                </Dropdown.Toggle>
+              )}
+              {newStatus === "Watching" && (
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                  {newStatus}
+                </Dropdown.Toggle>
+              )}
+              {newStatus === "Dropped" && (
+                <Dropdown.Toggle variant="danger" id="dropdown-basic">
+                  {newStatus}
+                </Dropdown.Toggle>
+              )}
+              {newStatus === "Watched" && (
+                <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                  {newStatus}
+                </Dropdown.Toggle>
+              )}
+              {newStatus === "On hold" && (
+                <Dropdown.Toggle variant="warning" id="dropdown-basic">
+                  {newStatus}
+                </Dropdown.Toggle>
+              )}
+            
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => { setNewStatus("Planned"); handleSelect("Planned"); }}>Planned</Dropdown.Item>
+                <Dropdown.Item onClick={() => { setNewStatus("Watching"); handleSelect("Watching"); }}>Watching</Dropdown.Item>
+                <Dropdown.Item onClick={() => { setNewStatus("Dropped"); handleSelect("Dropped"); }}>Dropped</Dropdown.Item>
+                <Dropdown.Item onClick={() => { setNewStatus("Watched"); handleSelect("Watched"); }}>Watched</Dropdown.Item>
+                <Dropdown.Item onClick={() => { setNewStatus("On hold"); handleSelect("On hold"); }}>On hold</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            
           )}
           <Dialog
             open={open}

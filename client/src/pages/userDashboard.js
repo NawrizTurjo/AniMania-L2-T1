@@ -29,12 +29,14 @@ function UserDashboard() {
   let [most_favourite_anime,setMostFavouriteAnime]=useState("");
   let [first_access,setFirstAccess]=useState("");
   let [last_access,setLastAccess]=useState("");
-  let [active_time,setActiveTime]=useState("");
+  let [active_time,setActiveTime]=useState([]);
 
 
   user = state && state.user;
-  let email = state && state.email;
+  let email = localStorage.getItem("email");
   let [img_url, setImgUrl] = useState("");
+  const[animeList,setAnimeList]=useState([]);
+  const[stat,setStat]=useState(false);
 
 //   console.log(user);
 //   console.log(email);
@@ -58,7 +60,6 @@ const formatActiveTime = (activeTime) => {
   let getPerson = async () => {
     // e.preventDefault();
     try {
-      console.log(email);
       let response = await axios.post(
         `http://localhost:3000/userDash`,
         JSON.stringify({ email }),
@@ -68,6 +69,11 @@ const formatActiveTime = (activeTime) => {
         }
       );
       let personData = response.data[0];
+      const activeTime = personData?.active_time || {}; // Initialize activeTime as an object
+      console.log(activeTime);
+    // const formattedInterval = formatActiveTime(activeTime); // Format the active time
+    const formattedActiveTime = `${activeTime.days} day(s) ${activeTime.hours}h ${activeTime.minutes}m ${activeTime.seconds}s ${activeTime.milliseconds}ms`;
+    console.log(formattedActiveTime);
 
       person = {
         // user: personData?.user_name || "",
@@ -77,29 +83,51 @@ const formatActiveTime = (activeTime) => {
         most_favourite_anime: personData?.most_favourite_anime || "",
         first_access: personData?.first_access || 0,
         last_access: personData?.last_access || 0,
-        active_time: formatActiveTime(personData?.active_time || {}),
+        active_time: formattedActiveTime
       };
       console.log(person);
       console.log(person.img_url);
       setPerson(person);
-      setActiveTime(person.activeTime);
+      setActiveTime(formattedActiveTime);
       setBio(person.bio);
       setFirstAccess(person.first_access);
       setLastAccess(person.last_access);
       setMostFavouriteAnime(person.most_favourite_anime);
       setName(person.name);
-      setLoading(false);
       setUrl(personData?.img_url || "");
       console.log(url);
+      setStat((prev)=>!prev);
     } catch (err) {
       console.log(err);
     }
+    
   }
-
+  
+  const getAnimeList = async () => {
+    try {
+      console.log(email);
+      const res = await axios.post("http://localhost:3000/userDash/getAnimeList", { email });
+      // console.log(res.data);
+      setTimeout(() => {
+        setAnimeList(res.data);
+      }, 10000);
+      console.log(animeList);
+      // setLoading(false);
+      setLoading(false)
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  
   useEffect(() => {
     getPerson();
+    // getAnimeList();
   }, []);
 
+  useEffect(() => {
+    getAnimeList();
+  }, [animeList]);
+  
   const handleImageChange = async(e) => {
     if (e.target.files[0]) {
       await setImage(e.target.files[0]);
@@ -153,17 +181,51 @@ const formatActiveTime = (activeTime) => {
     }
   };
 
+
+  const saveBio = async(e)=>{
+    e.preventDefault();
+    console.log(bio);
+    try {
+      let response = await axios.put(
+        `http://localhost:3000/userDash/updateBio`,
+        JSON.stringify({ bio, email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      let updatedBio = response.data[0].bio;
+      setBio(updatedBio); // Update img_url in state
+      console.log(updatedBio);
+      localStorage.setItem("bio", updatedBio);
+      // console.log(animeList)
+    //   setUser(name);
+    //   localStorage.setItem("user", name);
+    //   console.log(name);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+
 //   if(person.img_url!=="")
 //   {
 //     return (<>
 //         <Avatar src={person.img_url} sx={{ width: 150, height: 150 }} />
 //     </>)
 //   }
+if(loading)
+{
+  return (
+    <h2>Loading...</h2>
+  )
 
+}
 
   
 
 return (
+  
   <motion.div style={{ display: "flex", justifyContent: "flex-start" }}
   initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -194,14 +256,26 @@ return (
         {/* Box on the left of the first vertical line */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "60px" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-  <h1 style={{ marginTop: "0px" }}>Welcome to the User Dashboard</h1>
-  <h1 style={{ marginTop: "10px" }}>Hello!!!  {name}</h1>
-</div>
+        <h1 style={{ marginTop: "0px" }}>Welcome to the User Dashboard</h1>
+        <h1 style={{ marginTop: "10px" }}>Hello!!!  {name}</h1>
+      </div>
 
-          <Paper elevation={3} style={{ width: "500px", padding: "20px", border: "0.5px solid #cccccc", marginTop: "60px" }}>
-            <h2>{name}'s Profile</h2>
+          <Paper elevation={3} style={{ width: "550px", padding: "20px", border: "0.5px solid #cccccc", marginTop: "60px" }}>
+              <h2>{name}'s Profile</h2>
             
-            <p><strong>Bio:</strong> {bio}</p>
+            {/* <p><strong>Bio:</strong> {bio}</p> */}
+              <Box style={{ marginTop: "20px" }}>
+              <TextField
+                label="Type your Bio"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+              />
+              <Button variant="primary" onClick={(e)=>{saveBio(e)}}>Save</Button>
+            </Box>
             <p><strong>Most Favourite Anime:</strong> {most_favourite_anime}</p>
             <p><strong>First Access:</strong> {first_access}</p>
             <p><strong>Last Access:</strong> {last_access}</p>

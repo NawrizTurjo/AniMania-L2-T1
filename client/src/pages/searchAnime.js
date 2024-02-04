@@ -25,6 +25,8 @@ export default function SearchAnime({forceRerender}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [animePerPage] = useState(10);
 
+  const email = localStorage.getItem("email");
+
   const getAnime = async () => {
         try {
             if (!searchTerm) {
@@ -33,8 +35,9 @@ export default function SearchAnime({forceRerender}) {
             }
       console.log(searchTerm);
       setLoading(true);
-      console.log(1);
-      const res = await axios.get(`http://localhost:3000/searchAnime/${searchTerm}`);
+      console.log(email);
+      const userEmail = email;
+      const res = await axios.post("http://localhost:3000/searchAnime", { userEmail,searchTerm });
       setAnime(res.data);
       setLoading(false);
     } catch (err) {
