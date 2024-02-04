@@ -248,6 +248,7 @@ const AnimeListItem = ({
             theme: "colored",
             transition: Zoom,
             });
+            setNewStatus("Planned");
         }
       } else {
         toast.error("Failed to update favorite status");
