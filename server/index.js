@@ -528,6 +528,44 @@ app.get("/watch/anime/episodes/:id/episode/:id2/comments", async (req, res) => {
   }
 });
 
+app.get("/watch/anime/episodes/:id/episode/:id2/comments/:cId", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const id2 = parseInt(req.params.id2);
+    const cId = parseInt(req.params.cId);
+
+    
+
+    const query = `
+      SELECT *,
+      (SELECT user_name
+      FROM person PE
+      WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT email
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS email,
+      (SELECT img_url
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS img_src
+      FROM comments R
+      WHERE R.anime_id = $1 AND R.episode_no = $2 AND R.parent_id = $3
+      `;
+    const queryParams = [id, id2, cId];
+
+    const allReviews = await pool.query(query, queryParams);
+
+    if (allReviews.rows.length === 0) {
+      // If no comments found with the specified cId, return 404 Not Found
+      return res.status(404).json({ error: "Comment not found" });
+    }
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allReviews.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.put("/moderatorDash", async (req, res) => {
   try {
