@@ -310,6 +310,44 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
   }
 });
 
+
+app.post("/watch/anime/episodes/:id/episode/:id2/reply", async (req, res) => {
+  try {
+    // const id = parseInt(req.params.id);
+    const { id, id2, reply, email, parentId } = req.body;
+    //console.log(id, review, email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(userID.rows[0].id);
+
+    // console.log(userID.rows[0].id);
+
+    await pool.query(
+      `
+      INSERT INTO comments ( anime_id,episode_no, user_id, text, comment_time, status, comment_role, parent_id )
+      VALUES
+      ( $1, $2, $3, $4,CURRENT_TIMESTAMP, 'pending', 'U', $5);
+      `,
+      [id, id2, userID.rows[0].id, reply, parentId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 app.put("/updateStatus", async (req, res) => {
   try {
     const { status, email,anime_id } = req.body;

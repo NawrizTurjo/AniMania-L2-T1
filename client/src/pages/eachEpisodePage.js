@@ -27,6 +27,7 @@ export default function Episode({ toggleRerender,setProgress }) {
     const [comments, setComments] = useState([]);
     const [reply, setReply]=useState("");
     const [replies, setReplies]=useState([]);
+    const [replyIndex, setReplyIndex] = useState(null);
     //const [repliesVisible, setRepliesVisible] = useState(false);
 
 
@@ -97,7 +98,7 @@ export default function Episode({ toggleRerender,setProgress }) {
         e.preventDefault();
         //console.log("Review:", review, "by ", user);
         try {
-          await axios.post(`http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}`, {
+          await axios.post(`http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/reply`, {
             id: id,
             id2:id2,
             reply: reply,
@@ -326,7 +327,7 @@ export default function Episode({ toggleRerender,setProgress }) {
                 {!commentloading ? (
                     <div>
                         {comments.map((comment, index) => (
-                            <div key={index}>
+                            <div key={index}  style={{ marginBottom: '20px' }}>
                                 {/* Render reviewer information */}
                                 <Box
                                     sx={{
@@ -341,6 +342,7 @@ export default function Episode({ toggleRerender,setProgress }) {
                                         <Typography variant="body1">{comment.reviewer}</Typography>
                                     </Stack>
                                 </Box>
+                                
     
                                 {/* Render editable textarea for user's own comment */}
                                 {email === comment.email ? (
@@ -353,7 +355,7 @@ export default function Episode({ toggleRerender,setProgress }) {
                                                 25 // Maximum of 20 rows
                                             )}
                                             value={comment.text}
-                                            style={{ resize: "none", width: "100%" }}
+                                            style={{ resize: "none", width: "100%",marginBottom: "10px" }}
                                             onChange={(e) => {
                                                 setEditedText(e.target.value);
                                                 comment.text = e.target.value;
@@ -363,6 +365,7 @@ export default function Episode({ toggleRerender,setProgress }) {
                                             variant="contained"
                                             color="primary"
                                             onClick={() => handleUpdateReview(comment.comment_id, editedText)}
+                                            style={{ marginBottom: "10px" }}
                                         >
                                             Save
                                         </Button>
@@ -383,77 +386,100 @@ export default function Episode({ toggleRerender,setProgress }) {
                                         />
                                     </Box>
                                 )}
+                                {replyIndex === index ? (
+                                    <div>
+                                        <form onSubmit={(e) => handleSubmitReplies(e, comment.comment_id)}>
+                                            <div className="form-group" style={{ marginBottom: '10px' }}>
+                                                <strong>
+                                                    <label htmlFor={`reply-${index}`}>Your Reply:</label>
+                                                </strong>
+                                                <textarea
+                                                    className="form-control"
+                                                    id={`reply-${index}`}
+                                                    rows="2"
+                                                    value={reply}
+                                                    onChange={(e) => setReply(e.target.value)}
+                                                    style={{ resize: 'none' }}
+                                                ></textarea>
+                                            </div>
+                                            {reply !== "" ? (
+                                                <Button
+                                                    type="submit"
+                                                    variant="contained"
+                                                    color="primary"
+                                                >
+                                                    Reply
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    disabled
+                                                    variant="contained"
+                                                    color="primary"
+                                                >
+                                                    Reply
+                                                </Button>
+                                            )}
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => setReplyIndex(index)}
+                                    >
+                                        Reply
+                                    </Button>
+                                )}
     
                                 {/* Render replies */}
-                                <div>
-                                {replies
-                            .filter((reply) => reply.parent_id === comment.comment_id) // Filter replies based on parent_id
-                            .map((reply, replyIndex) => (
-                                <div key={`reply-${replyIndex}`}>
-                                    {/* Render reply */}
-                                    <Box
-                                        sx={{
-                                            mt: 2,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Stack direction="row" spacing={2} alignItems="center">
-                                            <Avatar alt={reply.reviewer} src={reply.img_src} />
-                                            <Typography variant="body1">{reply.reviewer}</Typography>
-                                        </Stack>
-                                    </Box>
-                                    <Box sx={{ mt: 2, textAlign: "center" }}>
-                                        <textarea
-                                            className="form-control-disabled"
-                                            id={`reply-${index}-${replyIndex}`}
-                                            rows={Math.min(
-                                                Math.ceil(reply.text.length / 200) + 2,
-                                                25 // Maximum of 20 rows
-                                            )}
-                                            value={reply.text}
-                                            style={{ resize: "none", width: "100%" }}
-                                            readOnly
-                                        />
-                                    </Box>
-                                </div>
-                            ))}
+                                <div style={{ marginLeft: '100px', marginBottom: '10px' }}>
+                                    {replies
+                                        .filter((reply) => reply.parent_id === comment.comment_id)
+                                        .map((reply, replyIndex) => (
+                                            <div key={`reply-${replyIndex}`}>
+                                                {/* Render reply */}
+                                                <Box
+                                                    sx={{
+                                                        mt: 2,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }}
+                                                >
+                                                    <Stack direction="row" spacing={2} alignItems="center">
+                                                        <Avatar alt={reply.reviewer} src={reply.img_src} />
+                                                        <Typography variant="body1">{reply.reviewer}</Typography>
+                                                    </Stack>
+                                                </Box>
+                                                <Box sx={{ mt: 2, textAlign: "center" }}>
+                                                    <textarea
+                                                        className="form-control-disabled"
+                                                        id={`reply-${index}-${replyIndex}`}
+                                                        rows={Math.min(
+                                                            Math.ceil(reply.text.length / 200) + 2,
+                                                            25 // Maximum of 20 rows
+                                                        )}
+                                                        value={reply.text}
+                                                        style={{ resize: "none", width: "100%" }}
+                                                        readOnly
+                                                    />
+                                                </Box>
+                                            </div>
+                                        ))}
     
                                     {/* Reply form */}
-                                    <form onSubmit={(e) => handleSubmitReplies( e,comment.comment_id)}>
-                                        <div className="form-group">
-                                            <strong>
-                                                <label htmlFor={`reply-${index}`}>Your Reply:</label>
-                                            </strong>
-                                            <textarea
-                                                className="form-control"
-                                                id={`reply-${index}`}
-                                                rows="2"
-                                                value={reply}
-                                                onChange={(e) => setReply(e.target.value)}
-                                                style={{ resize: 'none' }}
-                                            ></textarea>
-                                        </div>
-                                        <Button
-                                            type="submit"
-                                            variant="contained"
-                                            color="primary"
-                                        >
-                                            Submit Reply
-                                        </Button>
-                                    </form>
-                                </div>
+                                    
                             </div>
-                        ))}
-                    </div>
-                ) : (
-                    // Render a loading indicator or placeholder if reviews are still loading
-                    <h3>Loading reviews...</h3>
-                )}
-            </div>
-        </motion.div>
-    )
-                }    
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                // Render a loading indicator or placeholder if reviews are still loading
+                <h3>Loading reviews...</h3>
+            )}
+        </div>
+    </motion.div>
+)
+                }      
 
 
