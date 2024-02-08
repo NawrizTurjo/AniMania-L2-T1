@@ -22,6 +22,7 @@ export default function Episode({ toggleRerender,setProgress }) {
     const [stat, setStat] = useState(false);
     const [statr, setStatr] = useState(false);
     const [animeStat, setAnimeStat] = useState(false);
+    const [animeStatr, setAnimeStatr] = useState(false);
     const [editedText,setEditedText] = useState("");
     const [comments, setComments] = useState([]);
     const [reply, setReply]=useState("");
@@ -125,23 +126,24 @@ export default function Episode({ toggleRerender,setProgress }) {
             const res = await axios.get(
                 `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/comments`
             );
+                    //------------------------------------------------------------------------------get parent comments
     
-            if (res.status === 200) {
-                const commentsWithReplies = await Promise.all(res.data.map(async (comment) => {
-                    console.log(comment.comment_id)
-                    let cId = comment.comment_id?comment.comment_id:0;
-                    const response = await axios.get(
-                        `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/comments/${cId}`
-                    );
-                    comment.replies = response.data;
-                    return comment;
-                }));
+            // if (res.status === 200) {
+            //     const commentsWithReplies = await Promise.all(res.data.map(async (comment) => {
+            //         console.log(comment.comment_id)
+            //         let cId = comment.comment_id?comment.comment_id:0;
+            //         const response = await axios.get(
+            //             `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/comments/${cId}`
+            //         );
+            //         comment.replies = response.data;
+            //         return comment;
+            //     }));
     
-                setComments(commentsWithReplies);
-            } else if (res.status === 404) {
-                // Handle case when no comments are found
-                setComments([]); // Set empty array for comments
-            }
+            setComments(res.data);
+            // } else if (res.status === 404) {
+            //     // Handle case when no comments are found
+            //     setComments([]); // Set empty array for comments
+            // }
     
             setCommentLoading(false);
             setTimeout(() => {
@@ -162,31 +164,31 @@ export default function Episode({ toggleRerender,setProgress }) {
       }, [comments]);
        // Log reviews whenever it changes
 
-    //    const getReply = async (event,parentId) => {
-    //     try {
-    //       setCommentLoading(true);
-    //       const res = await axios.get(
-    //         `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/comments/${parentId}`
-    //       );
-    //       //   setAnime(res.data[0]);
-    //       //console.log(res.data.age_rating);
-    //       // setStat((prev)=>(!prev));
-    //       console.log(statr);
-    //       setReplies(res.data);
-    //       console.log(replies);
-    //       console.log(res.data);
-    //       setCommentLoading(false);
-    //       setTimeout(() => {
-    //         setProgress(100);
-    //       }, 500);
+       const getReply = async (event) => {
+        try {
+          setCommentLoading(true);
+          const res = await axios.get(
+            `http://localhost:3000/watch/anime/episodes/${id}/episode/${id2}/replies`
+          );
+          //   setAnime(res.data[0]);
+          //console.log(res.data.age_rating);
+          // setStat((prev)=>(!prev));
+          console.log(statr);
+          setReplies(res.data);
+          console.log(replies);
+          console.log(res.data);
+          setCommentLoading(false);
+          setTimeout(() => {
+            setProgress(100);
+          }, 500);
             
-    //     } catch (err) {
-    //       console.error(err.message);
-    //     }
-    //   };
+        } catch (err) {
+          console.error(err.message);
+        }
+      };
       useEffect(() => {
-        getReview();
-      }, [stat,animeStat]);
+        getReply();
+      }, [statr,animeStatr]);
 
 
 
@@ -227,13 +229,6 @@ export default function Episode({ toggleRerender,setProgress }) {
     useEffect(() => {
         getAnime();
     }, [id, id2]);
-
-    // const handleSubmitComments = (event) => {
-    //     event.preventDefault();
-    //     console.log("Comments:", comments);
-    //     // Add your logic to submit the comments here
-    //     // For example, you can make an API call to send the comments data to your backend
-    // };
 
     if (loading) {
         return <h1>Loading...</h1>
@@ -391,40 +386,39 @@ export default function Episode({ toggleRerender,setProgress }) {
     
                                 {/* Render replies */}
                                 <div>
-                                    {comment.replies && comment.replies.length > 0 && (
-                                        <div>
-                                            {comment.replies.map((reply, replyIndex) => (
-                                                <div key={`reply-${replyIndex}`}>
-                                                    <Box
-                                                        sx={{
-                                                            mt: 2,
-                                                            display: "flex",
-                                                            alignItems: "center",
-                                                            justifyContent: "center",
-                                                        }}
-                                                    >
-                                                        <Stack direction="row" spacing={2} alignItems="center">
-                                                            <Avatar alt={reply.reviewer} src={reply.img_src} />
-                                                            <Typography variant="body1">{reply.reviewer}</Typography>
-                                                        </Stack>
-                                                    </Box>
-                                                    <Box sx={{ mt: 2, textAlign: "center" }}>
-                                                        <textarea
-                                                            className="form-control-disabled"
-                                                            id={`reply-${index}-${replyIndex}`}
-                                                            rows={Math.min(
-                                                                Math.ceil(reply.text.length / 200) + 2,
-                                                                25 // Maximum of 20 rows
-                                                            )}
-                                                            value={reply.text}
-                                                            style={{ resize: "none", width: "100%" }}
-                                                            readOnly
-                                                        />
-                                                    </Box>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                {replies
+                            .filter((reply) => reply.parent_id === comment.comment_id) // Filter replies based on parent_id
+                            .map((reply, replyIndex) => (
+                                <div key={`reply-${replyIndex}`}>
+                                    {/* Render reply */}
+                                    <Box
+                                        sx={{
+                                            mt: 2,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <Avatar alt={reply.reviewer} src={reply.img_src} />
+                                            <Typography variant="body1">{reply.reviewer}</Typography>
+                                        </Stack>
+                                    </Box>
+                                    <Box sx={{ mt: 2, textAlign: "center" }}>
+                                        <textarea
+                                            className="form-control-disabled"
+                                            id={`reply-${index}-${replyIndex}`}
+                                            rows={Math.min(
+                                                Math.ceil(reply.text.length / 200) + 2,
+                                                25 // Maximum of 20 rows
+                                            )}
+                                            value={reply.text}
+                                            style={{ resize: "none", width: "100%" }}
+                                            readOnly
+                                        />
+                                    </Box>
+                                </div>
+                            ))}
     
                                     {/* Reply form */}
                                     <form onSubmit={(e) => handleSubmitReplies( e,comment.comment_id)}>

@@ -275,9 +275,9 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
 
     await pool.query(
       `
-      INSERT INTO comments ( anime_id,episode_no, user_id, text, comment_time, status, comment_role )
+      INSERT INTO comments ( anime_id,episode_no, user_id, text, comment_time, status, comment_role, parent_id )
       VALUES
-      ( $1, $2, $3, $4,CURRENT_TIMESTAMP, 'pending', 'U' );
+      ( $1, $2, $3, $4,CURRENT_TIMESTAMP, 'pending', 'U', -1);
       `,
       [id, id2, userID.rows[0].id, comment]
     );
@@ -515,7 +515,39 @@ app.get("/watch/anime/episodes/:id/episode/:id2/comments", async (req, res) => {
         FROM person PE
         WHERE PE."id" = R.user_id) AS img_src
       FROM comments R
-      WHERE R.anime_id = $1 AND R.episode_no=$2
+      WHERE R.anime_id = $1 AND R.episode_no=$2 AND R.parent_id= -1
+      `,
+      [id, id2]
+    );
+    //console.log(1);
+    //console.log(allReviews);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allReviews.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/watch/anime/episodes/:id/episode/:id2/replies", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const id2 = parseInt(req.params.id2);
+    console.log(id, id2);
+
+    const allReviews = await pool.query(
+      `
+      SELECT *,
+      (SELECT user_name
+      FROM person PE
+      WHERE PE."id" = R.user_id) AS reviewer,
+      (SELECT email
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS email,
+      (SELECT img_url
+        FROM person PE
+        WHERE PE."id" = R.user_id) AS img_src
+      FROM comments R
+      WHERE R.anime_id = $1 AND R.episode_no=$2 AND R.parent_id <> -1
       `,
       [id, id2]
     );
