@@ -59,11 +59,6 @@ export default function Episodes({ toggleRerender,setProgress }) {
   //   console.log(user, email, img_url, userRole);
   let [cleanedText, setCleanedText] = useState("");
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-});
-
   const getAnime = async () => {
     try {
       setProgress(10);
@@ -112,7 +107,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 
   const getReview = async (event) => {
     try {
-      setReviewLoading(true);
+      
       const res = await axios.get(
         `http://localhost:3000/watch/anime/episodes/${id}/reviews`
       );
@@ -120,18 +115,49 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
       //console.log(res.data.age_rating);
       // setStat((prev)=>(!prev));
       console.log(stat);
-      setReviews(res.data);
+      // setReviews(res.data);
       console.log(reviews);
       console.log(res.data);
-      setReviewLoading(false);
-      setTimeout(() => {
-        setProgress(100);
-      }, 500);
+      
+
+      return res.data;
         
     } catch (err) {
       console.error(err.message);
     }
   };
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getReview();
+  //   }, 10000); // Fetch reviews every 60 seconds
+
+  //   // Cleanup function to clear the interval
+  //   return () => clearInterval(interval);
+  // }, []); 
+  useEffect(() => {
+    let isMounted = true; // Flag to prevent state updates after unmounting
+
+    const fetchReviews = async () => {
+      const newReviews = await getReview();
+      if (isMounted && JSON.stringify(newReviews) !== JSON.stringify(reviews)) {
+        setReviewLoading(true);
+        setReviews(newReviews);
+        setTimeout(() => {
+          setProgress(100);
+        }, 500);
+        setReviewLoading(false);
+      }
+    };
+
+    const interval = setInterval(fetchReviews, 10000); // Fetch reviews every 60 seconds
+
+    fetchReviews(); // Fetch reviews on component mount
+
+    return () => {
+      clearInterval(interval); // Cleanup function to clear the interval
+      isMounted = false; // Update the flag to prevent state updates after unmounting
+    };
+  }, []); // Fetch reviews when id changes
   useEffect(() => {
     getReview();
   }, [stat,animeStat]);
@@ -321,8 +347,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar alt={review.reviewer} src={review.img_src} />
               <Typography variant="body1">{review.reviewer}</Typography>
-              {/* <Typography variant="body2">{format(new Date(review.review_time), 'MMM dd, yyyy HH:mm:ss')}</Typography> */}
-              <Typography variant="body2">{dateFormatter.format(new Date(review.review_time))}</Typography>
+              {DateFormatter({date:review.review_time})}
             </Stack>
           </Box>
           {/* Render editable textarea if user's email matches review email */}
@@ -394,7 +419,7 @@ const DateFormatter = ({ date }) => {
   // Format the date using dateFormatter
   const formattedDate = dateFormatter.format(dateObject);
 
-  return <Typography>{formattedDate}</Typography>;
+  return <Typography variant="body2">{formattedDate}</Typography>;
 };
 
 // const styles = {
