@@ -168,7 +168,9 @@ export default function ModeratorDash() {
   });
 
   return (
-    <motion.div style={{ display: "flex", justifyContent: "flex-start" }}
+    <motion.div 
+    // className="d-flex flex-wrap"
+    style={{ display: "flex", justifyContent: "flex-start" }}
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>

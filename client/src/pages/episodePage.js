@@ -17,6 +17,7 @@ import { motion } from "framer-motion/dist/framer-motion";
 import { Link } from "react-router-dom";
 
 
+
 export default function Episodes({ toggleRerender,setProgress }) {
   const { id } = useParams();
   const [anime, setAnime] = useState([]);
@@ -57,6 +58,11 @@ export default function Episodes({ toggleRerender,setProgress }) {
 
   //   console.log(user, email, img_url, userRole);
   let [cleanedText, setCleanedText] = useState("");
+
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+});
 
   const getAnime = async () => {
     try {
@@ -315,6 +321,8 @@ export default function Episodes({ toggleRerender,setProgress }) {
             <Stack direction="row" spacing={2} alignItems="center">
               <Avatar alt={review.reviewer} src={review.img_src} />
               <Typography variant="body1">{review.reviewer}</Typography>
+              {/* <Typography variant="body2">{format(new Date(review.review_time), 'MMM dd, yyyy HH:mm:ss')}</Typography> */}
+              <Typography variant="body2">{dateFormatter.format(new Date(review.review_time))}</Typography>
             </Stack>
           </Box>
           {/* Render editable textarea if user's email matches review email */}
@@ -373,6 +381,21 @@ export default function Episodes({ toggleRerender,setProgress }) {
     </motion.div>
   );
 }
+
+const DateFormatter = ({ date }) => {
+  const dateFormatter = new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+  });
+
+  // Convert the date string to a Date object
+  const dateObject = new Date(date);
+
+  // Format the date using dateFormatter
+  const formattedDate = dateFormatter.format(dateObject);
+
+  return <Typography>{formattedDate}</Typography>;
+};
 
 // const styles = {
 //   container: {
