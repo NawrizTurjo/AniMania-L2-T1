@@ -13,7 +13,7 @@ import Typography from "@mui/material/Typography";
 // import Button from "@mui/material/Button";
 // import Paper from "@mui/material/Paper";
 import { motion } from "framer-motion/dist/framer-motion";
-
+import AnimeList from "../Components/getAnimeList";
 
 function UserDashboard() {
   const [image, setImage] = useState(null);
@@ -24,38 +24,36 @@ function UserDashboard() {
   let [user, setUser] = useState("");
   let [person, setPerson] = useState({});
   let [loading, setLoading] = useState(true);
-  let [name,setName]=useState("");
-  let [bio,setBio]=useState("");
-  let [most_favourite_anime,setMostFavouriteAnime]=useState("");
-  let [first_access,setFirstAccess]=useState("");
-  let [last_access,setLastAccess]=useState("");
-  let [active_time,setActiveTime]=useState([]);
-
+  let [name, setName] = useState("");
+  let [bio, setBio] = useState("");
+  let [most_favourite_anime, setMostFavouriteAnime] = useState("");
+  let [first_access, setFirstAccess] = useState("");
+  let [last_access, setLastAccess] = useState("");
+  let [active_time, setActiveTime] = useState([]);
 
   user = state && state.user;
   let email = localStorage.getItem("email");
   let [img_url, setImgUrl] = useState("");
-  const[animeList,setAnimeList]=useState([]);
-  const[stat,setStat]=useState(false);
+  const [animeList, setAnimeList] = useState([]);
+  const [stat, setStat] = useState(false);
 
-//   console.log(user);
-//   console.log(email);
-const formatActiveTime = (activeTime) => {
+  //   console.log(user);
+  //   console.log(email);
+  const formatActiveTime = (activeTime) => {
     const totalMilliseconds =
       activeTime.hours * 3600000 +
       activeTime.minutes * 60000 +
       activeTime.seconds * 1000 +
       activeTime.milliseconds;
-  
+
     const months = Math.floor(totalMilliseconds / (30 * 24 * 60 * 60 * 1000));
     const days = Math.floor(totalMilliseconds / (24 * 60 * 60 * 1000)) % 30;
     const hours = Math.floor(totalMilliseconds / (60 * 60 * 1000)) % 24;
     const minutes = Math.floor(totalMilliseconds / (60 * 1000)) % 60;
     const seconds = Math.floor(totalMilliseconds / 1000) % 60;
-  
+
     return `${months} month(s) ${days} day(s) ${hours} hour(s) ${minutes} minute(s) ${seconds} second(s)`;
   };
-  
 
   let getPerson = async () => {
     // e.preventDefault();
@@ -71,9 +69,9 @@ const formatActiveTime = (activeTime) => {
       let personData = response.data[0];
       const activeTime = personData?.active_time || {}; // Initialize activeTime as an object
       console.log(activeTime);
-    // const formattedInterval = formatActiveTime(activeTime); // Format the active time
-    const formattedActiveTime = `${activeTime.days} day(s) ${activeTime.hours}h ${activeTime.minutes}m ${activeTime.seconds}s ${activeTime.milliseconds}ms`;
-    console.log(formattedActiveTime);
+      // const formattedInterval = formatActiveTime(activeTime); // Format the active time
+      const formattedActiveTime = `${activeTime.days} day(s) ${activeTime.hours}h ${activeTime.minutes}m ${activeTime.seconds}s ${activeTime.milliseconds}ms`;
+      console.log(formattedActiveTime);
 
       person = {
         // user: personData?.user_name || "",
@@ -83,7 +81,7 @@ const formatActiveTime = (activeTime) => {
         most_favourite_anime: personData?.most_favourite_anime || "",
         first_access: personData?.first_access || 0,
         last_access: personData?.last_access || 0,
-        active_time: formattedActiveTime
+        active_time: formattedActiveTime,
       };
       console.log(person);
       console.log(person.img_url);
@@ -96,29 +94,31 @@ const formatActiveTime = (activeTime) => {
       setName(person.name);
       setUrl(personData?.img_url || "");
       console.log(url);
-      setStat((prev)=>!prev);
+      setStat((prev) => !prev);
     } catch (err) {
       console.log(err);
     }
-    
-  }
-  
+  };
+
   const getAnimeList = async () => {
     try {
       console.log(email);
-      const res = await axios.post("http://localhost:3000/userDash/getAnimeList", { email });
+      const res = await axios.post(
+        "http://localhost:3000/userDash/getAnimeList",
+        { email }
+      );
       // console.log(res.data);
       setTimeout(() => {
         setAnimeList(res.data);
       }, 10000);
       console.log(animeList);
       // setLoading(false);
-      setLoading(false)
+      setLoading(false);
     } catch (err) {
       console.error(err.message);
     }
   };
-  
+
   useEffect(() => {
     getPerson();
     // getAnimeList();
@@ -127,22 +127,22 @@ const formatActiveTime = (activeTime) => {
   useEffect(() => {
     getAnimeList();
   }, [animeList]);
-  
-  const handleImageChange = async(e) => {
+
+  const handleImageChange = async (e) => {
     if (e.target.files[0]) {
       await setImage(e.target.files[0]);
     }
   };
 
   const handleSubmit = () => {
-    const imageRef = ref(storage,`files/${v4()}`)
+    const imageRef = ref(storage, `files/${v4()}`);
     uploadBytes(imageRef, image)
       .then(() => {
         getDownloadURL(imageRef)
           .then((url) => {
             setUrl(url);
             console.log(url);
-            updateImg({url});
+            updateImg({ url });
             setImgUrl(url);
           })
           .catch((error) => {
@@ -155,9 +155,7 @@ const formatActiveTime = (activeTime) => {
       });
   };
 
-  
-
-  const updateImg = async({url})=>{
+  const updateImg = async ({ url }) => {
     // e.preventDefault();
     console.log(url);
     try {
@@ -173,16 +171,15 @@ const formatActiveTime = (activeTime) => {
       setUrl(updatedImageUrl); // Update img_url in state
       console.log(updatedImageUrl);
       localStorage.setItem("img_url", updatedImageUrl);
-    //   setUser(name);
-    //   localStorage.setItem("user", name);
-    //   console.log(name);
+      //   setUser(name);
+      //   localStorage.setItem("user", name);
+      //   console.log(name);
     } catch (err) {
       console.error(err.message);
     }
   };
 
-
-  const saveBio = async(e)=>{
+  const saveBio = async (e) => {
     e.preventDefault();
     console.log(bio);
     try {
@@ -199,126 +196,243 @@ const formatActiveTime = (activeTime) => {
       console.log(updatedBio);
       localStorage.setItem("bio", updatedBio);
       // console.log(animeList)
-    //   setUser(name);
-    //   localStorage.setItem("user", name);
-    //   console.log(name);
+      //   setUser(name);
+      //   localStorage.setItem("user", name);
+      //   console.log(name);
     } catch (err) {
       console.error(err.message);
     }
   };
 
+  //   if(person.img_url!=="")
+  //   {
+  //     return (<>
+  //         <Avatar src={person.img_url} sx={{ width: 150, height: 150 }} />
+  //     </>)
+  //   }
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
 
-//   if(person.img_url!=="")
-//   {
-//     return (<>
-//         <Avatar src={person.img_url} sx={{ width: 150, height: 150 }} />
-//     </>)
-//   }
-if(loading)
-{
   return (
-    <h2>Loading...</h2>
-  )
-
-}
-
-  
-
-return (
-  
-  <motion.div style={{ display: "flex", justifyContent: "flex-start" }}
-  initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
-    {loading ? (
-      <h2>Loading...</h2>
-    ) : (
-      <>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "20px" }}>
-          <Avatar src={url} sx={{ width: 120, height: 120, marginBottom: "8px" }} />
-          <input type="file" onChange={handleImageChange} />
-          <Button variant="contained" disableElevation onClick={handleSubmit} size="small" startIcon={<CloudUploadIcon />} style={{ marginTop: "8px" }}>
-            Update Image
-          </Button>
-          <Paper elevation={3} style={{ width: "400px", padding: "20px", border: "0.5px solid #cccccc", marginTop: "20px", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-  <Typography variant="h5" component="h2" style={{ fontWeight: "bold", marginBottom: "15px" }}>
-    {user}'s Anime List
-  </Typography>
-  {/* Other content */}
-</Paper>          <div style={{ border: "0.5px solid #cccccc", width: "400px", height: "500px", marginTop: "10px", marginRight: "auto", overflow: "auto" }}>
-            {/* Content of the box */}
+    <motion.div
+      style={{ display: "flex", justifyContent: "flex-start" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
+      {loading ? (
+        <h2>Loading...</h2>
+      ) : (
+        <>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              marginTop: "20px",
+              marginLeft: "0px",
+            }}
+          >
+            <Avatar
+              src={url}
+              sx={{ width: 120, height: 120, marginBottom: "8px" }}
+            />
+            <input type="file" onChange={handleImageChange} />
+            <Button
+              variant="contained"
+              disableElevation
+              onClick={handleSubmit}
+              size="small"
+              startIcon={<CloudUploadIcon />}
+              style={{ marginTop: "8px" }}
+            >
+              Update Image
+            </Button>
+            <Paper
+              elevation={3}
+              style={{
+                width: "500px",
+                padding: "20px",
+                border: "0.5px solid #cccccc",
+                marginTop: "20px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                variant="h5"
+                component="h2"
+                style={{ fontWeight: "bold", marginBottom: "15px" }}
+              >
+                {user}'s Anime List
+              </Typography>
+              {/* Other content */}
+            </Paper>{" "}
+            <div
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "500px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+              <AnimeList />
+            </div>
           </div>
-        </div>
 
-        {/* First Vertical Line */}
-        <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
+          {/* First Vertical Line */}
+          <div
+            style={{
+              borderLeft: "0.5px solid #cccccc",
+              height: "800px",
+              margin: "10px",
+            }}
+          ></div>
 
-        {/* Box on the left of the first vertical line */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginTop: "60px" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <h1 style={{ marginTop: "0px" }}>Welcome to the User Dashboard</h1>
-        <h1 style={{ marginTop: "10px" }}>Hello!!!  {name}</h1>
-      </div>
+          {/* Box on the left of the first vertical line */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              marginTop: "60px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <h1 style={{ marginTop: "0px" }}>
+                Welcome to the User Dashboard
+              </h1>
+              <h1 style={{ marginTop: "10px" }}>Hello!!! {name}</h1>
+            </div>
 
-          <Paper elevation={3} style={{ width: "550px", padding: "20px", border: "0.5px solid #cccccc", marginTop: "60px" }}>
+            <Paper
+              elevation={3}
+              style={{
+                width: "550px",
+                padding: "20px",
+                border: "0.5px solid #cccccc",
+                marginTop: "60px",
+              }}
+            >
               <h2>{name}'s Profile</h2>
-            
-            {/* <p><strong>Bio:</strong> {bio}</p> */}
+
+              {/* <p><strong>Bio:</strong> {bio}</p> */}
               <Box style={{ marginTop: "20px" }}>
-              <TextField
-                label="Type your Bio"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={4}
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-              />
-              <Button variant="primary" onClick={(e)=>{saveBio(e)}}>Save</Button>
-            </Box>
-            <p><strong>Most Favourite Anime:</strong> {most_favourite_anime}</p>
-            <p><strong>First Access:</strong> {first_access}</p>
-            <p><strong>Last Access:</strong> {last_access}</p>
-            <p><strong>Active Time:</strong> {active_time}</p>
-          </Paper>
-        </div>
+                <TextField
+                  label="Type your Bio"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                />
+                <Button
+                  variant="primary"
+                  onClick={(e) => {
+                    saveBio(e);
+                  }}
+                >
+                  Save
+                </Button>
+              </Box>
+              <p>
+                <strong>Most Favourite Anime:</strong> {most_favourite_anime}
+              </p>
+              <p>
+                <strong>First Access:</strong> {first_access}
+              </p>
+              <p>
+                <strong>Last Access:</strong> {last_access}
+              </p>
+              <p>
+                <strong>Active Time:</strong> {active_time}
+              </p>
+            </Paper>
+          </div>
 
-        {/* Second Vertical Line */}
-        <div style={{ borderLeft: "0.5px solid #cccccc", height: "800px", margin: "10px" }}></div>
+          {/* Second Vertical Line */}
+          <div
+            style={{
+              borderLeft: "0.5px solid #cccccc",
+              height: "800px",
+              margin: "10px",
+            }}
+          ></div>
 
-        {/* Box below the Update Profile button */}
-        
-        <div style={{ position: "relative" }}>
-  <Paper elevation={3} style={{ position: "absolute", top: "230px", left: "50%", transform: "translateX(-50%)", zIndex: 1, width: "400px", padding: "20px", border: "0.5px solid #cccccc", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-    <Typography variant="h5" component="h2" style={{ fontWeight: "bold", marginBottom: "15px" }}>
-      {user}'s Watch History
-    </Typography>
-    {/* Other content */}
-  </Paper>
+          {/* Box below the Update Profile button */}
 
-  <div style={{ border: "0.5px solid #cccccc", width: "400px", height: "500px", marginTop: "330px", marginLeft: "auto", overflow: "auto" }}>
-    {/* Content of the box */}
-  </div>
-</div>
+          <div style={{ position: "relative" }}>
+            <Paper
+              elevation={3}
+              style={{
+                position: "absolute",
+                top: "230px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 1,
+                width: "500px",
+                padding: "20px",
+                border: "0.5px solid #cccccc",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                variant="h5"
+                component="h2"
+                style={{ fontWeight: "bold", marginBottom: "15px" }}
+              >
+                {user}'s Watch History
+              </Typography>
+              {/* Other content */}
+            </Paper>
 
-      </>
-    )}
-  </motion.div>
-);
+            <div
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "500px",
+                height: "500px",
+                marginTop: "330px",
+                marginLeft: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+            </div>
+          </div>
+        </>
+      )}
+    </motion.div>
+  );
 }
 
 export default UserDashboard;
 
 export const uploadImage = async (imageFile) => {
-    const imageRef = ref(storage, `files/${v4()}`);
-    try {
-      await uploadBytes(imageRef, imageFile);
-      const imageUrl = await getDownloadURL(imageRef);
-      return imageUrl;
-    } catch (error) {
-      console.log("Error uploading image:", error);
-      throw error;
-    }
+  const imageRef = ref(storage, `files/${v4()}`);
+  try {
+    await uploadBytes(imageRef, imageFile);
+    const imageUrl = await getDownloadURL(imageRef);
+    return imageUrl;
+  } catch (error) {
+    console.log("Error uploading image:", error);
+    throw error;
+  }
 };
 
 // export const uploadImage = async (image) => {

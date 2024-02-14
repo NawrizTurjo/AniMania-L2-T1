@@ -21,6 +21,7 @@ import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Typewriter from "typewriter-effect";
 import { motion } from "framer-motion/dist/framer-motion";
+import AnimeList from "../Components/getAnimeList";
 
 export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const location = useLocation();
@@ -195,57 +196,35 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
   let imgsrc = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
   return (
-    <motion.div className="Home-div container-fluid"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}
+    <motion.div
+      className="Home-div container-fluid"
+      style={{ padding: 0, margin: 0, marginLeft: 0, marginRight: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      {/* <Box
-        className="d-flex flex-column justify-content-center w-100 h-100"
-        sx={{
-          background:
-            "linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)",
-          backgroundSize: "400% 400%",
-          animation: "gradient 15s ease infinite",
-          height: "100vh",
-        }}
-      >
-        <Box
-          className="d-flex flex-column justify-content-center align-items-center"
-          sx={{ width: "100%", height: "100%" }}
-        >
-          <div className="btn-group my-5"> */}
-      {/* <h4 className="text-center mt-3">
-        Unlock the Magic of Animation - where stories unfold, emotions ignite,
-        and worlds come alive
-      </h4> */}
       <div className="typewriter">
-      <h4>
-        {" "}
-        <Typewriter
-        
-          options={{
-            strings: [
-              "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
-            ],
-            autoStart: true,
-            loop: true,
-            delay: 50,
-            deleteSpeed: 20,
-            pauseFor: 2000,
-            skipAddStyles: true,
-            // cursor: "_",
-          }}
-          // className=""
-        />
-      </h4>
+        <h4>
+          {" "}
+          <Typewriter
+            options={{
+              strings: [
+                "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
+              ],
+              autoStart: true,
+              loop: true,
+              delay: 50,
+              deleteSpeed: 20,
+              pauseFor: 2000,
+              skipAddStyles: true,
+              // cursor: "_",
+            }}
+          />
+        </h4>
       </div>
-      <div className="flex-row flex-wrap">
-        {/* <h1>Hello {user}!</h1>
-      <h1>Email: {email}</h1> */}
+      <div className="flex-row flex-wrap ">
         <Button
           color="action"
-          // aria-describedby={pop_id}
           variant="contained"
           onClick={handleClick}
           style={{ float: "right" }}
@@ -279,13 +258,6 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
               {user === "" ? (
                 <p>You are not logged in</p>
               ) : (
-                // <img
-                //   src={imgsrc}
-                //   alt="You are not logged in"
-                //   className="d-flex align-items-center"
-                //   width={"100px"}
-                //   height={"100px"}
-                // />
                 <Avatar alt={imgsrc} src={img_url} />
               )}
 
@@ -307,21 +279,18 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
             {userRole === "U" && (
               <div>
                 <h3>User Content</h3>
-                {/* Render additional content for User */}
               </div>
             )}
 
             {userRole === "M" && (
               <div>
                 <h3>Moderator Content</h3>
-                {/* Render additional content for Moderator */}
               </div>
             )}
           </Typography>
         </Popover>
         <Button
           color="action"
-          // aria-describedby={pop_id}
           variant="contained"
           onClick={handleLogout}
           style={{ float: "right" }}
@@ -356,82 +325,37 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         >
           <Typography sx={{ p: 1 }}>Logout</Typography>
         </Popover>
-
-        {/* //<h1>Welcome, {username}!</h1> */}
-        {/* <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
-      <li className="list-group-item align-items-center flex-wrap"> */}
         <img
           src="./images/AniMania.png"
           alt="AniMania Logo"
           className="logo_big img-fluid"
         />
       </div>
-      {/* </li> */}
-      {/* <li className="list-group-item align-items-center flex-wrap"> */}
-      {/* <Box sx={{ width: 120, marginLeft: "auto"}}>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={sort}
-          label="Sort"
-          onChange={handleChange}
-        >
-          <MenuItem value={'anime_id'}>id</MenuItem>
-          <MenuItem value={'anime_name'}>Name</MenuItem>
-          <MenuItem value={'year'}>Release Date</MenuItem>
-          <MenuItem value={'age_Rating'}>Age_rating</MenuItem>
-          <MenuItem value={'demographic'}>Demographic</MenuItem>
-          <MenuItem value={'season'}>Season</MenuItem>
-          <MenuItem value={'mal_score'}>Score</MenuItem>
-        </Select>
-      </FormControl>
-    </Box> */}
-      {/* </li> */}
-      {/* </ul> */}
-      <div className="row">
-        {/* <section className="col-md-6 upper-part">
-          <div className="card-container">
-            {[...Array(4)].map((_, index) => (
-              <div key={index} className="card bg-light p-3 mt-3">
-                <h6>{`Card ${index + 1} Title`}</h6>
-                <p>{`This is the description for Card ${index + 1}`}</p>
-              </div>
-            ))}
-          </div>
-        </section> */}
-        <section>
-          <div className="anime-list-container">
-            <AnimeItem
-              currentanimes={currentanimes}
-              loading={loading}
-              forceRerender={forceRerender}
+      <div className="d-flex w-1280 m-0">
+        <div className="row">
+          <section>
+            <div className="anime-list-container">
+              <AnimeItem
+                currentanimes={currentanimes}
+                loading={loading}
+                forceRerender={forceRerender}
+                toggleRerender={toggleRerender}
+              />
+            </div>
+          </section>
+          <section className="pagination-container">
+            <Pagination
+              animePerPage={animePerPage}
+              totalAnimes={animes.length}
+              paginate={paginate}
               toggleRerender={toggleRerender}
             />
-          </div>
-        </section>
-        <section className="pagination-container">
-          <Pagination
-            animePerPage={animePerPage}
-            totalAnimes={animes.length}
-            paginate={paginate}
-            toggleRerender={toggleRerender}
-          />
-        </section>
-        {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>
-          <div className="watch-history-container">
-            <ul className="anime-list">
-              {[...Array(10)].map((_, index) => (
-                <AnimeListItem key={index} title={`Watched Anime ${index + 1}`} description="Watched this recently" />
-              ))}
-            </ul>
-          </div>
-        </section> */}
+          </section>
+        </div>
+        <div>
+          <AnimeList />
+        </div>
       </div>
-      {/* </div>
-        </Box>
-      </Box> */}
     </motion.div>
   );
 }

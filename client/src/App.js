@@ -21,6 +21,8 @@ import UserDash from "./pages/userDashboard";
 import Episode from "./pages/eachEpisodePage";
 import LoadingBar from "react-top-loading-bar";
 import { AnimatePresence } from "framer-motion/dist/framer-motion";
+import AnimeList from "./Components/getAnimeList";
+import History from "./Components/getHistory";
 
 
 function App() {
@@ -101,6 +103,8 @@ function App() {
             path="/watch/anime/episodes/:id/episode/:id2"
             element={<Episode toggleRerender={toggleRerender} setProgress={setProgress}/>}
           ></Route>
+          <Route path="/AnimeList" element={<AnimeList/>} />
+          <Route path="/History" element={<History/>} />
         </Routes>
         </AnimatePresence>
       </div>
