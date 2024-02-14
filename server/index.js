@@ -1466,3 +1466,127 @@ app.put("/anime/:id", async (req, res) => {
 //     VIEW_NO INT,
 
 // Other configurations and routes
+app.post("/reactionL", async (req, res) => {
+  try {
+    // const id = parseInt(req.params.id);
+    const { email, commentId } = req.body;
+    //console.log(id, review, email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(userID.rows[0].id);
+
+    await pool.query(
+      `
+      DELETE FROM reaction WHERE user_id=$1 AND comment_id=$2;
+      `,
+      [userID.rows[0].id, commentId]
+    );
+
+    await pool.query(
+      `
+      INSERT INTO reaction (user_id, comment_id, reaction_type )
+      VALUES
+      ( $1, $2, 'L');
+      `,
+      [userID.rows[0].id, commentId]
+    );
+
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/reactionD", async (req, res) => {
+  try {
+    // const id = parseInt(req.params.id);
+    const { email, commentId } = req.body;
+    //console.log(id, review, email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(userID.rows[0].id);
+
+    await pool.query(
+      `
+      DELETE FROM reaction WHERE user_id=$1 AND comment_id=$2;
+      `,
+      [userID.rows[0].id, commentId]
+    );
+
+    await pool.query(
+      `
+      INSERT INTO reaction (user_id, comment_id, reaction_type )
+      VALUES
+      ( $1, $2, 'D');
+      `,
+      [userID.rows[0].id, commentId]
+    );
+
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/getlikes", async (req, res) => {
+  try {
+
+    const allLikes = await pool.query(
+      `
+      SELECT COUNT(*) AS total_likes, comment_id
+			from reaction
+			where reaction_type='L'
+			GROUP BY comment_id, user_id;
+      `,
+    );
+    //console.log(1);
+    //console.log(allReviews);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allLikes.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/getdislikes", async (req, res) => {
+  try {
+
+    const alDislLikes = await pool.query(
+      `
+      SELECT COUNT(*) AS total_dislikes, comment_id
+			from reaction
+			where reaction_type='D'
+			GROUP BY comment_id, user_id;
+      `,
+    );
+    //console.log(1);
+    //console.log(allReviews);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(alDislLikes.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
