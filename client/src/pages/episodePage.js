@@ -101,7 +101,8 @@ export default function Episodes({ toggleRerender, setProgress }) {
       setReview("");
       setStat((prev) => !prev);
       setValue(0);
-      getReview();
+      const newReviews = await getReview();
+      setReviews(newReviews);
     } catch (err) {
       console.log(err.message);
       if (err.message === "Request failed with status code 500") {
