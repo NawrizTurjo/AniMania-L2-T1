@@ -21,13 +21,19 @@ export default function Episode({ toggleRerender,setProgress }) {
     const location = useLocation();
     const [stat, setStat] = useState(false);
     const [statr, setStatr] = useState(false);
+    const [statl, setStatl] = useState(false);
+    const [statd, setStatd] = useState(false);
     const [animeStat, setAnimeStat] = useState(false);
+    const [animeStatl, setAnimeStalt] = useState(false);
     const [animeStatr, setAnimeStatr] = useState(false);
+    const [animeStatd, setAnimeStatd] = useState(false);
     const [editedText,setEditedText] = useState("");
     const [comments, setComments] = useState([]);
     const [reply, setReply]=useState("");
     const [replies, setReplies]=useState([]);
     const [replyIndex, setReplyIndex] = useState(null);
+    const [likes, setLikes]=useState([]);
+    const [dislikes, setDislikes]=useState([]);
     //const [repliesVisible, setRepliesVisible] = useState(false);
 
 
@@ -119,6 +125,33 @@ export default function Episode({ toggleRerender,setProgress }) {
         }
         // toggleRerender();
       };
+      const handleSubmitLikes = async (e,commentId) => {
+        e.preventDefault();
+        try {
+          await axios.post(`http://localhost:3000/reactionL`, {
+            email: email,
+            commentId:commentId
+          });
+          setStatl((prev) => !prev);
+        } catch (err) {
+          console.log(err.message);
+        }
+        // toggleRerender();
+      };
+      const handleSubmitDisLikes = async (e,commentId) => {
+        e.preventDefault();
+        try {
+          await axios.post(`http://localhost:3000/reactionD`, {
+            email: email,
+            commentId:commentId
+          });
+          setStatd((prev) => !prev);
+        } catch (err) {
+          console.log(err.message);
+        }
+        // toggleRerender();
+      };
+
       //# problem
     
       const getReview = async (event) => {
@@ -187,9 +220,67 @@ export default function Episode({ toggleRerender,setProgress }) {
           console.error(err.message);
         }
       };
+      const getLike = async (event) => {
+        try {
+          setCommentLoading(true);
+          const res = await axios.get(
+            `http://localhost:3000/getlikes`
+          );
+          //   setAnime(res.data[0]);
+          //console.log(res.data.age_rating);
+          // setStat((prev)=>(!prev));
+          //console.log(statr);
+          //--------------------------setLikes(res.data);
+          setLikes(res.data.reduce((acc, curr) => {
+            acc[curr.comment_id] = curr.total_likes;
+            return acc;
+        }, {}));
+          //console.log(replies);
+          console.log(res.data);
+          setCommentLoading(false);
+          setTimeout(() => {
+            setProgress(100);
+          }, 500);
+            
+        } catch (err) {
+          console.error(err.message);
+        }
+      };
+      const getDisLike = async (event) => {
+        try {
+          setCommentLoading(true);
+          const res = await axios.get(
+            `http://localhost:3000/getdislikes`
+          );
+          //   setAnime(res.data[0]);
+          //console.log(res.data.age_rating);
+          // setStat((prev)=>(!prev));
+          //console.log(statr);
+          //----------------------setDislikes(res.data);
+          setDislikes(res.data.reduce((acc, curr) => {
+            acc[curr.comment_id] = curr.total_dislikes;
+            return acc;
+        }, {}));
+          //console.log(replies);
+          console.log(res.data);
+          setCommentLoading(false);
+          setTimeout(() => {
+            setProgress(100);
+          }, 500);
+            
+        } catch (err) {
+          console.error(err.message);
+        }
+      };
       useEffect(() => {
         getReply();
       }, [statr,animeStatr]);
+      useEffect(() => {
+        getLike();
+      }, [statl,animeStatl,statd,animeStatd]);
+      useEffect(() => {
+        getDisLike();
+      }, [statl,animeStatl,statd,animeStatd]);
 
 
 
@@ -342,7 +433,11 @@ export default function Episode({ toggleRerender,setProgress }) {
                                         <Typography variant="body1">{comment.reviewer}</Typography>
                                     </Stack>
                                 </Box>
-                                
+                                {/* <div style={{ marginBottom: '10px' }}>
+    <Typography variant="body1">Likes: {likes[comment.comment_id]}</Typography>
+    <Typography variant="body1">Dislikes: {dislikes[comment.comment_id]}</Typography>
+</div> */}
+
     
                                 {/* Render editable textarea for user's own comment */}
                                 {email === comment.email ? (
@@ -386,6 +481,24 @@ export default function Episode({ toggleRerender,setProgress }) {
                                         />
                                     </Box>
                                 )}
+                                 {/* <div style={{ marginBottom: '10px' }}>
+                                    <Button
+                                        onClick={(e) => handleSubmitLikes(e, comment.comment_id)}
+                                        variant="contained"
+                                        color="primary"
+                                        style={{ marginRight: '50px' }}
+                                    >
+                                        Like
+                                    </Button>
+                                    <Button
+                                        onClick={(e) => handleSubmitDisLikes(e, comment.comment_id)}
+                                        variant="contained"
+                                        color="secondary"
+                                    >
+                                        Dislike
+                                    </Button>
+                                </div> */}
+
                                 {replyIndex === index ? (
                                     <div>
                                         <form onSubmit={(e) => handleSubmitReplies(e, comment.comment_id)}>
@@ -422,13 +535,44 @@ export default function Episode({ toggleRerender,setProgress }) {
                                         </form>
                                     </div>
                                 ) : (
+                                    <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
+                                    <Button
+                                        onClick={(e) => handleSubmitLikes(e, comment.comment_id)}
+                                        variant="contained"
+                                        color="primary"
+                                        style={{ marginRight: '5px' }}
+                                    >
+                                        Like
+                                    </Button>
+                                    <Typography variant="body1" style={{ marginRight: '10px' }}>
+                                        {likes[comment.comment_id] || 0}
+                                    </Typography>
+                                    </div>
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
+                                    <Button
+                                        onClick={(e) => handleSubmitDisLikes(e, comment.comment_id)}
+                                        variant="contained"
+                                        color="secondary"
+                                        style={{ marginRight: '5px' }}
+                                    >
+                                        Dislike
+                                    </Button>
+                                    <Typography variant="body1">
+                                        {dislikes[comment.comment_id] || 0}
+                                    </Typography>
+                                    </div>
                                     <Button
                                         variant="contained"
                                         color="primary"
                                         onClick={() => setReplyIndex(index)}
+                                        style={{ marginLeft: '10px' }}
                                     >
                                         Reply
                                     </Button>
+                                    </div>
+
+                                    
                                 )}
     
                                 {/* Render replies */}
@@ -464,6 +608,35 @@ export default function Episode({ toggleRerender,setProgress }) {
                                                         readOnly
                                                     />
                                                 </Box>
+                                                <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
+                                                <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
+                                                <Button
+                                                    onClick={(e) => handleSubmitLikes(e, reply.comment_id)}
+                                                    variant="contained"
+                                                    color="primary"
+                                                    style={{ marginRight: '5px' }}
+                                                >
+                                                    Like
+                                                </Button>
+                                                <Typography variant="body1" style={{ marginRight: '10px' }}>
+                                                    {likes[reply.comment_id] || 0}
+                                                </Typography>
+                                                </div>
+                                                <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
+                                                <Button
+                                                    onClick={(e) => handleSubmitDisLikes(e, reply.comment_id)}
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    style={{ marginRight: '5px' }}
+                                                >
+                                                    Dislike
+                                                </Button>
+                                                <Typography variant="body1">
+                                                    {dislikes[reply.comment_id] || 0}
+                                                </Typography>
+                                                </div>
+                                                </div>
+
                                             </div>
                                         ))}
     
