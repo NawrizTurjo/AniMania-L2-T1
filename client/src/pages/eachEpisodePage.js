@@ -66,8 +66,6 @@ export default function Episode({ toggleRerender,setProgress }) {
       //   console.log(user, email, img_url, userRole);
       //let [cleanedText, setCleanedText] = useState("");
 
-      
-
     const getAnime = async () => {
         try {
             setLoading(true);
@@ -229,8 +227,23 @@ export default function Episode({ toggleRerender,setProgress }) {
             console.error(err.message);
         }
     };
-    
-    
+    async function updateHistory(){
+        try{
+         const res = await axios.put(`http://localhost:3000/updateHistory`,{
+            email: email,
+            anime_id: id,
+            episode_no: id2
+         }, {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+            }
+         )   
+        }catch(err){
+            console.error(err.message);
+        }}
+    useEffect( () => {
+        updateHistory();
+      },[]);
       useEffect(() => {
         getReview();
       }, [stat,animeStat]);

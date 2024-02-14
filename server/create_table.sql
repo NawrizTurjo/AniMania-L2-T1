@@ -170,7 +170,8 @@ CREATE TABLE REVIEW(
     review_text text,
     review_time timestamp,
     STATUS VARCHAR(10),
-    review_role VARCHAR(100)
+    review_role VARCHAR(100),
+    PRIMARY KEY(ANIME_ID,USER_ID)
 );
 
 CREATE TABLE COMMENTS(

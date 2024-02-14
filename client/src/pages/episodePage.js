@@ -15,10 +15,9 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import { motion } from "framer-motion/dist/framer-motion";
 import { Link } from "react-router-dom";
+import Rating from "@mui/material/Rating";
 
-
-
-export default function Episodes({ toggleRerender,setProgress }) {
+export default function Episodes({ toggleRerender, setProgress }) {
   const { id } = useParams();
   const [anime, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +30,9 @@ export default function Episodes({ toggleRerender,setProgress }) {
   const location = useLocation();
   const [editMode, setEditMode] = useState(false);
   const [editableReviewIndex, setEditableReviewIndex] = useState(null);
-  const [editedText,setEditedText] = useState("");
+  const [editedText, setEditedText] = useState("");
+  const [value, setValue] = useState(0);
+  const [updatedRating, setUpdatedRating] = useState(0);
   //const { user, email } = location.state || {};
   const {
     user: routeUser,
@@ -77,7 +78,7 @@ export default function Episodes({ toggleRerender,setProgress }) {
       //   console.log(res.data);
       // toggleRerender();
       // setTimeout(() => {
-        setProgress(50);
+      setProgress(50);
       // }, 1000);
     } catch (err) {
       console.error(err.message);
@@ -90,7 +91,7 @@ export default function Episodes({ toggleRerender,setProgress }) {
       await axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
         id: id,
         review: review,
-        // user: user,
+        rating: value,
         email: email,
       });
       // setReviews(res.data[0]);
@@ -99,15 +100,22 @@ export default function Episodes({ toggleRerender,setProgress }) {
       // console.log(response.data[0]);
       setReview("");
       setStat((prev) => !prev);
+      setValue(0);
+      const newReviews = await getReview();
+      setReviews(newReviews);
     } catch (err) {
       console.log(err.message);
+      if (err.message === "Request failed with status code 500") {
+        alert("You cannot post multiple reviews for the same anime.");
+        setReview("");
+        setValue(0);
+      }
     }
     // toggleRerender();
   };
 
   const getReview = async (event) => {
     try {
-      
       const res = await axios.get(
         `http://localhost:3000/watch/anime/episodes/${id}/reviews`
       );
@@ -118,10 +126,8 @@ export default function Episodes({ toggleRerender,setProgress }) {
       // setReviews(res.data);
       console.log(reviews);
       console.log(res.data);
-      
 
       return res.data;
-        
     } catch (err) {
       console.error(err.message);
     }
@@ -133,20 +139,34 @@ export default function Episodes({ toggleRerender,setProgress }) {
 
   //   // Cleanup function to clear the interval
   //   return () => clearInterval(interval);
-  // }, []); 
+  // }, []);
   useEffect(() => {
     let isMounted = true; // Flag to prevent state updates after unmounting
 
     const fetchReviews = async () => {
       const newReviews = await getReview();
-      if (isMounted && JSON.stringify(newReviews) !== JSON.stringify(reviews)) {
-        setReviewLoading(true);
-        setReviews(newReviews);
-        setTimeout(() => {
-          setProgress(100);
-        }, 500);
-        setReviewLoading(false);
+
+      console.log(newReviews);
+      if (isMounted) {
+        const oldReviewTimes = reviews.map((review) => review.review_time);
+        const newReviewTimes = newReviews.map((review) => review.review_time);
+
+        if (JSON.stringify(newReviewTimes) !== JSON.stringify(oldReviewTimes)) {
+          setReviewLoading(true);
+          setReviews(newReviews);
+          setTimeout(() => {
+            setProgress(100);
+          }, 500);
+          setReviewLoading(false);
+        }
       }
+      // else {
+      //   setReviewLoading(false);
+      //   setReviews([]);
+      //   setTimeout(() => {
+      //     setProgress(100);
+      //   }, 500);
+      // }
     };
 
     const interval = setInterval(fetchReviews, 10000); // Fetch reviews every 60 seconds
@@ -157,10 +177,10 @@ export default function Episodes({ toggleRerender,setProgress }) {
       clearInterval(interval); // Cleanup function to clear the interval
       isMounted = false; // Update the flag to prevent state updates after unmounting
     };
-  }, []); // Fetch reviews when id changes
+  }, [reviews]); // Fetch reviews when id changes
   useEffect(() => {
     getReview();
-  }, [stat,animeStat]);
+  }, [stat, animeStat]);
   useEffect(() => {
     console.log(reviews); // Log updated reviews state
   }, [reviews]); // Log reviews whenever it changes
@@ -173,15 +193,16 @@ export default function Episodes({ toggleRerender,setProgress }) {
   //   return <h1>Loading...</h1>;
   // }
 
-  const handleUpdateReview = async (reviewId,reviewText) => {
-    
+  const handleUpdateReview = async (reviewId, reviewText, newRating) => {
     console.log("Review:", review, "by ", user);
     try {
       await axios.put(`http://localhost:3000/updateReview`, {
         review_id: reviewId,
-        review_text:reviewText
+        review_text: reviewText,
+        rating: newRating,
       });
       setEditedText("");
+      setUpdatedRating(0);
 
       // setReviews(res.data[0]);
       // console.log(res.data[0]);
@@ -195,12 +216,12 @@ export default function Episodes({ toggleRerender,setProgress }) {
     // toggleRerender();
   };
 
-  
   return (
     <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
       {!loading ? (
         <div className="row justify-content-center">
           <div className="col-lg-4">
@@ -307,23 +328,47 @@ export default function Episodes({ toggleRerender,setProgress }) {
                     ></textarea>
                   </div>
 
-                  {review!=="" && <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    endIcon={<KeyboardArrowUpSharpIcon />}
-                  >
-                    Submit Review
-                  </Button>}
-                  {review==="" && <Button
-                    //type="submit"
-                    disabled
-                    variant="contained"
-                    color="primary"
-                    endIcon={<KeyboardArrowUpSharpIcon />}
-                  >
-                    Submit Review
-                  </Button>}
+                  {review !== "" && (
+                    <Stack direction="row" spacing={18} alignItems="center">
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        style={{ marginLeft: "265px" }}
+                        endIcon={<KeyboardArrowUpSharpIcon />}
+                      >
+                        Submit Review
+                      </Button>
+                      <Rating
+                        name="simple-controlled"
+                        value={value}
+                        onChange={(event, newValue) => {
+                          setValue(newValue);
+                        }}
+                        style={{ marginRight: "0" }}
+                      />
+                    </Stack>
+                  )}
+                  {review === "" && (
+                    <Stack direction="row" spacing={18} alignItems="center">
+                      <Button
+                        //type="submit"
+                        disabled
+                        variant="contained"
+                        color="primary"
+                        style={{ marginLeft: "265px" }}
+                        endIcon={<KeyboardArrowUpSharpIcon />}
+                      >
+                        Submit Review
+                      </Button>
+                      <Rating
+                        name="disabled"
+                        style={{ marginRight: "0" }}
+                        value={value}
+                        disabled
+                      />
+                    </Stack>
+                  )}
                 </form>
               </div>
             </div>
@@ -331,86 +376,102 @@ export default function Episodes({ toggleRerender,setProgress }) {
         </div>
       )}
       <div>
-  {/* Render reviews */}
-  {!reviewloading ? (
-    <div>
-      {reviews.map((review, index) => (
-        <div key={index}>
-          <Box
-            sx={{
-              mt: 4,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Avatar alt={review.reviewer} src={review.img_src} />
-              <Typography variant="body1">{review.reviewer}</Typography>
-              {DateFormatter({date:review.review_time})}
-            </Stack>
-          </Box>
-          {/* Render editable textarea if user's email matches review email */}
-          {email === review.email ? (
-            <Box sx={{ mt: 2, textAlign: "center" }}>
-              <textarea
-                className="form-control"
-                id={`review-${index}`}
-                rows={
-                  Math.min(
-                    Math.ceil(review.review_text.length / 200) + 2,
-                    25 // Maximum of 20 rows
-                  )
-                }
-                value={review.review_text}
-                style={{ resize: "none", width: "100%" }}
-                onChange={(e) => {
-                  setEditedText(e.target.value);
-                  review.review_text = e.target.value;
-                }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleUpdateReview(review.review_id,editedText)}
-              >
-                Save
-              </Button>
-            </Box>
-          ) : (
-            // Render read-only textarea for other reviews
-            <Box sx={{ mt: 2, textAlign: "center" }}>
-              <textarea
-                className="form-control-disabled"
-                id={`review-${index}`}
-                rows={
-                  Math.min(
-                    Math.ceil(review.review_text.length / 200) + 2,
-                    25 // Maximum of 20 rows
-                  )
-                }
-                value={review.review_text}
-                style={{ resize: "none", width: "100%" }}
-                readOnly
-              />
-            </Box>
-          )}
-        </div>
-      ))}
-    </div>
-  ) : (
-    // Render a loading indicator or placeholder if reviews is null
-    <h3>Loading reviews...</h3>
-  )}
-</div>
+        {/* Render reviews */}
+        {!reviewloading ? (
+          <div>
+            {reviews.map((review, index) => (
+              <div key={index}>
+                <Box
+                  sx={{
+                    mt: 4,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar alt={review.reviewer} src={review.img_src} />
+                    <Typography variant="body1">{review.reviewer}</Typography>
+                    {DateFormatter({ date: review.review_time })}
+                    {email === review.email ? (
+                      <Rating
+                        name={`editable-rating-${index}`}
+                        value={review.rating}
+                        onChange={(event, newValue) => {
+                          setUpdatedRating(newValue);
+                          console.log(updatedRating);
+                          review.rating = newValue;
+                        }}
+                      />
+                    ) : (
+                      <Rating name="read-only" value={review.rating} readOnly />
+                    )}
+                  </Stack>
+                </Box>
+                {/* Render editable textarea if user's email matches review email */}
+                {email === review.email ? (
+                  <Box sx={{ mt: 2, textAlign: "center" }}>
+                    <textarea
+                      className="form-control"
+                      id={`review-${index}`}
+                      rows={Math.min(
+                        Math.ceil(review.review_text.length / 200) + 2,
+                        25 // Maximum of 20 rows
+                      )}
+                      value={review.review_text}
+                      style={{ resize: "none", width: "100%" }}
+                      onChange={(e) => {
+                        setEditedText(e.target.value);
+                        review.review_text = e.target.value;
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() =>
+                        handleUpdateReview(
+                          review.review_id,
+                          review.review_text,
+                          review.rating
+                        )
+                      }
+                    >
+                      Save
+                    </Button>
+                  </Box>
+                ) : (
+                  // Render read-only textarea for other reviews
+                  <Box sx={{ mt: 2, textAlign: "center" }}>
+                    <textarea
+                      className="form-control-disabled"
+                      id={`review-${index}`}
+                      rows={Math.min(
+                        Math.ceil(review.review_text.length / 200) + 2,
+                        25 // Maximum of 20 rows
+                      )}
+                      value={review.review_text}
+                      style={{ resize: "none", width: "100%" }}
+                      readOnly
+                    />
+                  </Box>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          // Render a loading indicator or placeholder if reviews is null
+
+          <h3>Loading reviews...</h3>
+        )}
+      </div>
     </motion.div>
   );
 }
 
 const DateFormatter = ({ date }) => {
   const dateFormatter = new Intl.DateTimeFormat(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
+    dateStyle: "medium",
+    timeStyle: "short",
   });
 
   // Convert the date string to a Date object
@@ -460,7 +521,6 @@ const DateFormatter = ({ date }) => {
 //       fontWeight: 'bold',
 //   },
 // };
-
 
 // editable review
 
