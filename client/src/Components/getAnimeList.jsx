@@ -6,7 +6,6 @@ import ImageListItemBar from "@mui/material/ImageListItemBar";
 import ListSubheader from "@mui/material/ListSubheader";
 import IconButton from "@mui/material/IconButton";
 import InfoIcon from "@mui/icons-material/Info";
-import { loadCurrentSeason } from "@mateoaranda/jikanjs";
 import { Link } from "react-router-dom";
 
 export default function AnimeList() {
@@ -47,7 +46,7 @@ export default function AnimeList() {
       <ImageListItem
         key="Subheader"
         cols={animeList.length >= 10 ? 4 : 2}
-        sx={{ height: 1000, width: 500 }}
+        sx={{ height: "auto", width: "auto" }}
       >
         <ListSubheader component="div">{date.getMonth}</ListSubheader>
       </ImageListItem>
@@ -55,8 +54,8 @@ export default function AnimeList() {
         <ImageListItem key={anime.img}>
           <Link to={`/watch/anime/episodes/${anime.anime_id}`}>
             <img
-              srcSet={anime.title_screen}
-              src={anime.title_screen}
+              srcSet={`${anime.title_screen}?w=248&fit=crop&auto=format`}
+              src={`${anime.title_screen}?w=248&fit=crop&auto=format`}
               alt={anime.anime_name}
               loading="lazy"
               style={{ maxHeight: "300px", maxWidth: "250px" }}

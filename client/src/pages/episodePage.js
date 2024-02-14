@@ -16,6 +16,7 @@ import Stack from "@mui/material/Stack";
 import { motion } from "framer-motion/dist/framer-motion";
 import { Link } from "react-router-dom";
 import Rating from "@mui/material/Rating";
+import Alert from "@mui/material/Alert";
 
 export default function Episodes({ toggleRerender, setProgress }) {
   const { id } = useParams();
@@ -109,6 +110,9 @@ export default function Episodes({ toggleRerender, setProgress }) {
         alert("You cannot post multiple reviews for the same anime.");
         setReview("");
         setValue(0);
+        // return(
+        //   <Alert severity="error">"You cannot post multiple reviews for the same anime."</Alert>
+        //   )
       }
     }
     // toggleRerender();
@@ -480,7 +484,8 @@ const DateFormatter = ({ date }) => {
   // Format the date using dateFormatter
   const formattedDate = dateFormatter.format(dateObject);
 
-  return <Typography variant="body2">{formattedDate}</Typography>;
+  // string of formatted date
+  return formattedDate;
 };
 
 // const styles = {

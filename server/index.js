@@ -711,6 +711,39 @@ app.put("/updateHistory", async (req, res) => {
   }
 });
 
+app.post("/getHistory", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const history = await pool.query(
+      `
+      SELECT *,(
+        SELECT anime_name
+        FROM anime
+        WHERE anime_id = WH.anime_id
+      ) AS "name",
+      (
+        SELECT thumbnail
+        FROM episodes
+        WHERE anime_id = WH.anime_id AND episode_no = WH.episode_no
+      ) AS thumbnail
+      FROM watch_history WH
+      WHERE WH.user_id = (
+        SELECT "id"
+        FROM person
+        WHERE email = $1
+      )
+      ORDER BY WH.anime_id, WH.episode_no
+      `,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(history.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.post("/userDash", async (req, res) => {
   try {
     const { email } = req.body;

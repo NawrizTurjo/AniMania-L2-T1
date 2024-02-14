@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 // import Paper from "@mui/material/Paper";
 import { motion } from "framer-motion/dist/framer-motion";
 import AnimeList from "../Components/getAnimeList";
+import History from "../Components/getHistory";
 
 function UserDashboard() {
   const [image, setImage] = useState(null);
@@ -33,6 +34,7 @@ function UserDashboard() {
 
   user = state && state.user;
   let email = localStorage.getItem("email");
+  
   let [img_url, setImgUrl] = useState("");
   const [animeList, setAnimeList] = useState([]);
   const [stat, setStat] = useState(false);
@@ -383,7 +385,7 @@ function UserDashboard() {
                 left: "50%",
                 transform: "translateX(-50%)",
                 zIndex: 1,
-                width: "500px",
+                width: "450px",
                 padding: "20px",
                 border: "0.5px solid #cccccc",
                 display: "flex",
@@ -405,7 +407,7 @@ function UserDashboard() {
             <div
               style={{
                 border: "0.5px solid #cccccc",
-                width: "500px",
+                width: "450px",
                 height: "500px",
                 marginTop: "330px",
                 marginLeft: "auto",
@@ -413,6 +415,7 @@ function UserDashboard() {
               }}
             >
               {/* Content of the box */}
+              <History />
             </div>
           </div>
         </>

@@ -352,9 +352,15 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
             />
           </section>
         </div>
-        <div>
-          <AnimeList />
-        </div>
+        {
+          userRole === "U" && (
+            <div>
+              <AnimeList />
+            </div>
+          )
+        }
+        
+        
       </div>
     </motion.div>
   );
