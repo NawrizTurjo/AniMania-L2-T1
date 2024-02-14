@@ -223,7 +223,7 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
       VALUES
       ( $1, $2, $3, CURRENT_TIMESTAMP, 'pending', 'U',$4 );
       `,
-      [id, userID.rows[0].id, review,rating]
+      [id, userID.rows[0].id, review, rating]
     );
 
     // const allReviews = await pool.query(
@@ -417,8 +417,8 @@ app.put("/updateComment", async (req, res) => {
 
 app.put("/updateReview", async (req, res) => {
   try {
-    const { review_id, review_text,rating } = req.body;
-    console.log(review_id, review_text,rating);
+    const { review_id, review_text, rating } = req.body;
+    console.log(review_id, review_text, rating);
 
     const response = await pool.query(
       `UPDATE review
@@ -430,7 +430,7 @@ app.put("/updateReview", async (req, res) => {
           WHERE
             review_id = $2
             `,
-      [review_text, review_id,rating]
+      [review_text, review_id, rating]
     );
 
     // const { newUsername, img_url, email } = req.body;
@@ -656,6 +656,56 @@ app.put("/moderatorDash", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(person.rows);
     console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/updateHistory", async (req, res) => {
+  try {
+    const { email, anime_id, episode_no } = req.body;
+
+    console.log(email, anime_id, episode_no);
+
+    const user_id = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(user_id.rows[0].id);
+    // console.log(user_id);
+    const uid = user_id.rows[0].id;
+
+    const view = await pool.query(
+      `
+      SELECT MAX(view_no) AS MAX_VIEW
+      FROM watch_history
+      WHERE anime_id = $1 AND episode_no = $2;
+      `,
+      [anime_id, episode_no]
+    );
+    const maxView = view.rows[0].max_view ? view.rows[0].max_view + 1 : 1;
+
+    console.log(maxView);
+
+    const result = await pool.query(
+      `
+      INSERT INTO watch_history VALUES ($1, $2, $3,CURRENT_TIMESTAMP,$4)
+      ON CONFLICT (user_id,anime_id,episode_no)
+      DO UPDATE SET time = CURRENT_TIMESTAMP
+      `,
+      [uid, anime_id, episode_no,maxView]
+    );
+
+    // console.log(result);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(result.rows);
+    // console.log(person.rows);
   } catch (error) {
     console.error(error.message);
   }
@@ -1499,7 +1549,6 @@ app.post("/reactionL", async (req, res) => {
       [userID.rows[0].id, commentId]
     );
 
-
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
   } catch (error) {
@@ -1541,7 +1590,6 @@ app.post("/reactionD", async (req, res) => {
       [userID.rows[0].id, commentId]
     );
 
-
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
   } catch (error) {
@@ -1552,14 +1600,13 @@ app.post("/reactionD", async (req, res) => {
 
 app.get("/getlikes", async (req, res) => {
   try {
-
     const allLikes = await pool.query(
       `
       SELECT COUNT(*) AS total_likes, comment_id
 			from reaction
 			where reaction_type='L'
 			GROUP BY comment_id, user_id;
-      `,
+      `
     );
     //console.log(1);
     //console.log(allReviews);
@@ -1572,14 +1619,13 @@ app.get("/getlikes", async (req, res) => {
 
 app.get("/getdislikes", async (req, res) => {
   try {
-
     const alDislLikes = await pool.query(
       `
       SELECT COUNT(*) AS total_dislikes, comment_id
 			from reaction
 			where reaction_type='D'
 			GROUP BY comment_id, user_id;
-      `,
+      `
     );
     //console.log(1);
     //console.log(allReviews);
@@ -1589,4 +1635,3 @@ app.get("/getdislikes", async (req, res) => {
     console.error(error.message);
   }
 });
-
