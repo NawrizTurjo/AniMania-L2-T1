@@ -35,6 +35,9 @@ export default function Episode({ toggleRerender,setProgress }) {
     const [likes, setLikes]=useState([]);
     const [dislikes, setDislikes]=useState([]);
     //const [repliesVisible, setRepliesVisible] = useState(false);
+    const [likedComments, setLikedComments] = useState([]);
+    const [dislikedComments, setDislikedComments] = useState([]);
+
 
 
     const {
@@ -63,6 +66,8 @@ export default function Episode({ toggleRerender,setProgress }) {
       //   console.log(user, email, img_url, userRole);
       //let [cleanedText, setCleanedText] = useState("");
 
+      
+
     const getAnime = async () => {
         try {
             setLoading(true);
@@ -75,6 +80,7 @@ export default function Episode({ toggleRerender,setProgress }) {
             console.error(err.message);
         }
     };
+
 
     const handleSubmitComments = async (event) => {
         event.preventDefault();
@@ -127,11 +133,29 @@ export default function Episode({ toggleRerender,setProgress }) {
       };
       const handleSubmitLikes = async (e,commentId) => {
         e.preventDefault();
+        
         try {
-          await axios.post(`http://localhost:3000/reactionL`, {
-            email: email,
-            commentId:commentId
-          });
+            const isLiked = likedComments.includes(commentId);
+            if(isLiked)
+            {
+                await axios.post(`http://localhost:3000/reactionLremove`, {
+                email: email,
+                commentId:commentId
+                });
+                setLikedComments(likedComments.filter(id => id !== commentId));
+            }
+            else
+            {
+                await axios.post(`http://localhost:3000/reactionL`, {
+                email: email,
+                commentId:commentId
+                });
+                setLikedComments([...likedComments, commentId]);
+                if (dislikedComments.includes(commentId)) {
+                    setDislikedComments(dislikedComments.filter(id => id !== commentId));
+                }
+            }
+          
           setStatl((prev) => !prev);
         } catch (err) {
           console.log(err.message);
@@ -141,10 +165,27 @@ export default function Episode({ toggleRerender,setProgress }) {
       const handleSubmitDisLikes = async (e,commentId) => {
         e.preventDefault();
         try {
-          await axios.post(`http://localhost:3000/reactionD`, {
-            email: email,
-            commentId:commentId
-          });
+            const isDisliked=dislikedComments.includes(commentId);
+            if(isDisliked)
+            {
+                await axios.post(`http://localhost:3000/reactionDremove`, {
+                email: email,
+                commentId:commentId
+                });
+                setDislikedComments(dislikedComments.filter(id => id !== commentId));
+            }
+            else
+            {
+                await axios.post(`http://localhost:3000/reactionD`, {
+                email: email,
+                commentId:commentId
+                });
+                setDislikedComments([...dislikedComments, commentId]);
+                if (likedComments.includes(commentId)) {
+                    setLikedComments(likedComments.filter(id => id !== commentId));
+                }
+            }
+          
           setStatd((prev) => !prev);
         } catch (err) {
           console.log(err.message);
@@ -196,6 +237,7 @@ export default function Episode({ toggleRerender,setProgress }) {
       useEffect(() => {
         console.log(comments); // Log updated reviews state
       }, [comments]);
+      
        // Log reviews whenever it changes
 
        const getReply = async (event) => {
@@ -220,6 +262,57 @@ export default function Episode({ toggleRerender,setProgress }) {
           console.error(err.message);
         }
       };
+      const fetchUserLikes = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3000/getlikes`,{
+                email:email
+            });
+            console.log(response.data);
+            const likedCommentIds = response.data.map(like => like.comment_id);
+            setLikedComments(likedCommentIds);
+            //const { likes, dislikes } = response.data;
+           // setLikedComments(response.data);
+            //setDislikedComments(dislikes);
+            console.log(likedComments);
+            //console.log(dislikes);
+            setTimeout(() => {
+                setProgress(100);
+              }, 500);
+        } catch (error) {
+            console.error('Error fetching user likes and dislikes:', error);
+        }
+    };
+    const fetchUserDislikes = async () => {
+        try {
+            const res = await axios.get(`http://localhost:3000/getDislikes`,{
+                email:email
+            });
+            const likedCommentIds = res.data.map(like => like.comment_id);
+            setDislikedComments(likedCommentIds);
+            //setDislikedComments(res.data);
+            console.log(dislikedComments);
+            //console.log(dislikes);
+            setTimeout(() => {
+                setProgress(100);
+              }, 500);
+        } catch (error) {
+            console.error('Error fetching user likes and dislikes:', error);
+        }
+    };
+    useEffect(() => {
+        // Fetch user likes and dislikes when the component mounts
+        fetchUserLikes();
+        fetchUserDislikes();
+    }, []); 
+
+
+    useEffect(() => {
+        console.log(likedComments);
+    }, [likedComments]);
+    
+    useEffect(() => {
+        console.log(dislikedComments);
+    }, [dislikedComments]);
       const getLike = async (event) => {
         try {
           setCommentLoading(true);
@@ -281,6 +374,13 @@ export default function Episode({ toggleRerender,setProgress }) {
       useEffect(() => {
         getDisLike();
       }, [statl,animeStatl,statd,animeStatd]);
+    //   useEffect(() => {
+    //     fetchUserLikes();
+    //   }, [statl,animeStatl,statd,animeStatd]);
+    //   useEffect(() => {
+    //     fetchUserDislikes();
+    //   }, [statl,animeStatl,statd,animeStatd]);
+
 
 
 
@@ -538,29 +638,29 @@ export default function Episode({ toggleRerender,setProgress }) {
                                     <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
                                     <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
                                     <Button
-                                        onClick={(e) => handleSubmitLikes(e, comment.comment_id)}
-                                        variant="contained"
-                                        color="primary"
-                                        style={{ marginRight: '5px' }}
-                                    >
-                                        Like
-                                    </Button>
-                                    <Typography variant="body1" style={{ marginRight: '10px' }}>
-                                        {likes[comment.comment_id] || 0}
-                                    </Typography>
-                                    </div>
-                                    <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
-                                    <Button
-                                        onClick={(e) => handleSubmitDisLikes(e, comment.comment_id)}
-                                        variant="contained"
-                                        color="secondary"
-                                        style={{ marginRight: '5px' }}
-                                    >
-                                        Dislike
-                                    </Button>
-                                    <Typography variant="body1">
-                                        {dislikes[comment.comment_id] || 0}
-                                    </Typography>
+        onClick={(e) => handleSubmitLikes(e, comment.comment_id)}
+        variant="contained"
+        color={likedComments.includes(comment.comment_id) ? 'secondary' : 'primary'}
+        style={{ marginRight: '5px' }}
+    >
+        {likedComments.includes(comment.comment_id) ? 'Liked' : 'Like'}
+    </Button>
+    <Typography variant="body1" style={{ marginRight: '10px' }}>
+        {likes[comment.comment_id] || 0}
+    </Typography>
+</div>
+<div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
+    <Button
+        onClick={(e) => handleSubmitDisLikes(e, comment.comment_id)}
+        variant="contained"
+        color={dislikedComments.includes(comment.comment_id) ? 'primary' : 'secondary'}
+        style={{ marginRight: '5px' }}
+    >
+        {dislikedComments.includes(comment.comment_id) ? 'Disliked' : 'Dislike'}
+    </Button>
+    <Typography variant="body1">
+        {dislikes[comment.comment_id] || 0}
+    </Typography>
                                     </div>
                                     <Button
                                         variant="contained"
@@ -611,29 +711,29 @@ export default function Episode({ toggleRerender,setProgress }) {
                                                 <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
                                                 <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
                                                 <Button
-                                                    onClick={(e) => handleSubmitLikes(e, reply.comment_id)}
-                                                    variant="contained"
-                                                    color="primary"
-                                                    style={{ marginRight: '5px' }}
-                                                >
-                                                    Like
-                                                </Button>
-                                                <Typography variant="body1" style={{ marginRight: '10px' }}>
-                                                    {likes[reply.comment_id] || 0}
-                                                </Typography>
-                                                </div>
-                                                <div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
-                                                <Button
-                                                    onClick={(e) => handleSubmitDisLikes(e, reply.comment_id)}
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    style={{ marginRight: '5px' }}
-                                                >
-                                                    Dislike
-                                                </Button>
-                                                <Typography variant="body1">
-                                                    {dislikes[reply.comment_id] || 0}
-                                                </Typography>
+        onClick={(e) => handleSubmitLikes(e, reply.comment_id)}
+        variant="contained"
+        color={likedComments.includes(reply.comment_id) ? 'secondary' : 'primary'}
+        style={{ marginRight: '5px' }}
+    >
+        {likedComments.includes(reply.comment_id) ? 'Liked' : 'Like'}
+    </Button>
+    <Typography variant="body1" style={{ marginRight: '10px' }}>
+        {likes[reply.comment_id] || 0}
+    </Typography>
+</div>
+<div style={{ display: 'inline-flex', alignItems: 'center', marginRight: '10px' }}>
+    <Button
+        onClick={(e) => handleSubmitDisLikes(e, reply.comment_id)}
+        variant="contained"
+        color={dislikedComments.includes(reply.comment_id) ? 'primary' : 'secondary'}
+        style={{ marginRight: '5px' }}
+    >
+        {dislikedComments.includes(reply.comment_id) ? 'Disliked' : 'Dislike'}
+    </Button>
+    <Typography variant="body1">
+        {dislikes[reply.comment_id] || 0}
+    </Typography>
                                                 </div>
                                                 </div>
 

@@ -1591,3 +1591,128 @@ app.get("/getdislikes", async (req, res) => {
   }
 });
 
+
+app.post("/reactionLremove", async (req, res) => {
+  try {
+    // const id = parseInt(req.params.id);
+    const { email, commentId } = req.body;
+    //console.log(id, review, email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(userID.rows[0].id);
+
+    await pool.query(
+      `
+      DELETE FROM reaction WHERE user_id=$1 AND comment_id=$2 AND reaction_type='L';
+      `,
+      [userID.rows[0].id, commentId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/reactionDremove", async (req, res) => {
+  try {
+    // const id = parseInt(req.params.id);
+    const { email, commentId } = req.body;
+    //console.log(id, review, email);
+
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+
+    console.log(userID.rows[0].id);
+
+    await pool.query(
+      `
+      DELETE FROM reaction WHERE user_id=$1 AND comment_id=$2 AND reaction_type='D';
+      `,
+      [userID.rows[0].id, commentId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Endpoint to retrieve user's likes and dislikes
+app.get("/getlikes", async (req, res) => {
+  //const userId = req.params.userId;
+
+  try {
+    const{email}=req.body;
+    //console.log(email);
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+    const ID=userID.rows[0].id;
+    console.log('a');
+    console.log(ID);
+      // Query database for user's likes and dislikes
+      const allLikes=await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='L'`, [ID]);
+      //const dislikes = await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
+      //console.log(likes.rows[1]);
+      // Send likes and dislikes data in response
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.status(200).json(allLikes.rows);
+  } catch (error) {
+      console.error('Error retrieving user likes and dislikes:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.get("/getDislikes", async (req, res) => {
+  //const userId = req.params.userId;
+
+  try {
+    const{email}=req.body;
+    //console.log(email);
+    const userID = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+    const ID=userID.rows[0].id;
+    console.log('a');
+    console.log(ID);
+      // Query database for user's likes and dislikes
+      const allLikes=await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
+      //const dislikes = await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
+      //console.log(likes.rows[1]);
+      // Send likes and dislikes data in response
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.status(200).json(allLikes.rows);
+  } catch (error) {
+      console.error('Error retrieving user likes and dislikes:', error);
+      res.status(500).json({ message: 'Internal server error' });
+  }
+});
