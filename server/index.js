@@ -1743,7 +1743,7 @@ app.get("/getlikes", async (req, res) => {
       SELECT COUNT(*) AS total_likes, comment_id
 			from reaction
 			where reaction_type='L'
-			GROUP BY comment_id, user_id;
+			GROUP BY comment_id;
       `
     );
     //console.log(1);
@@ -1762,7 +1762,7 @@ app.get("/getdislikes", async (req, res) => {
       SELECT COUNT(*) AS total_dislikes, comment_id
 			from reaction
 			where reaction_type='D'
-			GROUP BY comment_id, user_id;
+			GROUP BY comment_id;
       `
     );
     //console.log(1);
@@ -1839,11 +1839,11 @@ app.post("/reactionDremove", async (req, res) => {
 });
 
 // Endpoint to retrieve user's likes and dislikes
-app.get("/getlikes", async (req, res) => {
+app.get("/getlike", async (req, res) => {
   //const userId = req.params.userId;
 
   try {
-    const { email } = req.body;
+    const { email } = req.query;
     //console.log(email);
     const userID = await pool.query(
       `
@@ -1872,11 +1872,11 @@ app.get("/getlikes", async (req, res) => {
   }
 });
 
-app.get("/getDislikes", async (req, res) => {
+app.get("/getDislike", async (req, res) => {
   //const userId = req.params.userId;
 
   try {
-    const { email } = req.body;
+    const { email } = req.query;
     //console.log(email);
     const userID = await pool.query(
       `
@@ -2012,7 +2012,6 @@ app.put("/comment/approve", async (req, res) => {
     console.error(error.message);
   }
 });
-
 
 app.put("/comment/decline", async (req, res) => {
   try {

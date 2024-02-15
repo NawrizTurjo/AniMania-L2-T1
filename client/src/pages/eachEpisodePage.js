@@ -277,9 +277,7 @@ export default function Episode({ toggleRerender,setProgress }) {
       };
       const fetchUserLikes = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/getlikes`,{
-                email:email
-            });
+            const response = await axios.get(`http://localhost:3000/getlike?email=${email}`);
             console.log(response.data);
             const likedCommentIds = response.data.map(like => like.comment_id);
             setLikedComments(likedCommentIds);
@@ -297,9 +295,7 @@ export default function Episode({ toggleRerender,setProgress }) {
     };
     const fetchUserDislikes = async () => {
         try {
-            const res = await axios.get(`http://localhost:3000/getDislikes`,{
-                email:email
-            });
+            const res = await axios.get(`http://localhost:3000/getDislike?email=${email}`);
             const likedCommentIds = res.data.map(like => like.comment_id);
             setDislikedComments(likedCommentIds);
             //setDislikedComments(res.data);
