@@ -68,6 +68,97 @@ app.post("/sign_up", async (req, res) => {
   }
 });
 
+app.post("/AdvancedSearch", async (req, res) => {
+  const {
+    searchString,
+    season,
+    genre,
+    tag,
+    year,
+    ageRating,
+    rating,
+    type,
+    demographic,
+    source,
+    episodeCount,
+    characters
+  } = req.body;
+
+  try {
+    let query = `
+      SELECT
+          a.*,
+          string_agg(DISTINCT(g.genre_name), ',') AS genres,
+          string_agg(DISTINCT(s.studio_name), ',') AS studios,
+          string_agg(DISTINCT(t.tag_name), ',') AS tags,
+          string_agg(DISTINCT(c.character_name), ',') AS "characters"
+      FROM anime a
+      LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
+      LEFT JOIN studio s ON s.studio_id = ast.studio_id
+      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+      LEFT JOIN genres g ON g.genre_id = ga.genre_id
+      LEFT JOIN tag_id_table ti ON ti.anime_id = a.anime_id
+      LEFT JOIN tags t ON t.tag_id = ti.tag_id
+      LEFT JOIN character_anime_relationship ca ON a.anime_id = ca.anime_id
+      LEFT JOIN "characters" c ON ca.character_id = c.character_id
+      WHERE 1 = 1`;
+
+    // Add conditions based on the provided search parameters
+    if (searchString) {
+      query += ` AND (UPPER(a.anime_name) LIKE UPPER('%${searchString}%') 
+      -- OR UPPER(a.description) LIKE UPPER('%${searchString}%')
+      )`;
+    }
+    if (season) {
+      query += ` AND a.season = '${season}'`;
+    }
+    if (genre) {
+      query += ` AND g.genre_name = '${genre}'`;
+    }
+    if (tag) {
+      query += ` AND UPPER(t.tag_name) = UPPER('${tag}')`;
+    }
+    if (year) {
+      query += ` AND a.year = ${year}`;
+    }
+    if (ageRating) {
+      query += ` AND a.age_rating = '${ageRating}'`;
+    }
+    if (rating) {
+      query += ` AND a.mal_score >= ${rating}`;
+    }
+    if (type) {
+      query += ` AND a.anime_type = '${type}'`;
+    }
+    if (demographic) {
+      query += ` AND a.demographic = '${demographic}'`;
+    }
+    if (source) {
+      query += ` AND a.anime_source = '${source}'`;
+    }
+    if (episodeCount) {
+      query += ` AND a.number_of_episodes >= ${episodeCount}`;
+    }
+    if (characters) {
+      query += ` AND UPPER(c.character_name) = UPPER('${characters}')`;
+    }
+
+
+    // Group by anime_id
+    query += ` GROUP BY a.anime_id`;
+
+    // Execute the query
+    const results = await pool.query(query, []);
+
+    res.json(results.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 // app.get("/auth", async (req, res) => {
 //   try {
 //     const {
@@ -712,7 +803,7 @@ app.put("/updateHistory", async (req, res) => {
       ON CONFLICT (user_id,anime_id,episode_no)
       DO UPDATE SET time = CURRENT_TIMESTAMP
       `,
-      [uid, anime_id, episode_no,maxView]
+      [uid, anime_id, episode_no, maxView]
     );
 
     // console.log(result);
@@ -1752,7 +1843,7 @@ app.get("/getlikes", async (req, res) => {
   //const userId = req.params.userId;
 
   try {
-    const{email}=req.body;
+    const { email } = req.body;
     //console.log(email);
     const userID = await pool.query(
       `
@@ -1762,19 +1853,22 @@ app.get("/getlikes", async (req, res) => {
       `,
       [email]
     );
-    const ID=userID.rows[0].id;
-    console.log('a');
+    const ID = userID.rows[0].id;
+    console.log("a");
     console.log(ID);
-      // Query database for user's likes and dislikes
-      const allLikes=await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='L'`, [ID]);
-      //const dislikes = await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
-      //console.log(likes.rows[1]);
-      // Send likes and dislikes data in response
-      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-      res.status(200).json(allLikes.rows);
+    // Query database for user's likes and dislikes
+    const allLikes = await pool.query(
+      `SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='L'`,
+      [ID]
+    );
+    //const dislikes = await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
+    //console.log(likes.rows[1]);
+    // Send likes and dislikes data in response
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allLikes.rows);
   } catch (error) {
-      console.error('Error retrieving user likes and dislikes:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error("Error retrieving user likes and dislikes:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
@@ -1782,7 +1876,7 @@ app.get("/getDislikes", async (req, res) => {
   //const userId = req.params.userId;
 
   try {
-    const{email}=req.body;
+    const { email } = req.body;
     //console.log(email);
     const userID = await pool.query(
       `
@@ -1792,60 +1886,21 @@ app.get("/getDislikes", async (req, res) => {
       `,
       [email]
     );
-    const ID=userID.rows[0].id;
-    console.log('a');
+    const ID = userID.rows[0].id;
+    console.log("a");
     console.log(ID);
-      // Query database for user's likes and dislikes
-      const allLikes=await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
-      //const dislikes = await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
-      //console.log(likes.rows[1]);
-      // Send likes and dislikes data in response
-      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-      res.status(200).json(allLikes.rows);
-  } catch (error) {
-      console.error('Error retrieving user likes and dislikes:', error);
-      res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-app.put("/review/decline", async (req, res) => {
-  try {
-    const { updatedId, email } = req.body;
-    //console.log(review_id);
-    console.log(email);
-
-    const moderator_id = await pool.query(
-      `
-      SELECT "id"
-      from person
-      where email = $1
-      `,
-      [email]
+    // Query database for user's likes and dislikes
+    const allLikes = await pool.query(
+      `SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`,
+      [ID]
     );
-    const id=moderator_id.rows[0].id;
-    const response = await pool.query(
-      `
-      DELETE FROM review
-      WHERE
-        review_id = $1
-      `,
-      [updatedId]
-    );
-    const updateModeratorQuery = await pool.query(
-      `
-      UPDATE moderator
-      SET
-        review_verifications = review_verifications + 1
-      WHERE
-        moderator_id = $1
-      `,
-      [id]
-    );
-    
+    //const dislikes = await pool.query(`SELECT comment_id FROM reaction WHERE user_id = $1 AND reaction_type='D'`, [ID]);
+    //console.log(likes.rows[1]);
+    // Send likes and dislikes data in response
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    res.json(response.body);
-    // console.log(person.rows);
+    res.status(200).json(allLikes.rows);
   } catch (error) {
-    console.error(error.message);
+    console.error("Error retrieving user likes and dislikes:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });

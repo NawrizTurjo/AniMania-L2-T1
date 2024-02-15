@@ -23,6 +23,8 @@ import LoadingBar from "react-top-loading-bar";
 import { AnimatePresence } from "framer-motion/dist/framer-motion";
 import AnimeList from "./Components/getAnimeList";
 import History from "./Components/getHistory";
+import AdvancedSearch from "./pages/advancedSearch";
+import VideoPlayer from "./Components/dateFormatter";
 
 
 function App() {
@@ -105,6 +107,8 @@ function App() {
           ></Route>
           <Route path="/AnimeList" element={<AnimeList/>} />
           <Route path="/History" element={<History/>} />
+          <Route path = "/AdvancedSearch" element ={<AdvancedSearch/>}/>
+          <Route path = "/VideoPlayer" element ={<VideoPlayer/>}/>
         </Routes>
         </AnimatePresence>
       </div>
