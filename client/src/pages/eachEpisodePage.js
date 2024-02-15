@@ -544,6 +544,8 @@ export default function Episode({ toggleRerender,setProgress }) {
                                     <Stack direction="row" spacing={2} alignItems="center">
                                         <Avatar alt={comment.reviewer} src={comment.img_src} />
                                         <Typography variant="body1">{comment.reviewer}</Typography>
+                                        &nbsp;
+                                        {DateFormatter({ date: comment.comment_time })}
                                     </Stack>
                                 </Box>
                                 {/* <div style={{ marginBottom: '10px' }}>
@@ -706,6 +708,8 @@ export default function Episode({ toggleRerender,setProgress }) {
                                                     <Stack direction="row" spacing={2} alignItems="center">
                                                         <Avatar alt={reply.reviewer} src={reply.img_src} />
                                                         <Typography variant="body1">{reply.reviewer}</Typography>
+                                                        &nbsp;
+                                        {DateFormatter({ date: comment.comment_time })}
                                                     </Stack>
                                                 </Box>
                                                 <Box sx={{ mt: 2, textAlign: "center" }}>
@@ -767,5 +771,21 @@ export default function Episode({ toggleRerender,setProgress }) {
     </motion.div>
 )
                 }      
+
+                const DateFormatter = ({ date }) => {
+                    const dateFormatter = new Intl.DateTimeFormat(undefined, {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    });
+                  
+                    // Convert the date string to a Date object
+                    const dateObject = new Date(date);
+                  
+                    // Format the date using dateFormatter
+                    const formattedDate = dateFormatter.format(dateObject);
+                  
+                    // string of formatted date
+                    return formattedDate;
+                  };
 
 
