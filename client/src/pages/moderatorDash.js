@@ -8,6 +8,7 @@ import { uploadImage } from "./userDashboard";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
+import Typography from "@mui/material/Typography";
 
 
 export default function ModeratorDash() {
@@ -118,19 +119,41 @@ export default function ModeratorDash() {
     }
   };
 
-  const handleApprove = async (e) => {
+  const handleApproveReview = async (e,updatedId) => {
     e.preventDefault();
     try {
+      console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/review/approve`,
-        JSON.stringify({ updatedId, email }),
+        JSON.stringify({ updatedId, email}),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
+      getPerson();
       setStat((prev) => !prev);
-      setUpdatedId(0);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
+  const handleDeclineReview = async (e,updatedId) => {
+    e.preventDefault();
+    try {
+      console.log(updatedId);
+      const response = await axios.put(
+        `http://localhost:3000/review/decline`,
+        JSON.stringify({ updatedId, email}),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
     } catch (error) {
       console.error("Error Updating review");
     }
@@ -364,20 +387,46 @@ export default function ModeratorDash() {
 
           {/* Box below the Update Profile button */}
           <div
-            style={{
-              border: "0.5px solid #cccccc",
-              width: "600px",
-              height: "500px",
-              marginTop: "225px",
-              marginLeft: "auto",
-              overflow: "auto",
-            }}
+      style={{
+        border: '0.5px solid #cccccc',
+        width: '600px',
+        height: '500px',
+        marginTop: '225px',
+        marginLeft: 'auto',
+        overflow: 'auto',
+      }}
+    >
+      {/* Content of the box */}
+      {pendingReviews.map((review, index) => (
+        <div key={index} style={{ marginBottom: '20px' }}>
+          <Typography variant="body1">User Name: {review.user_name}</Typography>
+          <Typography variant="body1">Review Time: {review.review_time}</Typography>
+          <Typography variant="body1" style={{ wordWrap: 'break-word', marginLeft: 0 }}>Review Text: {review.review_text}</Typography>
+          <Typography variant="body1">Review ID: {review.review_id}</Typography>
+          <Typography variant="body1">Anime Name: {review.anime_name}</Typography>
+          <Typography variant="body1">Rating: {review.rating}</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ marginRight: '10px' }}
+            onClick={(e) => handleApproveReview(e,review.review_id)}
           >
-            {/* Content of the box */}
-          </div>
+            Approve
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={(e) => handleDeclineReview(e,review.review_id)}
+          >
+            Decline
+          </Button>
+        </div>
+      ))}
+    </div>
+
 
           {/* Button in the bottom right corner */}
-          <div
+          {/* <div
             style={{
               display: "flex",
               position: "absolute",
@@ -390,7 +439,7 @@ export default function ModeratorDash() {
             <Button variant="contained" color="primary">
               Approve Review
             </Button>
-          </div>
+          </div> */}
         </>
       )}
     </motion.div>
