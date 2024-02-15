@@ -29,6 +29,7 @@ export default function ModeratorDash() {
   const [updatedId, setUpdatedId] = useState(0);
 
   let [pendingReviews, setPendingReviews] = useState([]);
+  let [pendingComments, setPendingComments]=useState([]);
 
   user = state && state.user;
   let email = state && state.email;
@@ -139,12 +140,52 @@ export default function ModeratorDash() {
     }
   };
 
+  const handleApproveComment = async (e,updatedId) => {
+    e.preventDefault();
+    try {
+      console.log(updatedId);
+      const response = await axios.put(
+        `http://localhost:3000/comment/approve`,
+        JSON.stringify({ updatedId, email}),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
   const handleDeclineReview = async (e,updatedId) => {
     e.preventDefault();
     try {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/review/decline`,
+        JSON.stringify({ updatedId, email}),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
+  const handleDeclineComment = async (e,updatedId) => {
+    e.preventDefault();
+    try {
+      console.log(updatedId);
+      const response = await axios.put(
+        `http://localhost:3000/comment/decline`,
         JSON.stringify({ updatedId, email}),
         {
           headers: { "Content-Type": "application/json" },
@@ -174,8 +215,27 @@ export default function ModeratorDash() {
     }
   };
 
+  const getComments = async (event) => {
+    try {
+      // event.preventDefault();
+      let response = await axios.get(`http://localhost:3000/moderator/comments`);
+      // console.log(response.data);
+      // setTimeout(()=>{
+
+      // },500);
+      setPendingComments(response.data);
+      console.log(pendingComments);
+    } catch (error) {
+      console.error("Error fetching Reviews");
+    }
+  };
+
   useEffect(() => {
     getReviews();
+  }, [stat]);
+
+  useEffect(() => {
+    getComments();
   }, [stat]);
 
   const VisuallyHiddenInput = styled("input")({
@@ -225,18 +285,55 @@ export default function ModeratorDash() {
               Update Image
             </Button>
             <div
-              style={{
-                border: "0.5px solid #cccccc",
-                width: "400px",
-                height: "500px",
-                marginTop: "10px",
-                marginRight: "auto",
-                overflow: "auto",
-              }}
+    style={{
+        border: "0.5px solid #cccccc",
+        width: "400px",
+        height: "500px",
+        marginTop: "10px",
+        marginRight: "auto",
+        overflow: "auto",
+    }}
+>
+    {/* Content of the box */}
+    {pendingComments.map((comment, index) => (
+        <div key={index} style={{ marginBottom: "20px" }}>
+            <Typography variant="body1">
+                Comment ID: {comment.comment_id}
+            </Typography>
+            <Typography variant="body1">
+                Anime Name: {comment.anime_name}
+            </Typography>
+            <Typography variant="body1">
+                Episode Title: {comment.episode_title}
+            </Typography>
+            <Typography variant="body1">
+                User Name: {comment.user_name}
+            </Typography>
+            <Typography variant="body1">
+                Comment Time: {comment.comment_time}
+            </Typography>
+            <Typography variant="body1" style={{ wordWrap: 'break-word', marginLeft: 0 }}>Comment Text: {comment.text}</Typography>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={(e) => handleApproveComment(e,comment.comment_id)}
+                style={{ marginRight: "10px" }}
             >
-              {/* Content of the box */}
-            </div>
-            <div
+                Approve
+            </Button>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={(e) => handleDeclineComment(e,comment.comment_id)}
+            >
+                Decline
+            </Button>
+        </div>
+    ))}
+</div>
+
+
+            {/* <div
               style={{
                 position: "absolute",
                 right: "0",
@@ -248,7 +345,7 @@ export default function ModeratorDash() {
               <Button variant="contained" color="primary">
                 Filter Comment
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* First Vertical Line */}

@@ -1946,3 +1946,128 @@ app.put("/review/decline", async (req, res) => {
     console.error(error.message);
   }
 });
+
+app.get("/moderator/comments", async (req, res) => {
+  try {
+    const allReviews = await pool.query(
+      `
+      SELECT *
+      FROM comments c join person p on c.user_id=p.id join anime a on a.anime_id=c.anime_id join episodes e on e.anime_id=c.anime_id and e.episode_no=c.episode_no
+      WHERE c.status = 'pending'
+      ORDER BY c.comment_id
+      ;			
+
+      `
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(allReviews.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+
+app.put("/comment/approve", async (req, res) => {
+  try {
+    const { updatedId, email } = req.body;
+    //console.log(review_id);
+    console.log(email);
+
+    const moderator_id = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+    const id=moderator_id.rows[0].id;
+
+    const response = await pool.query(
+      `
+      UPDATE comments
+      SET
+        status = 'approved',
+        moderator_id = $1
+      WHERE
+        comment_id = $2
+      `,
+      [id, updatedId]
+    );
+    const updateModeratorQuery = await pool.query(
+      `
+      UPDATE moderator
+      SET
+        filtered_comments = filtered_comments + 1
+      WHERE
+        moderator_id = $1
+      `,
+      [id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+
+app.put("/comment/decline", async (req, res) => {
+  try {
+    const { updatedId, email } = req.body;
+    //console.log(review_id);
+    console.log(email);
+
+    const moderator_id = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+    const id=moderator_id.rows[0].id;
+    const response3 = await pool.query(
+      `
+      DELETE FROM reaction
+      WHERE
+        comment_id = $1
+      `,
+      [updatedId]
+    );
+    // const response = await pool.query(
+    //   `
+    //   DELETE FROM comments
+    //   WHERE
+    //     parent_id = $1
+    //   `,
+    //   [updatedId]
+    // );
+    const response = await pool.query(
+      `
+      DELETE FROM comments
+      WHERE
+        comment_id = $1
+      `,
+      [updatedId]
+    );
+    const updateModeratorQuery = await pool.query(
+      `
+      UPDATE moderator
+      SET
+        filtered_comments = filtered_comments + 1
+      WHERE
+        moderator_id = $1
+      `,
+      [id]
+    );
+    
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
