@@ -1904,3 +1904,45 @@ app.get("/getDislikes", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+app.put("/review/decline", async (req, res) => {
+  try {
+    const { updatedId, email } = req.body;
+    //console.log(review_id);
+    console.log(email);
+
+    const moderator_id = await pool.query(
+      `
+      SELECT "id"
+      from person
+      where email = $1
+      `,
+      [email]
+    );
+    const id=moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      DELETE FROM review
+      WHERE
+        review_id = $1
+      `,
+      [updatedId]
+    );
+    const updateModeratorQuery = await pool.query(
+      `
+      UPDATE moderator
+      SET
+        review_verifications = review_verifications + 1
+      WHERE
+        moderator_id = $1
+      `,
+      [id]
+    );
+    
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
