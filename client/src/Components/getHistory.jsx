@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
+import { Link } from "react-router-dom";
 
 export default function History() {
   const email = localStorage.getItem("email");
@@ -48,21 +49,25 @@ export default function History() {
       <ImageList sx={{ width: "auto", height: "auto" }}>
         {history.map((H) => (
           <ImageListItem key={H.thumbnail}>
-            <img
-              srcSet={`${H.thumbnail}?w=248&fit=crop&auto=format`}
-              src={`${H.thumbnail}?w=248&fit=crop&auto=format`}
-              alt={H.name}
-              loading="lazy"
-            />
-            <ImageListItemBar
-              title={H.name}
-              subtitle={
-                <span>
-                  {formatDate(new Date(H.time))}@ {H.view_no} th viewer
-                </span>
-              }
-              position="below"
-            />
+            <Link
+              to={`http://localhost:3001/watch/anime/episodes/${H.anime_id}/episode/${H.episode_no}`}
+            >
+              <img
+                srcSet={`${H.thumbnail}?w=248&fit=crop&auto=format`}
+                src={`${H.thumbnail}?w=248&fit=crop&auto=format`}
+                alt={H.name}
+                loading="lazy"
+              />
+              <ImageListItemBar
+                title={H.name}
+                subtitle={
+                  <span>
+                    {formatDate(new Date(H.time))}@ {H.view_no} th viewer
+                  </span>
+                }
+                position="below"
+              />
+            </Link>
           </ImageListItem>
         ))}
       </ImageList>

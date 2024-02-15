@@ -22,6 +22,7 @@ import Avatar from "@mui/material/Avatar";
 import Typewriter from "typewriter-effect";
 import { motion } from "framer-motion/dist/framer-motion";
 import AnimeList from "../Components/getAnimeList";
+import History from "../Components/getHistory";
 
 export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const location = useLocation();
@@ -331,7 +332,12 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
           className="logo_big img-fluid"
         />
       </div>
-      <div className="d-flex w-1280 m-0">
+      <div className="d-inline w-1280 m-0">
+        {userRole === "U" && (
+          <div>
+            <History />
+          </div>
+        )}
         <div className="row">
           <section>
             <div className="anime-list-container">
@@ -352,15 +358,11 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
             />
           </section>
         </div>
-        {
-          userRole === "U" && (
-            <div>
-              <AnimeList />
-            </div>
-          )
-        }
-        
-        
+        {userRole === "U" && (
+          <div>
+            <AnimeList />
+          </div>
+        )}
       </div>
     </motion.div>
   );
