@@ -88,10 +88,10 @@ app.post("/AdvancedSearch", async (req, res) => {
     let query = `
       SELECT
           a.*,
-          string_agg(DISTINCT(g.genre_name), ',') AS genres,
-          string_agg(DISTINCT(s.studio_name), ',') AS studios,
-          string_agg(DISTINCT(t.tag_name), ',') AS tags,
-          string_agg(DISTINCT(c.character_name), ',') AS "characters"
+          string_agg(DISTINCT g.genre_name,',') AS genres,
+          string_agg(DISTINCT s.studio_name, ',') AS studios,
+          string_agg(DISTINCT t.tag_name,',') AS tags,
+          string_agg(DISTINCT c.character_name, ',') AS "characters"
       FROM anime a
       LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
       LEFT JOIN studio s ON s.studio_id = ast.studio_id
@@ -103,20 +103,29 @@ app.post("/AdvancedSearch", async (req, res) => {
       LEFT JOIN "characters" c ON ca.character_id = c.character_id
       WHERE 1 = 1`;
 
-    // Add conditions based on the provided search parameters
+    
     if (searchString) {
-      query += ` AND (UPPER(a.anime_name) LIKE UPPER('%${searchString}%') 
-      -- OR UPPER(a.description) LIKE UPPER('%${searchString}%')
+    
+      const editDistanceThreshold = 2;
+    
+      query += ` AND EXISTS (
+        SELECT 1
+        FROM generate_series(1, LENGTH(a.anime_name)) AS i
+        WHERE LEVENSHTEIN(UPPER(SUBSTRING(a.anime_name FROM i FOR LENGTH('${searchString}'))), UPPER('${searchString}')) <= ${editDistanceThreshold}
       )`;
     }
+    
+    
     if (season) {
       query += ` AND a.season = '${season}'`;
     }
     if (genre) {
-      query += ` AND g.genre_name = '${genre}'`;
+      const genresArray = genre.split(',').map(genre => genre.trim());
+      query += ` AND g.genre_name IN ('${genresArray.join("','")}')`;
     }
     if (tag) {
-      query += ` AND UPPER(t.tag_name) = UPPER('${tag}')`;
+      const tagsArray = tag.split(',').map(tag => tag.trim());
+      query += ` AND UPPER(t.tag_name) IN ('${tagsArray.join("','").toUpperCase()}')`;
     }
     if (year) {
       query += ` AND a.year = ${year}`;
@@ -128,24 +137,28 @@ app.post("/AdvancedSearch", async (req, res) => {
       query += ` AND a.mal_score >= ${rating}`;
     }
     if (type) {
-      query += ` AND a.anime_type = '${type}'`;
+      const typesArray = type.split(',').map(type => type.trim());
+      query += ` AND UPPER(a.anime_type) IN ('${typesArray.join("','").toUpperCase()}')`;
     }
     if (demographic) {
-      query += ` AND a.demographic = '${demographic}'`;
+      const demographicsArray = demographic.split(',').map(demographic => demographic.trim());
+      query += ` AND a.demographic IN ('${demographicsArray.join("','")}')`;
     }
     if (source) {
-      query += ` AND a.anime_source = '${source}'`;
+      const sourcesArray = source.split(',').map(source => source.trim());
+      query += ` AND a.anime_source IN ('${sourcesArray.join("','")}')`;
     }
     if (episodeCount) {
       query += ` AND a.number_of_episodes >= ${episodeCount}`;
     }
     if (characters) {
-      query += ` AND UPPER(c.character_name) = UPPER('${characters}')`;
+      const charactersArray = characters.split(',').map(character => character.trim());
+      query += ` AND UPPER(c.character_name) IN ('${charactersArray.join("','").toUpperCase()}')`;
     }
 
-
-    // Group by anime_id
-    query += ` GROUP BY a.anime_id`;
+    query += ` GROUP BY a.anime_id
+              ORDER BY a.mal_score DESC
+    `;
 
     // Execute the query
     const results = await pool.query(query, []);
@@ -579,7 +592,7 @@ app.put("/review/approve", async (req, res) => {
       `,
       [email]
     );
-    const id=moderator_id.rows[0].id;
+    const id = moderator_id.rows[0].id;
 
     const response = await pool.query(
       `
@@ -1919,7 +1932,7 @@ app.put("/review/decline", async (req, res) => {
       `,
       [email]
     );
-    const id=moderator_id.rows[0].id;
+    const id = moderator_id.rows[0].id;
     const response = await pool.query(
       `
       DELETE FROM review
@@ -1938,7 +1951,7 @@ app.put("/review/decline", async (req, res) => {
       `,
       [id]
     );
-    
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.body);
     // console.log(person.rows);
@@ -1967,7 +1980,6 @@ app.get("/moderator/comments", async (req, res) => {
   }
 });
 
-
 app.put("/comment/approve", async (req, res) => {
   try {
     const { updatedId, email } = req.body;
@@ -1982,7 +1994,7 @@ app.put("/comment/approve", async (req, res) => {
       `,
       [email]
     );
-    const id=moderator_id.rows[0].id;
+    const id = moderator_id.rows[0].id;
 
     const response = await pool.query(
       `
@@ -2027,7 +2039,7 @@ app.put("/comment/decline", async (req, res) => {
       `,
       [email]
     );
-    const id=moderator_id.rows[0].id;
+    const id = moderator_id.rows[0].id;
     const response3 = await pool.query(
       `
       DELETE FROM reaction
@@ -2062,7 +2074,7 @@ app.put("/comment/decline", async (req, res) => {
       `,
       [id]
     );
-    
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.body);
     // console.log(person.rows);
