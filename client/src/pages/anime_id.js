@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams,useNavigate  } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
+import { Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, TextareaAutosize, FormControlLabel,FormGroup, Grid } from '@mui/material';
 
 
 const AnimePage = ({toggleRerender}) => {
@@ -71,121 +72,237 @@ const AnimePage = ({toggleRerender}) => {
 
   return (
     <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
       {loading ? (
-        <h2>Loading...</h2>
+        <Typography variant="h6">Loading...</Typography>
       ) : (
         <form onSubmit={handleSubmit}>
-          <label>Anime Name:</label>
-          <input
-            anime_type="text"
+          <TextField
+            label="Anime Name"
             name="anime_name"
             value={anime.anime_name  || ""}
             onChange={handleChange}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          size="large"
           />
           <br />
-
-          <label>Number of Episodes:</label>
-          <input
-            anime_type="text"
+  
+          <TextField
+            label="Number of Episodes"
             name="number_of_episodes"
             value={anime.number_of_episodes || 0}
             onChange={handleChange}
+            type="number"
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          size="large"
           />
-
           <br />
-          <label>Type:</label>
-          <input
-            anime_type="text"
-            name="anime_type"
-            value={anime.anime_type || ""}
-            onChange={handleChange}
-          />
+  
+          <FormControl variant="outlined" fullWidth size="large" margin="normal">
+  <InputLabel htmlFor="anime-type">Anime Type</InputLabel>
+  <Select
+    id="anime-type"
+    name="anime_type"
+    value={anime.anime_type || ""}
+    onChange={handleChange}
+    label="Anime Type"
+  >
+    <MenuItem value="TV">TV</MenuItem>
+    <MenuItem value="Special">Special</MenuItem>
+    <MenuItem value="ONA">ONA</MenuItem>
+    <MenuItem value="Music">Music</MenuItem>
+    <MenuItem value="Movie">Movie</MenuItem>
+    <MenuItem value="TV Special">TV Special</MenuItem>
+    <MenuItem value="OVA">OVA</MenuItem>
+  </Select>
+</FormControl>
 
-          <br />
-          <label>Age Rating:</label>
-          <input
-            anime_type="text"
-            name="age_rating"
-            value={anime.age_rating || ""}
-            onChange={handleChange}
-          />
 
-          <br />
-          <label>Demographic:</label>
-          <input
-            anime_type="text"
-            name="demographic"
-            value={anime.demographic || ""}
-            onChange={handleChange}
-          />
+  
+        <FormControl fullWidth variant="outlined" size="large" margin="normal">
+  <InputLabel id="age-rating-label">Age Rating</InputLabel>
+  <Select
+    labelId="age-rating-label"
+    id="age-rating"
+    name="age_rating"
+    value={anime.age_rating || ""}
+    onChange={handleChange}
+    label="Age Rating"
+  >
+    <MenuItem value="PG - Children">PG - Children</MenuItem>
+    <MenuItem value="PG-13 - Teens 13 or older">PG-13 - Teens 13 or older</MenuItem>
+    <MenuItem value="Rx - Hentai">Rx - Hentai</MenuItem>
+    <MenuItem value="R - 17+ (violence & profanity)">R - 17+ (violence & profanity)</MenuItem>
+    <MenuItem value="G - All Ages">G - All Ages</MenuItem>
+    <MenuItem value="R+ - Mild Nudity">R+ - Mild Nudity</MenuItem>
+  </Select>
+</FormControl>
+<br />
 
-          <br />
-          <label>Season:</label>
-          <input
-            anime_type="text"
-            name="season"
-            value={anime.season || ""}
-            onChange={handleChange}
-          />
+  
+<FormControl variant="outlined" fullWidth size="large" margin="normal">
+  <InputLabel htmlFor="demographic">Demographic</InputLabel>
+  <Select
+    id="demographic"
+    name="demographic"
+    value={anime.demographic || ""}
+    onChange={handleChange}
+    label="Demographic"
+  >
+    <MenuItem value="Seinen">Seinen</MenuItem>
+    <MenuItem value="Shoujo">Shoujo</MenuItem>
+    <MenuItem value="Shounen">Shounen</MenuItem>
+    <MenuItem value="Josei">Josei</MenuItem>
+    <MenuItem value="Kids">Kids</MenuItem>
+  </Select>
+</FormControl>
 
-          <br />
-          <label>Year:</label>
-          <input
-            anime_type="text"
+  
+<FormControl variant="outlined" fullWidth size="large" margin="normal">
+  <InputLabel htmlFor="season">Season</InputLabel>
+  <Select
+    id="season"
+    name="season"
+    value={anime.season || ""}
+    onChange={handleChange}
+    label="Season"
+  >
+    <MenuItem value="Spring">Spring</MenuItem>
+    <MenuItem value="Summer">Summer</MenuItem>
+    <MenuItem value="Fall">Fall</MenuItem>
+    <MenuItem value="Winter">Winter</MenuItem>
+  </Select>
+</FormControl>
+
+  
+          <TextField
+            label="Year"
             name="year"
             value={anime.year || 0}
             onChange={handleChange}
+            type="number"
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          size="large"
           />
-
           <br />
-          <label>Source:</label>
-          <input
-            anime_type="text"
-            name="anime_source"
-            value={anime.anime_source   || ""}
-            onChange={handleChange}
-          />
+  
+          <FormControl variant="outlined" fullWidth size="large" margin="normal">
+  <InputLabel htmlFor="anime-source">Source</InputLabel>
+  <Select
+    id="anime-source"
+    name="anime_source"
+    value={anime.anime_source || ""}
+    onChange={handleChange}
+    label="Source"
+  >
+    <MenuItem value="4-koma manga">4-koma manga</MenuItem>
+    <MenuItem value="Music">Music</MenuItem>
+    <MenuItem value="Book">Book</MenuItem>
+    <MenuItem value="Novel">Novel</MenuItem>
+    <MenuItem value="Web novel">Web novel</MenuItem>
+    <MenuItem value="Mixed media">Mixed media</MenuItem>
+    <MenuItem value="Visual novel">Visual novel</MenuItem>
+    <MenuItem value="Other">Other</MenuItem>
+    <MenuItem value="Unknown">Unknown</MenuItem>
+    <MenuItem value="Web manga">Web manga</MenuItem>
+    <MenuItem value="Manga">Manga</MenuItem>
+    <MenuItem value="Light novel">Light novel</MenuItem>
+    <MenuItem value="Picture book">Picture book</MenuItem>
+    <MenuItem value="Game">Game</MenuItem>
+    <MenuItem value="Card game">Card game</MenuItem>
+    <MenuItem value="Original">Original</MenuItem>
+    <MenuItem value="Radio">Radio</MenuItem>
+  </Select>
+</FormControl>
+<br />
 
-          <br />
-          <label>Description:</label>
-          <input
-            anime_type="text"
-            name="description"
-            value={anime.description || ""}
-            onChange={handleChange}
-          />
 
-          <br />
-          <label>Thumbnail Url:</label>
-          <input
-            anime_type="text"
+<FormGroup>
+  <FormControlLabel
+    control={
+      <TextareaAutosize
+        rowsMin={3}
+        rowsMax={6}
+        aria-label="description"
+        placeholder="Description"
+        name="description"
+        value={anime.description || ""}
+        onChange={handleChange}
+        style={{
+          width: "100%",
+          minHeight: "100px", // Set a minimum height to prevent the box from collapsing
+          resize: "none", // Disable resizing
+          overflowY: "auto", // Enable vertical scrolling if the content overflows
+          padding: "10px", // Adjust padding as needed
+          fontSize: "16px" // Adjust font size as needed
+        }}
+      />
+    }
+    label="Description"
+    labelPlacement="top"
+  />
+</FormGroup>
+
+
+
+
+
+
+
+
+  
+          <TextField
+            label="Thumbnail Url"
             name="title_screen"
             value={anime.title_screen || ""}
             onChange={handleChange}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          size="large"
           />
-
           <br />
-          <label>Next Season:</label>
-          <input
-            anime_type="text"
+  
+          <TextField
+            label="Next Season"
             name="next_season"
             value={anime.next_season || ""}
             onChange={handleChange}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          size="large"
           />
-
           <br />
-          <label>Previous Season:</label>
-          <input
-            anime_type="text"
+  
+          <TextField
+            label="Previous Season"
             name="previous_season"
-            value={anime.previous_season || ""  }
+            value={anime.previous_season || ""}
             onChange={handleChange}
+            margin="normal"
+            variant="outlined"
+            fullWidth
+          size="large"
           />
           <br />
-          <input type="submit" value="Submit" onClick={handleSubmit}/>
+  
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            style={{ marginTop: '20px' }}
+          >
+            Submit
+          </Button>
         </form>
       )}
     </motion.div>
