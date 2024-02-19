@@ -7,13 +7,10 @@ import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typewriter from "typewriter-effect";
 
-
-
-
-export default function SearchAnime({forceRerender}) {
+export default function SearchAnime({ forceRerender }) {
   const location = useLocation();
   const { searchTerm } = location.state || {};
-  
+
   //const { user: routeUser, email: routeEmail } = location.state || {};
 
   // Use local state to store user information
@@ -28,16 +25,19 @@ export default function SearchAnime({forceRerender}) {
   const email = localStorage.getItem("email");
 
   const getAnime = async () => {
-        try {
-            if (!searchTerm) {
-              // Handle the case when searchTerm is undefined or empty
-              return;
-            }
+    try {
+      if (!searchTerm) {
+        // Handle the case when searchTerm is undefined or empty
+        return;
+      }
       console.log(searchTerm);
       setLoading(true);
       console.log(email);
       const userEmail = email;
-      const res = await axios.post("http://localhost:3000/searchAnime", { userEmail,searchTerm });
+      const res = await axios.post("http://localhost:3000/searchAnime", {
+        userEmail,
+        searchTerm,
+      });
       setAnime(res.data);
       setLoading(false);
     } catch (err) {
@@ -47,8 +47,6 @@ export default function SearchAnime({forceRerender}) {
   useEffect(() => {
     getAnime();
   }, [forceRerender]);
-
-
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
@@ -62,11 +60,11 @@ export default function SearchAnime({forceRerender}) {
   // }, []);
 
   // Get current posts
-//   useEffect(() => {
-//     // Update local state and local storage when user and email change
-//     localStorage.setItem("user", user);
-//     localStorage.setItem("email", email);
-//   }, [user, email]);
+  //   useEffect(() => {
+  //     // Update local state and local storage when user and email change
+  //     localStorage.setItem("user", user);
+  //     localStorage.setItem("email", email);
+  //   }, [user, email]);
   const indexOfLastAnime = currentPage * animePerPage;
   const indexOfFirstAnime = indexOfLastAnime - animePerPage;
   const currentanimes = animes.slice(indexOfFirstAnime, indexOfLastAnime);
@@ -87,14 +85,15 @@ export default function SearchAnime({forceRerender}) {
   // );
 
   return (
-    <motion.div className="Home-div container-fluid"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
+    <motion.div
+      className="Home-div container-fluid"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
       <h4>
         {" "}
         <Typewriter
-        
           options={{
             strings: [
               "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
@@ -115,18 +114,15 @@ export default function SearchAnime({forceRerender}) {
       <h1>
         {"Search Results for:"}
         <Typewriter
-        
           options={{
-            strings: [
-              searchTerm,
-            ],
+            strings: [searchTerm],
             autoStart: true,
             loop: true,
             delay: 100,
             deleteSpeed: 200,
             pauseFor: 2000,
             skipAddStyles: true,
-            
+
             // cursor: "_",
           }}
           // className=""

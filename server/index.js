@@ -160,7 +160,6 @@ app.post("/AdvancedSearch", async (req, res) => {
               ORDER BY a.mal_score DESC
     `;
 
-    // Execute the query
     const results = await pool.query(query, []);
 
     res.json(results.rows);
@@ -1177,6 +1176,36 @@ app.get("/genre", async (req, res) => {
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(ALLGENRES.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/source", async (req, res) => {
+  try {
+    const ALLSOURCES = await pool.query(
+      `
+      SELECT DISTINCT(anime_source)
+      from anime;
+      `
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(ALLSOURCES.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/tags", async (req, res) => {
+  try {
+    const ALLTAGS = await pool.query(
+      `
+      SELECT * FROM TAGS 
+			ORDER BY TAG_ID
+      `
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(ALLTAGS.rows);
   } catch (error) {
     console.error(error.message);
   }

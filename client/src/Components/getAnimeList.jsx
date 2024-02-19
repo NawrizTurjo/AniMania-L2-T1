@@ -7,6 +7,7 @@ import ListSubheader from "@mui/material/ListSubheader";
 import IconButton from "@mui/material/IconButton";
 import InfoIcon from "@mui/icons-material/Info";
 import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 export default function AnimeList() {
   const [animeList, setAnimeList] = useState([]);
@@ -42,6 +43,10 @@ export default function AnimeList() {
     getAnimeList();
   }, []);
   return (
+    <>
+    <Typography variant="h4" component="h2" gutterBottom>
+      My Anime List
+    </Typography>
     <ImageList>
       <ImageListItem
         key="Subheader"
@@ -81,5 +86,6 @@ export default function AnimeList() {
         </ImageListItem>
       ))}
     </ImageList>
+    </>
   );
 }

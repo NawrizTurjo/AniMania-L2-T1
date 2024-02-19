@@ -185,6 +185,11 @@ img:hover {
   flex-wrap: wrap;
 }
 
+.multiselect {
+  width: 200px; /* Adjust the width as needed */
+  height: 150px; /* Adjust the height as needed */
+}
+
 /* Responsive Styles */
 @media (max-width: 1920px) {
   .anime-list-item {

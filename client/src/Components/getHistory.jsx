@@ -4,6 +4,7 @@ import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import ImageListItemBar from "@mui/material/ImageListItemBar";
 import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 export default function History() {
   const email = localStorage.getItem("email");
@@ -46,6 +47,9 @@ export default function History() {
   }, []);
   return (
     <div>
+      <Typography variant="h4" component="h2" gutterBottom>
+        {user}'s Watch History
+      </Typography>
       <ImageList sx={{ width: "auto", height: "auto" }}>
         {history.map((H) => (
           <ImageListItem key={H.thumbnail}>
