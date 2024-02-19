@@ -77,6 +77,8 @@ function AdvancedSearch() {
   const [currentPage, setCurrentPage] = useState(1);
   const [animePerPage] = useState(10);
 
+  const userEmail = localStorage.getItem("email");
+
   async function getGenres() {
     try {
       setLoadingGenres(true);
@@ -206,6 +208,7 @@ function AdvancedSearch() {
       source: searchSource,
       episodeCount: episodes,
       characters: characters,
+      userEmail: userEmail,
     });
     setAnimeList(res.data);
     setIsAnime(true);
