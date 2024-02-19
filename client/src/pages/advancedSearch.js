@@ -71,7 +71,7 @@ function AdvancedSearch() {
   const [selectedSource, setSelectedSource] = useState([]);
 
   const [animeList, setAnimeList] = useState([]);
-  const [isAnime,setIsAnime] = useState(false);
+  const [isAnime, setIsAnime] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -181,25 +181,31 @@ function AdvancedSearch() {
     console.log("Characters: ", characters);
 
     const searchSeasons = selectedSeasons.map((item) => item.name).join(", ");
-    const searchGenres = selectedGenres.map((item) => item.genre_name).join(", ");
+    const searchGenres = selectedGenres
+      .map((item) => item.genre_name)
+      .join(", ");
     const searchTypes = selectedType.map((item) => item.name).join(", ");
-    const searchDemographic = selectedDemographic.map((item) => item.name).join(", ");
-    const searchSource = selectedSource.map((item) => item.anime_source).join(", ");
-    const searchTags = ""
+    const searchDemographic = selectedDemographic
+      .map((item) => item.name)
+      .join(", ");
+    const searchSource = selectedSource
+      .map((item) => item.anime_source)
+      .join(", ");
+    const searchTags = "";
 
     const res = await axios.post(`http://localhost:3000/AdvancedSearch`, {
-      searchString:searchString,
-      season:searchSeasons,
-      genre:searchGenres,
-      tag:searchTags,
-      year:year,
-      ageRating:selectedAgeRating,
-      rating:rating,
-      type:searchTypes,
-      demographic:searchDemographic,
-      source:searchSource,
-      episodeCount:episodes,
-      characters:characters,
+      searchString: searchString,
+      season: searchSeasons,
+      genre: searchGenres,
+      tag: searchTags,
+      year: year,
+      ageRating: selectedAgeRating,
+      rating: rating,
+      type: searchTypes,
+      demographic: searchDemographic,
+      source: searchSource,
+      episodeCount: episodes,
+      characters: characters,
     });
     setAnimeList(res.data);
     setIsAnime(true);
@@ -330,41 +336,21 @@ function AdvancedSearch() {
           Search
         </button>
       </form>
-      {/* <p>This is a test</p> */}
       <div>
-      <div className="row">
-        {/* <section className="col-md-6 upper-part">
-          <div className="card-container">
-            {[...Array(4)].map((_, index) => (
-              <div key={index} className="card bg-light p-3 mt-3">
-                <h6>{`Card ${index + 1} Title`}</h6>
-                <p>{`This is the description for Card ${index + 1}`}</p>
-              </div>
-            ))}
-          </div>
-        </section> */}
-        <section>
-          <div className="anime-list-container">
-            <AnimeItem currentanimes={currentanimes} loading={loading} />
-          </div>
-        </section>
-        <section className="pagination-container">
-          <Pagination
-            animePerPage={animePerPage}
-            totalAnimes={animeList.length}
-            paginate={paginate}
-          />
-        </section>
-        {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>
-          <div className="watch-history-container">
-            <ul className="anime-list">
-              {[...Array(10)].map((_, index) => (
-                <AnimeListItem key={index} title={`Watched Anime ${index + 1}`} description="Watched this recently" />
-              ))}
-            </ul>
-          </div>
-        </section> */}
-      </div>
+        <div className="row">
+          <section>
+            <div className="anime-list-container">
+              <AnimeItem currentanimes={currentanimes} loading={loading} />
+            </div>
+          </section>
+          <section className="pagination-container">
+            <Pagination
+              animePerPage={animePerPage}
+              totalAnimes={animeList.length}
+              paginate={paginate}
+            />
+          </section>
+        </div>
       </div>
     </div>
   );

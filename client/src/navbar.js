@@ -72,12 +72,14 @@ export default function Navbar() {
           <CustomLink to="/login" onClick={toggleMenu}>
             login
           </CustomLink>
-          <CustomLink to="/advSearch" onClick={toggleMenu}>
+          <CustomLink to="/AdvancedSearch" onClick={toggleMenu}>
             Advanced Search
           </CustomLink>
         </ul>
       )}
-      {!isSearchAnimePage && windowWidth > 768 && <SearchBar navigate={navigate} />}
+      {!isSearchAnimePage && windowWidth > 768 && (
+        <SearchBar navigate={navigate} />
+      )}
     </nav>
   );
 }
