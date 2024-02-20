@@ -81,17 +81,31 @@ app.post("/AdvancedSearch", async (req, res) => {
     demographic,
     source,
     episodeCount,
-    characters
+    characters,
+    userEmail
   } = req.body;
-
+  console.log(userEmail);
   try {
     let query = `
+    with T AS(
+      SELECT DISTINCT (anime_id),user_id,status
+      FROM users_anime_list ua
+      where user_id = (
+        SELECT "id"
+        FROM person
+        WHERE email = $1
+      )
+      )
+      (
       SELECT
           a.*,
           string_agg(DISTINCT g.genre_name,',') AS genres,
           string_agg(DISTINCT s.studio_name, ',') AS studios,
           string_agg(DISTINCT t.tag_name,',') AS tags,
           string_agg(DISTINCT c.character_name, ',') AS "characters"
+          ,
+            CASE WHEN ta.user_id IS NOT NULL THEN true ELSE false END AS is_favorite,
+						CASE WHEN ta.user_id IS NOT NULL THEN ta.status ELSE NULL END AS status
       FROM anime a
       LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
       LEFT JOIN studio s ON s.studio_id = ast.studio_id
@@ -99,6 +113,8 @@ app.post("/AdvancedSearch", async (req, res) => {
       LEFT JOIN genres g ON g.genre_id = ga.genre_id
       LEFT JOIN tag_id_table ti ON ti.anime_id = a.anime_id
       LEFT JOIN tags t ON t.tag_id = ti.tag_id
+      LEFT JOIN 
+            T ta on ta.anime_id = a.anime_id
       LEFT JOIN character_anime_relationship ca ON a.anime_id = ca.anime_id
       LEFT JOIN "characters" c ON ca.character_id = c.character_id
       WHERE 1 = 1`;
@@ -156,11 +172,12 @@ app.post("/AdvancedSearch", async (req, res) => {
       query += ` AND UPPER(c.character_name) IN ('${charactersArray.join("','").toUpperCase()}')`;
     }
 
-    query += ` GROUP BY a.anime_id
+    query += ` GROUP BY a.anime_id,ta.user_id,ta.status
               ORDER BY a.mal_score DESC
+              )
     `;
 
-    const results = await pool.query(query, []);
+    const results = await pool.query(query, [userEmail]);
 
     res.json(results.rows);
   } catch (error) {
