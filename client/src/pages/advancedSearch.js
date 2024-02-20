@@ -69,6 +69,7 @@ function AdvancedSearch() {
   const [selectedDemographic, setSelectedDemographic] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
   const [selectedSource, setSelectedSource] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const [animeList, setAnimeList] = useState([]);
   const [isAnime, setIsAnime] = useState(false);
@@ -150,6 +151,14 @@ function AdvancedSearch() {
 
   const onRemoveSource = (selectedList, removedItem) => {
     setSelectedSource(selectedList);
+  };
+
+  const onSelectTags = (selectedList, selectedItem) => {
+    setSelectedTags(selectedList);
+  };
+
+  const onRemoveTags = (selectedList, removedItem) => {
+    setSelectedTags(selectedList);
   };
 
   const handleAgeRatingChange = (e) => {
@@ -305,6 +314,18 @@ function AdvancedSearch() {
             onSelect={onSelectDemo}
             onRemove={onRemoveDemo}
             selectedValues={selectedDemographic}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="tags">Tags</label>
+          <MultiSelect
+            options={tags}
+            displayValue="tag_name"
+            onSelect={onSelectTags}
+            onRemove={onRemoveTags}
+            selectedValues={selectedTags}
+            placeholder="Select Tags"
           />
         </div>
 
