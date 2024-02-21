@@ -17,13 +17,13 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Loader from "./loader.js";
 import { ToastContainer, toast } from "react-toastify";
-import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
+import { Slide, Zoom, Flip, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { json, useLocation } from "react-router";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 import { IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import Dropdown from 'react-bootstrap/Dropdown';
+import Dropdown from "react-bootstrap/Dropdown";
 import { Link } from "react-router-dom";
 
 const AnimeListItem = ({
@@ -78,7 +78,7 @@ const AnimeListItem = ({
 
   useEffect(() => {
     setFav(is_favorite);
-  },[id]);
+  }, [id]);
 
   // console.log(user);
   // console.log(email);
@@ -155,17 +155,17 @@ const AnimeListItem = ({
 
   // const handleClick = (event) => {
   //   window.location.href = `http://localhost:3001/watch/anime/episodes/${id}`;
-    // toast.success('🦄 Wow so easy!', {
-    //   position: "top-left",
-    //   autoClose: 5000,
-    //   hideProgressBar: false,
-    //   closeOnClick: true,
-    //   pauseOnHover: true,
-    //   draggable: true,
-    //   progress: undefined,
-    //   theme: "dark",
-    //   // transition: Bounce,
-    //   });
+  // toast.success('🦄 Wow so easy!', {
+  //   position: "top-left",
+  //   autoClose: 5000,
+  //   hideProgressBar: false,
+  //   closeOnClick: true,
+  //   pauseOnHover: true,
+  //   draggable: true,
+  //   progress: undefined,
+  //   theme: "dark",
+  //   // transition: Bounce,
+  //   });
   // };
   const [newStatus, setNewStatus] = useState(status || "Watching");
 
@@ -214,14 +214,13 @@ const AnimeListItem = ({
         anime_id: anime_id,
       });
 
-      
-      console.log("This is fav state: ",fav);
+      console.log("This is fav state: ", fav);
       if (response.status === 200) {
         setFav(!fav);
         is_favorite = fav;
-        console.log("This is is_fav state: ",is_favorite);
+        console.log("This is is_fav state: ", is_favorite);
         // toast.success(`Anime ${title} ${!fav ? "added to" : "removed from"} favorites`);
-        if(!fav){
+        if (!fav) {
           // toast.success(``);
           toast.success(`${title} anime is added to your list`, {
             position: "top-left",
@@ -233,9 +232,8 @@ const AnimeListItem = ({
             progress: undefined,
             theme: "colored",
             transition: Zoom,
-            });
-        }
-        else{
+          });
+        } else {
           // toast.error(``);
           toast.error(`${title} anime is removed from your list`, {
             position: "top-left",
@@ -247,8 +245,9 @@ const AnimeListItem = ({
             progress: undefined,
             theme: "colored",
             transition: Zoom,
-            });
-            setNewStatus("Planned");
+          });
+          setNewStatus("Planned");
+          // toggleRerender();
         }
       } else {
         toast.error("Failed to update favorite status");
@@ -259,23 +258,21 @@ const AnimeListItem = ({
     }
   };
 
-  const handleSelect = async(newStat) => {
+  const handleSelect = async (newStat) => {
     console.log(newStat);
-    try{
-    const response = await axios.put("http://localhost:3000/updateStatus", {
+    try {
+      const response = await axios.put("http://localhost:3000/updateStatus", {
         status: newStat,
         email: email,
         anime_id: anime_id,
       });
       toast.success(`Anime ${title} status updated to ${newStat}`);
-    }
-    catch(error){
+      // toggleRerender();
+    } catch (error) {
       console.error("Error updating favorite status:", error);
       toast.error("Failed to update favorite status");
     }
-    
   };
-
 
   const Open = Boolean(anchorEl);
   const pop_id = Open ? "simple-popover" : undefined;
@@ -344,18 +341,18 @@ const AnimeListItem = ({
             </Link>
           )}
           <Link to={`http://localhost:3001/watch/anime/episodes/${id}`}>
-          <Button
-            color="secondary"
-            aria-describedby={pop_id}
-            variant="contained"
-            // onClick={handleClick}
-            aria-owns={Open ? "mouse-over-popover" : undefined}
-            aria-haspopup="true"
-            onMouseEnter={handlePopoverOpen}
-            onMouseLeave={handlePopoverClose}
-          >
-            <InfoIcon />
-          </Button>
+            <Button
+              color="secondary"
+              aria-describedby={pop_id}
+              variant="contained"
+              // onClick={handleClick}
+              aria-owns={Open ? "mouse-over-popover" : undefined}
+              aria-haspopup="true"
+              onMouseEnter={handlePopoverOpen}
+              onMouseLeave={handlePopoverClose}
+            >
+              <InfoIcon />
+            </Button>
           </Link>
           <Popover
             // pop_id={pop_id}
@@ -403,13 +400,11 @@ const AnimeListItem = ({
 
           {userRole === "U" && (
             <IconButton color="error" onClick={handleFavorite}>
-              {fav ? (<FavoriteIcon />
-              ) : (<FavoriteBorderIcon />)}
+              {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </IconButton>
           )}
-          {userRole === "U" && fav==true &&
-            (
-              <Dropdown>
+          {userRole === "U" && fav == true && (
+            <Dropdown>
               {newStatus === "Planned" && (
                 <Dropdown.Toggle variant="primary" id="dropdown-basic">
                   {newStatus}
@@ -435,16 +430,50 @@ const AnimeListItem = ({
                   {newStatus}
                 </Dropdown.Toggle>
               )}
-            
+
               <Dropdown.Menu>
-                <Dropdown.Item onClick={() => { setNewStatus("Planned"); handleSelect("Planned"); }}>Planned</Dropdown.Item>
-                <Dropdown.Item onClick={() => { setNewStatus("Watching"); handleSelect("Watching"); }}>Watching</Dropdown.Item>
-                <Dropdown.Item onClick={() => { setNewStatus("Dropped"); handleSelect("Dropped"); }}>Dropped</Dropdown.Item>
-                <Dropdown.Item onClick={() => { setNewStatus("Watched"); handleSelect("Watched"); }}>Watched</Dropdown.Item>
-                <Dropdown.Item onClick={() => { setNewStatus("On hold"); handleSelect("On hold"); }}>On hold</Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    setNewStatus("Planned");
+                    handleSelect("Planned");
+                  }}
+                >
+                  Planned
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    setNewStatus("Watching");
+                    handleSelect("Watching");
+                  }}
+                >
+                  Watching
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    setNewStatus("Dropped");
+                    handleSelect("Dropped");
+                  }}
+                >
+                  Dropped
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    setNewStatus("Watched");
+                    handleSelect("Watched");
+                  }}
+                >
+                  Watched
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    setNewStatus("On hold");
+                    handleSelect("On hold");
+                  }}
+                >
+                  On hold
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            
           )}
           <Dialog
             open={open}

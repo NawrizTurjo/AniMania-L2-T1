@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./navbar";
 import About from "./pages/about";
 import Home from "./pages/home";
@@ -26,13 +26,12 @@ import History from "./Components/getHistory";
 import AdvancedSearch from "./pages/advancedSearch";
 import VideoPlayer from "./Components/dateFormatter";
 
-
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
   // State to force rerender in Home component
   const [forceRerender, setForceRerender] = useState(false);
-  const [progress, setProgress] = useState(0)  // Function to toggle forceRerender state
+  const [progress, setProgress] = useState(0); // Function to toggle forceRerender state
   const toggleRerender = () => {
     setForceRerender((prev) => !prev);
   };
@@ -53,63 +52,90 @@ function App() {
       />
       <div className="container">
         <AnimatePresence>
-        <Routes location={location} key={location.pathname}>
-          <Route
-            path="/"
-            element={<Landing toggleRerender={toggleRerender} setProgress={setProgress}/>}
-          />
-          <Route
-            path="/Home"
-            element={
-              <Home
+          <Routes location={location} key={location.pathname}>
+            <Route
+              path="/"
+              element={
+                <Landing
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            />
+            <Route
+              path="/Home"
+              element={
+                <Home
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            />
+            <Route path="/about" element={<About />} />
+            <Route path="/season" element={<Season />} />
+            <Route
+              path="/genre"
+              element={<Genre setProgress={setProgress} />}
+            />
+            <Route path="/sign_up" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/anime/:id"
+              element={<AnimePage toggleRerender={toggleRerender} />}
+            />
+            <Route path="/genre/:id" element={<GenreAnimes />} />
+            <Route
+              path="/searchAnime"
+              element={<SearchAnime forceRerender={forceRerender} />}
+            />
+            <Route
+              path="/searchAnime/:searchTerm"
+              element={<SearchAnime forceRerender={forceRerender} />}
+            />
+            {/* <Route path="/home/:username" component={Home} /> */}
+            <Route
+              path="/Home"
+              element={<Home forceRerender={forceRerender} />}
+            />
+            <Route
+              path="/searchAnime"
+              element={<SearchAnime forceRerender={forceRerender} />}
+            />
+            <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
+            <Route path="/userDash" element={<UserDash />}></Route>
+            <Route
+              path="/watch/anime/episodes/:id"
+              element={
+                <Episodes
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            ></Route>
+            <Route
+              path="/watch/anime/episodes/:id/episode/:id2"
+              element={
+                <Episode
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            ></Route>
+            <Route path="/AnimeList" element={<AnimeList />} />
+            <Route path="/History" element={<History />} />
+            <Route
+              path="/AdvancedSearch"
+              element={
+                <AdvancedSearch
                 forceRerender={forceRerender}
                 toggleRerender={toggleRerender}
                 setProgress={setProgress}
-              />
-            }
-          />
-          <Route path="/about" element={<About />} />
-          <Route path="/season" element={<Season />} />
-          <Route path="/genre" element={<Genre setProgress={setProgress}/>} />
-          <Route path="/sign_up" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/anime/:id"
-            element={<AnimePage toggleRerender={toggleRerender} />}
-          />
-          <Route path="/genre/:id" element={<GenreAnimes />} />
-          <Route
-            path="/searchAnime"
-            element={<SearchAnime forceRerender={forceRerender} />}
-          />
-          <Route
-            path="/searchAnime/:searchTerm"
-            element={<SearchAnime forceRerender={forceRerender} />}
-          />
-          {/* <Route path="/home/:username" component={Home} /> */}
-          <Route
-            path="/Home"
-            element={<Home forceRerender={forceRerender} />}
-          />
-          <Route
-            path="/searchAnime"
-            element={<SearchAnime forceRerender={forceRerender} />}
-          />
-          <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
-          <Route path="/userDash" element={<UserDash />}></Route>
-          <Route
-            path="/watch/anime/episodes/:id"
-            element={<Episodes toggleRerender={toggleRerender} setProgress={setProgress}/>}
-          ></Route>
-          <Route
-            path="/watch/anime/episodes/:id/episode/:id2"
-            element={<Episode toggleRerender={toggleRerender} setProgress={setProgress}/>}
-          ></Route>
-          <Route path="/AnimeList" element={<AnimeList/>} />
-          <Route path="/History" element={<History/>} />
-          <Route path = "/AdvancedSearch" element ={<AdvancedSearch toggleRerender={toggleRerender} forceRerender={forceRerender} setProgress={setProgress}/>}/>
-          <Route path = "/VideoPlayer" element ={<VideoPlayer/>}/>
-        </Routes>
+                />
+              }
+            />
+            <Route path="/VideoPlayer" element={<VideoPlayer />} />
+          </Routes>
         </AnimatePresence>
       </div>
       <Footer />

@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typewriter from "typewriter-effect";
 
-function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
+function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
   const [searchString, setSearchString] = useState("");
   const seasonsOptions = [
     { name: "summer", id: 1 },
@@ -370,7 +370,7 @@ function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
             <div className="anime-list-container">
               <AnimeItem
                 currentanimes={currentanimes}
-                loading={loading}
+                loading={loadingGenres}
                 forceRerender={forceRerender}
                 toggleRerender={toggleRerender}
               />
