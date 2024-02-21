@@ -86,8 +86,9 @@ export default function Episodes({ toggleRerender, setProgress }) {
     }
   };
   const handleSubmitReview = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log("Review:", review, "by ", user);
+    // const oldReviews = reviews;
     try {
       setReviewLoading(true);
       await axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
@@ -111,6 +112,8 @@ export default function Episodes({ toggleRerender, setProgress }) {
       if (err.message === "Request failed with status code 500") {
         alert("You cannot post multiple reviews for the same anime.");
         setReview("");
+        // setReviews(oldReviews);
+        // getReview();
         setValue(0);
         // return(
         //   <Alert severity="error">"You cannot post multiple reviews for the same anime."</Alert>
@@ -350,7 +353,6 @@ export default function Episodes({ toggleRerender, setProgress }) {
                         value={value}
                         onChange={(event, newValue) => {
                           setValue(newValue);
-                          
                         }}
                         style={{ marginRight: "0" }}
                       />

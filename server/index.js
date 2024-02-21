@@ -27,41 +27,42 @@ app.post("/sign_up", async (req, res) => {
       [user, pwd, email, userRole, img_url]
     );
     console.log(1);
+    res.json("Successfully signed up");
 
-    if (userRole === "U") {
-      const userId = newModerator.rows[0].id;
-      await pool.query(
-        `INSERT INTO "USER" 
-        ( 
-          user_id,
-          bio,
-          most_favourite_anime,
-          first_access,
-          last_access,
-          active_time
-        )
-          
-          VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP-CURRENT_TIMESTAMP)`,
-        [userId]
-      );
-      res.json("user created successfully");
-    } else {
-      const moderatorId = newModerator.rows[0].id;
-      await pool.query(
-        `INSERT INTO moderator 
-        ( moderator_id,
-          added_series,
-          deleted_series,
-          added_episodes,
-          deleted_episodes,
-          review_verifications,
-          filtered_comments)
-      
-      VALUES ($1,0,0,0,0,0,0)`,
-        [moderatorId]
-      );
-      res.json("Moderator created successfully");
-    }
+    // if (userRole === "U") {
+    //   const userId = newModerator.rows[0].id;
+    //   await pool.query(
+    //     `INSERT INTO "USER"
+    //     (
+    //       user_id,
+    //       bio,
+    //       most_favourite_anime,
+    //       first_access,
+    //       last_access,
+    //       active_time
+    //     )
+
+    //       VALUES ($1,'','',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,CURRENT_TIMESTAMP-CURRENT_TIMESTAMP)`,
+    //     [userId]
+    //   );
+    //   res.json("user created successfully");
+    // } else {
+    //   const moderatorId = newModerator.rows[0].id;
+    //   await pool.query(
+    //     `INSERT INTO moderator
+    //     ( moderator_id,
+    //       added_series,
+    //       deleted_series,
+    //       added_episodes,
+    //       deleted_episodes,
+    //       review_verifications,
+    //       filtered_comments)
+
+    //   VALUES ($1,0,0,0,0,0,0)`,
+    //     [moderatorId]
+    //   );
+    //   res.json("Moderator created successfully");
+    // }
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");

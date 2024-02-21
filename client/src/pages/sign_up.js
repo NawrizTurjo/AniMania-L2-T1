@@ -109,6 +109,7 @@ const SignUp = () => {
       localStorage.setItem("email", email);
       localStorage.setItem("userRole", userRole);
       localStorage.setItem("img_url", img_url);
+      console.log(user,email,userRole,img_url);
       navigate("/Home");
       setUser("");
       setPwd("");

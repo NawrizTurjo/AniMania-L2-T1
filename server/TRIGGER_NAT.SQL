@@ -165,7 +165,7 @@ BEGIN
 	WHERE user_id = UID;
 	
 	SELECT DISTINCT(count(*)) INTO COM
-	FROM review
+	FROM comments
 	WHERE user_id = UID;
 	
 	SELECT GET_REACH(UID) INTO REACH;
