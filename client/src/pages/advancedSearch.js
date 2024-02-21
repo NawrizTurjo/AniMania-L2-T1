@@ -69,6 +69,7 @@ function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
   const [selectedDemographic, setSelectedDemographic] = useState([]);
   const [selectedType, setSelectedType] = useState([]);
   const [selectedSource, setSelectedSource] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const [animeList, setAnimeList] = useState([]);
   const [isAnime, setIsAnime] = useState(false);
@@ -76,6 +77,8 @@ function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [animePerPage] = useState(10);
+
+  const userEmail = localStorage.getItem("email");
 
   async function getGenres() {
     try {
@@ -152,6 +155,14 @@ function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
     setSelectedSource(selectedList);
   };
 
+  const onSelectTags = (selectedList, selectedItem) => {
+    setSelectedTags(selectedList);
+  };
+
+  const onRemoveTags = (selectedList, removedItem) => {
+    setSelectedTags(selectedList);
+  };
+
   const handleAgeRatingChange = (e) => {
     setSelectedAgeRating(e.target.value);
   };
@@ -206,6 +217,7 @@ function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
       source: searchSource,
       episodeCount: episodes,
       characters: characters,
+      userEmail: userEmail,
     });
     setAnimeList(res.data);
     setIsAnime(true);
@@ -309,6 +321,18 @@ function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
             onSelect={onSelectDemo}
             onRemove={onRemoveDemo}
             selectedValues={selectedDemographic}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="tags">Tags</label>
+          <MultiSelect
+            options={tags}
+            displayValue="tag_name"
+            onSelect={onSelectTags}
+            onRemove={onRemoveTags}
+            selectedValues={selectedTags}
+            placeholder="Select Tags"
           />
         </div>
 

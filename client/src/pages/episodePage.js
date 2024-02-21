@@ -79,7 +79,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
       //   console.log(res.data);
       // toggleRerender();
       // setTimeout(() => {
-      setProgress(50);
+      setProgress(100);
       // }, 1000);
     } catch (err) {
       console.error(err.message);
@@ -89,6 +89,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
     event.preventDefault();
     console.log("Review:", review, "by ", user);
     try {
+      setReviewLoading(true);
       await axios.post(`http://localhost:3000/watch/anime/episodes/${id}`, {
         id: id,
         review: review,
@@ -104,6 +105,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
       setValue(0);
       const newReviews = await getReview();
       setReviews(newReviews);
+      setReviewLoading(false);
     } catch (err) {
       console.log(err.message);
       if (err.message === "Request failed with status code 500") {
@@ -348,6 +350,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
                         value={value}
                         onChange={(event, newValue) => {
                           setValue(newValue);
+                          
                         }}
                         style={{ marginRight: "0" }}
                       />
@@ -465,7 +468,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
         ) : (
           // Render a loading indicator or placeholder if reviews is null
 
-          <h3>Loading reviews...</h3>
+          <h3>No reviews yet...</h3>
         )}
       </div>
     </motion.div>
