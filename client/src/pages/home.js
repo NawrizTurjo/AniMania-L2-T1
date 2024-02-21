@@ -23,8 +23,11 @@ import Typewriter from "typewriter-effect";
 import { motion } from "framer-motion/dist/framer-motion";
 import AnimeList from "../Components/getAnimeList";
 import History from "../Components/getHistory";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export default function Home({ forceRerender, toggleRerender, setProgress }) {
+  const [isNotification, setIsNotification] = useState(false);
   const location = useLocation();
   //const { user, email } = location.state || {};
   const {
@@ -65,6 +68,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorE2, setAnchorE2] = React.useState(null);
+  const [anchorE3, setAnchorE3] = React.useState(null);
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -76,6 +80,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
 
   const open = Boolean(anchorEl);
   const open2 = Boolean(anchorE2);
+  const open3 = Boolean(anchorE3);
 
   // const getAnime = async () => {
   //   try {
@@ -227,6 +232,21 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         <Button
           color="action"
           variant="contained"
+          // onClick={handleLogout}
+          style={{ float: "right" }}
+          onMouseEnter={(event) => {
+            setAnchorE3(event.currentTarget);
+          }}
+          onMouseLeave={() => {
+            setAnchorE3(null);
+          }}
+        >
+          {isNotification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
+          {/* <NotificationsIcon /> */}
+        </Button>
+        <Button
+          color="action"
+          variant="contained"
           onClick={handleClick}
           style={{ float: "right" }}
           aria-owns={open ? "mouse-over-popover" : undefined}
@@ -325,6 +345,28 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
           disableRestoreFocus
         >
           <Typography sx={{ p: 1 }}>Logout</Typography>
+        </Popover>
+        <Popover
+          id="mouse-over-popover"
+          sx={{
+            pointerEvents: "none",
+          }}
+          open={open3}
+          anchorEl={anchorE3}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          onClose={() => {
+            setAnchorE3(null);
+          }}
+          disableRestoreFocus
+        >
+          <Typography sx={{ p: 1 }}>Notifications</Typography>
         </Popover>
         <img
           src="./images/AniMania.png"

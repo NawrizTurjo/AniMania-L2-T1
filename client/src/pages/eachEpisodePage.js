@@ -604,23 +604,23 @@ export default function Episode({ toggleRerender, setProgress }) {
                     />
                   </Box>
                 )}
-                {/* <div style={{ marginBottom: '10px' }}>
-                                    <Button
-                                        onClick={(e) => handleSubmitLikes(e, comment.comment_id)}
-                                        variant="contained"
-                                        color="primary"
-                                        style={{ marginRight: '50px' }}
-                                    >
-                                        Like
-                                    </Button>
-                                    <Button
-                                        onClick={(e) => handleSubmitDisLikes(e, comment.comment_id)}
-                                        variant="contained"
-                                        color="secondary"
-                                    >
-                                        Dislike
-                                    </Button>
-                                </div> */}
+                {/* <div style={{ marginBottom: "10px" }}>
+                  <Button
+                    onClick={(e) => handleSubmitLikes(e, comment.comment_id)}
+                    variant="contained"
+                    color="primary"
+                    style={{ marginRight: "50px" }}
+                  >
+                    Like
+                  </Button>
+                  <Button
+                    onClick={(e) => handleSubmitDisLikes(e, comment.comment_id)}
+                    variant="contained"
+                    color="secondary"
+                  >
+                    Dislike
+                  </Button>
+                </div> */}
 
                 {replyIndex === index ? (
                   <div>

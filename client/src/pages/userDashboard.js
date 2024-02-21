@@ -34,10 +34,11 @@ function UserDashboard() {
 
   user = state && state.user;
   let email = localStorage.getItem("email");
-  
+
   let [img_url, setImgUrl] = useState("");
   const [animeList, setAnimeList] = useState([]);
   const [stat, setStat] = useState(false);
+  const [contribution, setContribution] = useState(0);
 
   //   console.log(user);
   //   console.log(email);
@@ -121,9 +122,28 @@ function UserDashboard() {
     }
   };
 
+  const getContribution = async (e) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getContribution`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      setContribution(res.data[0].get_contribution);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     getPerson();
     // getAnimeList();
+    getContribution();
   }, []);
 
   useEffect(() => {
@@ -350,6 +370,9 @@ function UserDashboard() {
                   Save
                 </Button>
               </Box>
+              <p>
+                <strong>Contributions: </strong> {contribution}
+              </p>
               <p>
                 <strong>Most Favourite Anime:</strong> {most_favourite_anime}
               </p>

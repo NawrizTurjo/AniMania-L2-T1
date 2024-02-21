@@ -10,7 +10,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typography from "@mui/material/Typography";
 
-
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
   let [added_series, setAddedSeries] = useState("");
@@ -19,6 +18,7 @@ export default function ModeratorDash() {
   let [deleted_episodes, setDeletedEpisodes] = useState("");
   let [review_verifications, setReviewVerifications] = useState("");
   let [filtered_comments, setFileteredComments] = useState("");
+  const [karma, setKarma] = useState(0);
   let [loading, setLoading] = useState(true);
   let location = useLocation();
   let state = location.state;
@@ -29,7 +29,7 @@ export default function ModeratorDash() {
   const [updatedId, setUpdatedId] = useState(0);
 
   let [pendingReviews, setPendingReviews] = useState([]);
-  let [pendingComments, setPendingComments]=useState([]);
+  let [pendingComments, setPendingComments] = useState([]);
 
   user = state && state.user;
   let email = state && state.email;
@@ -120,13 +120,31 @@ export default function ModeratorDash() {
     }
   };
 
-  const handleApproveReview = async (e,updatedId) => {
+  const getKarma = async (e) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getKarma`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      setKarma(res.data[0].get_karma);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const handleApproveReview = async (e, updatedId) => {
     e.preventDefault();
     try {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/review/approve`,
-        JSON.stringify({ updatedId, email}),
+        JSON.stringify({ updatedId, email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -140,13 +158,13 @@ export default function ModeratorDash() {
     }
   };
 
-  const handleApproveComment = async (e,updatedId) => {
+  const handleApproveComment = async (e, updatedId) => {
     e.preventDefault();
     try {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/comment/approve`,
-        JSON.stringify({ updatedId, email}),
+        JSON.stringify({ updatedId, email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -160,13 +178,13 @@ export default function ModeratorDash() {
     }
   };
 
-  const handleDeclineReview = async (e,updatedId) => {
+  const handleDeclineReview = async (e, updatedId) => {
     e.preventDefault();
     try {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/review/decline`,
-        JSON.stringify({ updatedId, email}),
+        JSON.stringify({ updatedId, email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -180,13 +198,13 @@ export default function ModeratorDash() {
     }
   };
 
-  const handleDeclineComment = async (e,updatedId) => {
+  const handleDeclineComment = async (e, updatedId) => {
     e.preventDefault();
     try {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/comment/decline`,
-        JSON.stringify({ updatedId, email}),
+        JSON.stringify({ updatedId, email }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -218,7 +236,9 @@ export default function ModeratorDash() {
   const getComments = async (event) => {
     try {
       // event.preventDefault();
-      let response = await axios.get(`http://localhost:3000/moderator/comments`);
+      let response = await axios.get(
+        `http://localhost:3000/moderator/comments`
+      );
       // console.log(response.data);
       // setTimeout(()=>{
 
@@ -236,7 +256,11 @@ export default function ModeratorDash() {
 
   useEffect(() => {
     getComments();
+    getKarma();
   }, [stat]);
+
+  // useEffect(() => {
+  // }, [stat]);
 
   const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -251,12 +275,13 @@ export default function ModeratorDash() {
   });
 
   return (
-    <motion.div 
-    // className="d-flex flex-wrap"
-    style={{ display: "flex", justifyContent: "flex-start" }}
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 ,transition: { duration: 0.5 }}}>
+    <motion.div
+      // className="d-flex flex-wrap"
+      style={{ display: "flex", justifyContent: "flex-start" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
       {loading ? (
         <h2>Loading...</h2>
       ) : (
@@ -285,53 +310,57 @@ export default function ModeratorDash() {
               Update Image
             </Button>
             <div
-    style={{
-        border: "0.5px solid #cccccc",
-        width: "400px",
-        height: "500px",
-        marginTop: "10px",
-        marginRight: "auto",
-        overflow: "auto",
-    }}
->
-    {/* Content of the box */}
-    {pendingComments.map((comment, index) => (
-        <div key={index} style={{ marginBottom: "20px" }}>
-            <Typography variant="body1">
-                Comment ID: {comment.comment_id}
-            </Typography>
-            <Typography variant="body1">
-                Anime Name: {comment.anime_name}
-            </Typography>
-            <Typography variant="body1">
-                Episode Title: {comment.episode_title}
-            </Typography>
-            <Typography variant="body1">
-                User Name: {comment.user_name}
-            </Typography>
-            <Typography variant="body1">
-                Comment Time: {comment.comment_time}
-            </Typography>
-            <Typography variant="body1" style={{ wordWrap: 'break-word', marginLeft: 0 }}>Comment Text: {comment.text}</Typography>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={(e) => handleApproveComment(e,comment.comment_id)}
-                style={{ marginRight: "10px" }}
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "400px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
             >
-                Approve
-            </Button>
-            <Button
-                variant="contained"
-                color="secondary"
-                onClick={(e) => handleDeclineComment(e,comment.comment_id)}
-            >
-                Decline
-            </Button>
-        </div>
-    ))}
-</div>
-
+              {/* Content of the box */}
+              {pendingComments.map((comment, index) => (
+                <div key={index} style={{ marginBottom: "20px" }}>
+                  <Typography variant="body1">
+                    Comment ID: {comment.comment_id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Anime Name: {comment.anime_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Episode Title: {comment.episode_title}
+                  </Typography>
+                  <Typography variant="body1">
+                    User Name: {comment.user_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Comment Time: {comment.comment_time}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    style={{ wordWrap: "break-word", marginLeft: 0 }}
+                  >
+                    Comment Text: {comment.text}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={(e) => handleApproveComment(e, comment.comment_id)}
+                    style={{ marginRight: "10px" }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={(e) => handleDeclineComment(e, comment.comment_id)}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              ))}
+            </div>
 
             {/* <div
               style={{
@@ -456,12 +485,7 @@ export default function ModeratorDash() {
                 <label>
                   <strong>Karma:</strong>
                   <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
-                    {review_verifications * 2 +
-                      filtered_comments +
-                      added_episodes * 3 -
-                      deleted_episodes * 2 +
-                      added_series * 5 -
-                      deleted_series * 4}
+                    {karma}
                   </span>
                 </label>
               </div>
@@ -484,43 +508,55 @@ export default function ModeratorDash() {
 
           {/* Box below the Update Profile button */}
           <div
-      style={{
-        border: '0.5px solid #cccccc',
-        width: '600px',
-        height: '500px',
-        marginTop: '225px',
-        marginLeft: 'auto',
-        overflow: 'auto',
-      }}
-    >
-      {/* Content of the box */}
-      {pendingReviews.map((review, index) => (
-        <div key={index} style={{ marginBottom: '20px' }}>
-          <Typography variant="body1">User Name: {review.user_name}</Typography>
-          <Typography variant="body1">Review Time: {review.review_time}</Typography>
-          <Typography variant="body1" style={{ wordWrap: 'break-word', marginLeft: 0 }}>Review Text: {review.review_text}</Typography>
-          <Typography variant="body1">Review ID: {review.review_id}</Typography>
-          <Typography variant="body1">Anime Name: {review.anime_name}</Typography>
-          <Typography variant="body1">Rating: {review.rating}</Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            style={{ marginRight: '10px' }}
-            onClick={(e) => handleApproveReview(e,review.review_id)}
+            style={{
+              border: "0.5px solid #cccccc",
+              width: "600px",
+              height: "500px",
+              marginTop: "225px",
+              marginLeft: "auto",
+              overflow: "auto",
+            }}
           >
-            Approve
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={(e) => handleDeclineReview(e,review.review_id)}
-          >
-            Decline
-          </Button>
-        </div>
-      ))}
-    </div>
-
+            {/* Content of the box */}
+            {pendingReviews.map((review, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <Typography variant="body1">
+                  User Name: {review.user_name}
+                </Typography>
+                <Typography variant="body1">
+                  Review Time: {review.review_time}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  style={{ wordWrap: "break-word", marginLeft: 0 }}
+                >
+                  Review Text: {review.review_text}
+                </Typography>
+                <Typography variant="body1">
+                  Review ID: {review.review_id}
+                </Typography>
+                <Typography variant="body1">
+                  Anime Name: {review.anime_name}
+                </Typography>
+                <Typography variant="body1">Rating: {review.rating}</Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={{ marginRight: "10px" }}
+                  onClick={(e) => handleApproveReview(e, review.review_id)}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={(e) => handleDeclineReview(e, review.review_id)}
+                >
+                  Decline
+                </Button>
+              </div>
+            ))}
+          </div>
 
           {/* Button in the bottom right corner */}
           {/* <div

@@ -68,6 +68,34 @@ app.post("/sign_up", async (req, res) => {
   }
 });
 
+app.post("/getKarma", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const karma = await pool.query(`SELECT get_karma($1)`, [email]);
+    console.log(karma.rows[0].get_karma);
+    res.json(karma.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/getContribution", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const contribution = await pool.query(`SELECT GET_CONTRIBUTION($1)`, [
+      email,
+    ]);
+    console.log(contribution.rows[0].get_contribution);
+    res.json(contribution.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.post("/AdvancedSearch", async (req, res) => {
   const {
     searchString,
@@ -82,7 +110,7 @@ app.post("/AdvancedSearch", async (req, res) => {
     source,
     episodeCount,
     characters,
-    userEmail
+    userEmail,
   } = req.body;
   console.log(userEmail);
   try {
@@ -91,9 +119,7 @@ app.post("/AdvancedSearch", async (req, res) => {
       SELECT DISTINCT (anime_id),user_id,status
       FROM users_anime_list ua
       where user_id = (
-        SELECT "id"
-        FROM person
-        WHERE email = $1
+        SELECT EMAIL_TO_ID($1) as "id"
       )
       )
       (
@@ -119,29 +145,28 @@ app.post("/AdvancedSearch", async (req, res) => {
       LEFT JOIN "characters" c ON ca.character_id = c.character_id
       WHERE 1 = 1`;
 
-    
     if (searchString) {
-    
       const editDistanceThreshold = 2;
-    
+
       query += ` AND EXISTS (
         SELECT 1
         FROM generate_series(1, LENGTH(a.anime_name)) AS i
         WHERE LEVENSHTEIN(UPPER(SUBSTRING(a.anime_name FROM i FOR LENGTH('${searchString}'))), UPPER('${searchString}')) <= ${editDistanceThreshold}
       )`;
     }
-    
-    
+
     if (season) {
       query += ` AND a.season = '${season}'`;
     }
     if (genre) {
-      const genresArray = genre.split(',').map(genre => genre.trim());
+      const genresArray = genre.split(",").map((genre) => genre.trim());
       query += ` AND g.genre_name IN ('${genresArray.join("','")}')`;
     }
     if (tag) {
-      const tagsArray = tag.split(',').map(tag => tag.trim());
-      query += ` AND UPPER(t.tag_name) IN ('${tagsArray.join("','").toUpperCase()}')`;
+      const tagsArray = tag.split(",").map((tag) => tag.trim());
+      query += ` AND UPPER(t.tag_name) IN ('${tagsArray
+        .join("','")
+        .toUpperCase()}')`;
     }
     if (year) {
       query += ` AND a.year = ${year}`;
@@ -153,23 +178,31 @@ app.post("/AdvancedSearch", async (req, res) => {
       query += ` AND a.mal_score >= ${rating}`;
     }
     if (type) {
-      const typesArray = type.split(',').map(type => type.trim());
-      query += ` AND UPPER(a.anime_type) IN ('${typesArray.join("','").toUpperCase()}')`;
+      const typesArray = type.split(",").map((type) => type.trim());
+      query += ` AND UPPER(a.anime_type) IN ('${typesArray
+        .join("','")
+        .toUpperCase()}')`;
     }
     if (demographic) {
-      const demographicsArray = demographic.split(',').map(demographic => demographic.trim());
+      const demographicsArray = demographic
+        .split(",")
+        .map((demographic) => demographic.trim());
       query += ` AND a.demographic IN ('${demographicsArray.join("','")}')`;
     }
     if (source) {
-      const sourcesArray = source.split(',').map(source => source.trim());
+      const sourcesArray = source.split(",").map((source) => source.trim());
       query += ` AND a.anime_source IN ('${sourcesArray.join("','")}')`;
     }
     if (episodeCount) {
       query += ` AND a.number_of_episodes >= ${episodeCount}`;
     }
     if (characters) {
-      const charactersArray = characters.split(',').map(character => character.trim());
-      query += ` AND UPPER(c.character_name) IN ('${charactersArray.join("','").toUpperCase()}')`;
+      const charactersArray = characters
+        .split(",")
+        .map((character) => character.trim());
+      query += ` AND UPPER(c.character_name) IN ('${charactersArray
+        .join("','")
+        .toUpperCase()}')`;
     }
 
     query += ` GROUP BY a.anime_id,ta.user_id,ta.status
@@ -186,7 +219,60 @@ app.post("/AdvancedSearch", async (req, res) => {
   }
 });
 
+// app.post("/AdvancedSearch2", async (req, res) => {
+//   const {
+//     searchString,
+//     season,
+//     genre,
+//     tag,
+//     year,
+//     ageRating,
+//     rating,
+//     type,
+//     demographic,
+//     source,
+//     episodeCount,
+//     characters,
+//     userEmail,
+//   } = req.body;
 
+//   try {
+//     // Convert empty strings to null for numeric types
+//     const yearValue = year === "" ? null : parseInt(year);
+//     const ratingValue = rating === "" ? null : parseInt(rating);
+//     const episodeCountValue =
+//       episodeCount === "" ? null : parseInt(episodeCount);
+
+//     const query = `
+//             SELECT *
+//             FROM AdvancedSearchFunction($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+//         `;
+//     const values = [
+//       searchString,
+//       season,
+//       genre,
+//       tag,
+//       yearValue,
+//       ageRating,
+//       ratingValue,
+//       type,
+//       demographic,
+//       source,
+//       episodeCountValue,
+//       characters,
+//       userEmail,
+//     ];
+
+//     const client = await pool.connect();
+//     const result = await client.query(query, values);
+//     client.release();
+
+//     res.json(result.rows);
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 // app.get("/auth", async (req, res) => {
 //   try {
@@ -277,9 +363,7 @@ app.post("/home", async (req, res) => {
         SELECT DISTINCT (anime_id),user_id,status
         FROM users_anime_list ua
         where user_id = (
-          SELECT "id"
-          FROM person
-          WHERE email = $1
+          SELECT EMAIL_TO_ID($1) as "id"
         )
         )
         
@@ -326,9 +410,7 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -374,6 +456,17 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
   }
 });
 
+app.post("/uid", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const uid = await pool.query(`SELECT EMAIL_TO_ID($1) as "id"`, [email]);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.status(200).json(uid.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
   try {
     // const id = parseInt(req.params.id);
@@ -382,9 +475,7 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -438,9 +529,7 @@ app.post("/watch/anime/episodes/:id/episode/:id2/reply", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -472,38 +561,43 @@ app.put("/updateStatus", async (req, res) => {
     console.log(status, email, anime_id);
     const user_res = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
 
     const user_id = user_res.rows[0].id;
-    if (status === "Watched") {
-      const response = await pool.query(
-        `
-          UPDATE users_anime_list
-          SET
-            status = $1,
-            end_date = CURRENT_TIMESTAMP
-          WHERE
-          anime_id = $2 AND user_id = $3
-            `,
-        [status, anime_id, user_id]
-      );
-    } else {
-      const response = await pool.query(
-        `
-      UPDATE users_anime_list
-      SET
-        status = $1
-      WHERE
-      anime_id = $2 AND user_id = $3
-        `,
-        [status, anime_id, user_id]
-      );
-    }
+    // if (status === "Watched") {
+    //   const response = await pool.query(
+    //     `
+    //       UPDATE users_anime_list
+    //       SET
+    //         status = $1,
+    //         end_date = CURRENT_TIMESTAMP
+    //       WHERE
+    //       anime_id = $2 AND user_id = $3
+    //         `,
+    //     [status, anime_id, user_id]
+    //   );
+    // } else {
+    //   const response = await pool.query(
+    //     `
+    //   UPDATE users_anime_list
+    //   SET
+    //     status = $1
+    //   WHERE
+    //   anime_id = $2 AND user_id = $3
+    //     `,
+    //     [status, anime_id, user_id]
+    //   );
+    // }
+    const response = await pool.query(
+      `
+      CALL update_users_anime_list_status($1,$2,$3)
+      `,
+      [status, anime_id, user_id]
+    );
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
     // console.log(person.rows);
@@ -602,9 +696,7 @@ app.put("/review/approve", async (req, res) => {
 
     const moderator_id = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -621,16 +713,12 @@ app.put("/review/approve", async (req, res) => {
       `,
       [id, updatedId]
     );
-    const updateModeratorQuery = await pool.query(
-      `
-      UPDATE moderator
-      SET
-        review_verifications = review_verifications + 1
-      WHERE
-        moderator_id = $1
-      `,
-      [id]
-    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   CALL FILTERED_COMMENTS_UPDATE($1,'R')
+    //   `,
+    //   [id]
+    // );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.body);
     // console.log(person.rows);
@@ -803,9 +891,7 @@ app.put("/updateHistory", async (req, res) => {
 
     const user_id = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -863,9 +949,7 @@ app.post("/getHistory", async (req, res) => {
       ) AS thumbnail
       FROM watch_history WH
       WHERE WH.user_id = (
-        SELECT "id"
-        FROM person
-        WHERE email = $1
+        SELECT EMAIL_TO_ID($1) as "id"
       )
       ORDER BY WH.anime_id, WH.episode_no
       `,
@@ -943,9 +1027,7 @@ app.put("/userDash/updateBio", async (req, res) => {
   SET
     bio = $1
   WHERE user_id = (
-    SELECT "id"
-    FROM person
-    WHERE email = $2
+    SELECT EMAIL_TO_ID($1) as "id"
   )
     `,
       [bio, email]
@@ -955,9 +1037,7 @@ app.put("/userDash/updateBio", async (req, res) => {
       `SELECT bio
       FROM "USER"
       WHERE user_id = (
-        SELECT "id"
-        FROM person
-        WHERE email = $1
+        SELECT EMAIL_TO_ID($1) as "id"
       )`,
       [email]
     );
@@ -979,9 +1059,7 @@ app.post("/userDash/getAnimeList", async (req, res) => {
         SELECT DISTINCT (anime_id),user_id,status
         FROM users_anime_list ua
         where user_id = (
-          SELECT "id"
-          FROM person
-          WHERE email = $1
+          SELECT EMAIL_TO_ID($1) as "id"
         )
         )
         
@@ -1309,9 +1387,7 @@ app.post("/searchAnime", async (req, res) => {
         SELECT DISTINCT (anime_id),user_id,status
         FROM users_anime_list ua
         where user_id = (
-          SELECT "id"
-          FROM person
-          WHERE email = $1
+          SELECT EMAIL_TO_ID($1) as "id"
         )
         )
         
@@ -1721,9 +1797,7 @@ app.post("/reactionL", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1762,9 +1836,7 @@ app.post("/reactionD", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1841,9 +1913,7 @@ app.post("/reactionLremove", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1873,9 +1943,7 @@ app.post("/reactionDremove", async (req, res) => {
 
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1906,9 +1974,7 @@ app.get("/getlike", async (req, res) => {
     //console.log(email);
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1939,9 +2005,7 @@ app.get("/getDislike", async (req, res) => {
     //console.log(email);
     const userID = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1972,9 +2036,7 @@ app.put("/review/decline", async (req, res) => {
 
     const moderator_id = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -1989,11 +2051,7 @@ app.put("/review/decline", async (req, res) => {
     );
     const updateModeratorQuery = await pool.query(
       `
-      UPDATE moderator
-      SET
-        review_verifications = review_verifications + 1
-      WHERE
-        moderator_id = $1
+      CALL FILTERED_COMMENTS_UPDATE($1,'R')
       `,
       [id]
     );
@@ -2034,9 +2092,7 @@ app.put("/comment/approve", async (req, res) => {
 
     const moderator_id = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
@@ -2053,16 +2109,12 @@ app.put("/comment/approve", async (req, res) => {
       `,
       [id, updatedId]
     );
-    const updateModeratorQuery = await pool.query(
-      `
-      UPDATE moderator
-      SET
-        filtered_comments = filtered_comments + 1
-      WHERE
-        moderator_id = $1
-      `,
-      [id]
-    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   CALL FILTERED_COMMENTS_UPDATE($1,'C')
+    //   `,
+    //   [id]
+    // );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.body);
     // console.log(person.rows);
@@ -2079,21 +2131,19 @@ app.put("/comment/decline", async (req, res) => {
 
     const moderator_id = await pool.query(
       `
-      SELECT "id"
-      from person
-      where email = $1
+      SELECT EMAIL_TO_ID($1) as "id"
       `,
       [email]
     );
     const id = moderator_id.rows[0].id;
-    const response3 = await pool.query(
-      `
-      DELETE FROM reaction
-      WHERE
-        comment_id = $1
-      `,
-      [updatedId]
-    );
+    // const response3 = await pool.query(
+    //   `
+    //   DELETE FROM reaction
+    //   WHERE
+    //     comment_id = $1
+    //   `,
+    //   [updatedId]
+    // );
     // const response = await pool.query(
     //   `
     //   DELETE FROM comments
@@ -2112,11 +2162,7 @@ app.put("/comment/decline", async (req, res) => {
     );
     const updateModeratorQuery = await pool.query(
       `
-      UPDATE moderator
-      SET
-        filtered_comments = filtered_comments + 1
-      WHERE
-        moderator_id = $1
+      CALL FILTERED_COMMENTS_UPDATE($1,'C')
       `,
       [id]
     );
