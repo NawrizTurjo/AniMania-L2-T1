@@ -2086,14 +2086,14 @@ app.put("/comment/decline", async (req, res) => {
       [email]
     );
     const id = moderator_id.rows[0].id;
-    // const response3 = await pool.query(
-    //   `
-    //   DELETE FROM reaction
-    //   WHERE
-    //     comment_id = $1
-    //   `,
-    //   [updatedId]
-    // );
+    const response3 = await pool.query(
+      `
+      DELETE FROM reaction
+      WHERE
+        comment_id = $1
+      `,
+      [updatedId]
+    );
     // const response = await pool.query(
     //   `
     //   DELETE FROM comments
