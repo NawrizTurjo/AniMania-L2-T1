@@ -107,7 +107,7 @@ function App() {
           ></Route>
           <Route path="/AnimeList" element={<AnimeList/>} />
           <Route path="/History" element={<History/>} />
-          <Route path = "/AdvancedSearch" element ={<AdvancedSearch/>}/>
+          <Route path = "/AdvancedSearch" element ={<AdvancedSearch toggleRerender={toggleRerender} forceRerender={forceRerender} setProgress={setProgress}/>}/>
           <Route path = "/VideoPlayer" element ={<VideoPlayer/>}/>
         </Routes>
         </AnimatePresence>

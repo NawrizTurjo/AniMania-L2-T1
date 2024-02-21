@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typewriter from "typewriter-effect";
 
-function AdvancedSearch() {
+function AdvancedSearch(toggleRerender, forceRerender, setProgress) {
   const [searchString, setSearchString] = useState("");
   const seasonsOptions = [
     { name: "summer", id: 1 },
@@ -226,7 +226,11 @@ function AdvancedSearch() {
   }
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
       <form>
         <input
           type="text"
@@ -340,7 +344,12 @@ function AdvancedSearch() {
         <div className="row">
           <section>
             <div className="anime-list-container">
-              <AnimeItem currentanimes={currentanimes} loading={loading} />
+              <AnimeItem
+                currentanimes={currentanimes}
+                loading={loading}
+                forceRerender={forceRerender}
+                toggleRerender={toggleRerender}
+              />
             </div>
           </section>
           <section className="pagination-container">
@@ -348,11 +357,12 @@ function AdvancedSearch() {
               animePerPage={animePerPage}
               totalAnimes={animeList.length}
               paginate={paginate}
+              toggleRerender={toggleRerender}
             />
           </section>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
