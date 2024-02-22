@@ -25,6 +25,9 @@ import AnimeList from "./Components/getAnimeList";
 import History from "./Components/getHistory";
 import AdvancedSearch from "./pages/advancedSearch";
 import VideoPlayer from "./Components/dateFormatter";
+import AddAnime from "./pages/addAnime";
+import AddEpisode from "./pages/addEpisode";
+import DatePickerValue from "./Components/dateComp";
 
 function App() {
   const navigate = useNavigate();
@@ -128,13 +131,16 @@ function App() {
               path="/AdvancedSearch"
               element={
                 <AdvancedSearch
-                forceRerender={forceRerender}
-                toggleRerender={toggleRerender}
-                setProgress={setProgress}
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
                 />
               }
             />
             <Route path="/VideoPlayer" element={<VideoPlayer />} />
+            <Route path="/addAnime" element={<AddAnime />} />
+            <Route path="/:id/addEpisode" element={<AddEpisode />} />
+            <Route path="/DatePickerValue" element={<DatePickerValue />} />
           </Routes>
         </AnimatePresence>
       </div>
