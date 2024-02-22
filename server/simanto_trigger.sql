@@ -73,7 +73,7 @@ BEGIN
     DELETE FROM users_anime_list WHERE user_id = OLD."id";
     DELETE FROM comments WHERE user_id = OLD."id";
     DELETE FROM reaction WHERE user_id = OLD."id";
-    DELETE FROM notifications WHERE user_id = OLD."id";
+    DELETE FROM notifications WHERE users_id = OLD."id";
     DELETE FROM "USER" WHERE user_id = OLD."id";
     RETURN OLD;
 END;
