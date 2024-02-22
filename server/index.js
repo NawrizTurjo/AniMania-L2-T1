@@ -1282,7 +1282,8 @@ app.get("/source", async (req, res) => {
     const ALLSOURCES = await pool.query(
       `
       SELECT DISTINCT(anime_source)
-      from anime;
+      from anime
+      where anime_source is not NULL;
       `
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
