@@ -25,6 +25,7 @@ import AnimeList from "./Components/getAnimeList";
 import History from "./Components/getHistory";
 import AdvancedSearch from "./pages/advancedSearch";
 import VideoPlayer from "./Components/dateFormatter";
+import Notifications from "./pages/notifications";
 
 function App() {
   const navigate = useNavigate();
