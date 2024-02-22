@@ -84,8 +84,7 @@ BEFORE DELETE ON person
 FOR EACH ROW
 EXECUTE FUNCTION before_delete_user_function();
 
-------------------------------------------------------------------------------------------After insert anime episodes
-
+-
 CREATE OR REPLACE FUNCTION after_inserting_episodes_function()
 RETURNS TRIGGER AS $$
 DECLARE 
@@ -98,8 +97,8 @@ BEGIN
 
     FOR USER_ROW IN SELECT * FROM person LOOP
 			if user_row.role='U' THEN
-        INSERT INTO notifications (users_id, notifications, is_seen)
-        VALUES (USER_ROW."id",'Hey, '||USER_ROW.user_name|| ' We would like to announce that New episode for ' || NAME || ' has been released !!!', 'NO');
+        INSERT INTO notifications (users_id, notifications, track_date)
+        VALUES (USER_ROW."id",'Hey, '||USER_ROW.user_name|| ' We would like to announce that New episode for ' || NAME || ' has been released !!!', CURRENT_TIMESTAMP);
 			end if;	
     END LOOP;
 
@@ -126,8 +125,8 @@ BEGIN
 
     FOR USER_ROW IN SELECT * FROM person LOOP
 			if user_row.role='U' THEN
-        INSERT INTO notifications (users_id, notifications, is_seen)
-        VALUES (USER_ROW."id",'Hey, '||USER_ROW.user_name|| ' We would like to announce that a brand new anime named: ' || NAME || ' has been released !!!', 'NO');
+        INSERT INTO notifications (users_id, notifications, track_date)
+        VALUES (USER_ROW."id",'Hey, '||USER_ROW.user_name|| ' We would like to announce that a brand new anime named: ' || NAME || ' has been released !!!', CURRENT_TIMESTAMP);
 			end if;	
     END LOOP;
 
@@ -139,6 +138,7 @@ CREATE TRIGGER after_inserting_anime
 AFTER INSERT ON anime
 FOR EACH ROW
 EXECUTE FUNCTION after_inserting_anime_function();
+
 
 ----------------------------------------------------------------------------------after insert person
 
