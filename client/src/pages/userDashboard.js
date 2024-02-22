@@ -225,6 +225,36 @@ function UserDashboard() {
       console.error(err.message);
     }
   };
+  const goToHome = () => {
+    window.location.href = "/home";
+  };
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/deleteAccount`,
+        JSON.stringify({ user, email }),
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }
+      );
+    localStorage.removeItem("user");
+    localStorage.removeItem("email");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("img_url");
+    goToHome();
+    // setUser("");
+    // setEmail("");
+    // setUserRole("");
+    // setImgUrl("");
+    // toggleRerender();
+
+    // navigate("/login");
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   //   if(person.img_url!=="")
   //   {
@@ -385,6 +415,7 @@ function UserDashboard() {
               <p>
                 <strong>Active Time:</strong> {active_time}
               </p>
+              <Button variant="contained" color="error" onClick={handleDeleteAccount}>Remove Account</Button>
             </Paper>
           </div>
 

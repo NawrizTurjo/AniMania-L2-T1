@@ -2175,3 +2175,55 @@ app.put("/comment/decline", async (req, res) => {
     console.error(error.message);
   }
 });
+
+app.put("/deleteAccount", async (req, res) => {
+  try {
+    const { user, email } = req.body;
+    //console.log(review_id);
+    console.log(email);
+
+    const user_id = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+    const id = user_id.rows[0].id;
+    // const response3 = await pool.query(
+    //   `
+    //   DELETE FROM reaction
+    //   WHERE
+    //     comment_id = $1
+    //   `,
+    //   [updatedId]
+    // );
+    // const response = await pool.query(
+    //   `
+    //   DELETE FROM comments
+    //   WHERE
+    //     parent_id = $1
+    //   `,
+    //   [updatedId]
+    // );
+    const response = await pool.query(
+      `
+      DELETE FROM person
+      WHERE
+        "id" = $1
+      `,
+      [id]
+    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   CALL FILTERED_COMMENTS_UPDATE($1,'C')
+    //   `,
+    //   [id]
+    // );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
