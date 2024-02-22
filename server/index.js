@@ -2208,3 +2208,25 @@ app.put("/deleteAccount", async (req, res) => {
     console.error(error.message);
   }
 });
+
+app.post("/getNotifications", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const response = await pool.query(
+      `
+    SELECT * FROM
+    PERSON P JOIN NOTIFICATIONS N ON N.users_id= P."id"
+    where P.email=$1
+    ORDER BY N.track_date DESC
+    FETCH first 10 rows only;
+    `,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});

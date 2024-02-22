@@ -25,6 +25,7 @@ import AnimeList from "./Components/getAnimeList";
 import History from "./Components/getHistory";
 import AdvancedSearch from "./pages/advancedSearch";
 import VideoPlayer from "./Components/dateFormatter";
+import Notifications from "./pages/notifications";
 
 function App() {
   const navigate = useNavigate();
@@ -104,6 +105,7 @@ function App() {
             />
             <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
             <Route path="/userDash" element={<UserDash />}></Route>
+            <Route path="/notifications" element={<Notifications />}></Route>
             <Route
               path="/watch/anime/episodes/:id"
               element={

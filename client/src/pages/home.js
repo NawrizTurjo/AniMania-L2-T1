@@ -164,6 +164,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
   //   </div>
   // );
   const navigate = useNavigate();
+  const navigate2 = useNavigate();
 
   const handleClick = (event) => {
     if (user !== "" && userRole === "M")
@@ -172,6 +173,11 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       navigate("/userDash", { state: { user, email } });
     else navigate("/login");
   };
+
+  const handleClick2 = (event) => {
+    if (user !== "" && userRole === "U")
+      navigate("/notifications", { state: { user, email } });
+  }
 
   const handleLogout = async (e) => {
     // e.preventDefault();
@@ -229,21 +235,24 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         </h4>
       </div>
       <div className="flex-row flex-wrap ">
-        <Button
-          color="action"
-          variant="contained"
-          // onClick={handleLogout}
-          style={{ float: "right" }}
-          onMouseEnter={(event) => {
-            setAnchorE3(event.currentTarget);
-          }}
-          onMouseLeave={() => {
-            setAnchorE3(null);
-          }}
-        >
-          {isNotification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
-          {/* <NotificationsIcon /> */}
-        </Button>
+      {userRole === 'U' && (
+  <Button
+    color="action"
+    variant="contained"
+    onClick={handleClick2}
+    style={{ float: "right" }}
+    onMouseEnter={(event) => {
+      setAnchorE3(event.currentTarget);
+    }}
+    onMouseLeave={() => {
+      setAnchorE3(null);
+    }}
+  >
+    {isNotification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
+    {/* <NotificationsIcon /> */}
+  </Button>
+)}
+
         <Button
           color="action"
           variant="contained"
@@ -346,28 +355,31 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         >
           <Typography sx={{ p: 1 }}>Logout</Typography>
         </Popover>
-        <Popover
-          id="mouse-over-popover"
-          sx={{
-            pointerEvents: "none",
-          }}
-          open={open3}
-          anchorEl={anchorE3}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
-          onClose={() => {
-            setAnchorE3(null);
-          }}
-          disableRestoreFocus
-        >
-          <Typography sx={{ p: 1 }}>Notifications</Typography>
-        </Popover>
+        {userRole === 'U' && (
+  <Popover
+    id="mouse-over-popover"
+    sx={{
+      pointerEvents: "none",
+    }}
+    open={open3}
+    anchorEl={anchorE3}
+    anchorOrigin={{
+      vertical: "bottom",
+      horizontal: "left",
+    }}
+    transformOrigin={{
+      vertical: "top",
+      horizontal: "left",
+    }}
+    onClose={() => {
+      setAnchorE3(null);
+    }}
+    disableRestoreFocus
+  >
+    <Typography sx={{ p: 1 }}>Notifications</Typography>
+  </Popover>
+)}
+
         <img
           src="./images/AniMania.png"
           alt="AniMania Logo"
