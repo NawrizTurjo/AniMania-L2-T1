@@ -17,12 +17,23 @@ export default function AddAnime() {
   const [characters, setCharacters] = useState("");
   const [image, setImage] = useState("");
 
-  const [selectedSeasons, setSelectedSeasons] = useState([]);
+
+  const [anime_name, set_anime_name] = useState("");
+  const [total_episodes, set_total_episodes] = useState("");
+  const [description, setDescription] = useState ("");
+  const [opening_soundtrack, set_opening_soundtrack] = useState("");
+  const [ending_soundtrack, set_ending_soundtrack] = useState("");
+  const [streaming_sites, set_streaming_sites] = useState("");
+  const [mal_score, set_mal_score] = useState("");
+
+
+
+  const [selectedSeasons, setSelectedSeasons] = useState("");
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedAgeRating, setSelectedAgeRating] = useState("");
-  const [selectedDemographic, setSelectedDemographic] = useState([]);
-  const [selectedType, setSelectedType] = useState([]);
-  const [selectedSource, setSelectedSource] = useState([]);
+  const [selectedDemographic, setSelectedDemographic] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [selectedSource, setSelectedSource] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
 
   const [loadingGenres, setLoadingGenres] = useState(false);
@@ -45,29 +56,29 @@ export default function AddAnime() {
     setSelectedGenres(selectedList);
   };
 
-  const onSelectDemo = (selectedList, selectedItem) => {
-    setSelectedDemographic(selectedList);
-  };
+  // const onSelectDemo = (selectedList, selectedItem) => {
+  //   setSelectedDemographic(selectedList);
+  // };
 
-  const onRemoveDemo = (selectedList, removedItem) => {
-    setSelectedDemographic(selectedList);
-  };
+  // const onRemoveDemo = (selectedList, removedItem) => {
+  //   setSelectedDemographic(selectedList);
+  // };
 
-  const onSelectType = (selectedList, selectedItem) => {
-    setSelectedType(selectedList);
-  };
+  // const onSelectType = (selectedList, selectedItem) => {
+  //   setSelectedType(selectedList);
+  // };
 
-  const onRemoveType = (selectedList, removedItem) => {
-    setSelectedType(selectedList);
-  };
+  // const onRemoveType = (selectedList, removedItem) => {
+  //   setSelectedType(selectedList);
+  // };
 
-  const onSelectSource = (selectedList, selectedItem) => {
-    setSelectedSource(selectedList);
-  };
+  // const onSelectSource = (selectedList, selectedItem) => {
+  //   setSelectedSource(selectedList);
+  // };
 
-  const onRemoveSource = (selectedList, removedItem) => {
-    setSelectedSource(selectedList);
-  };
+  // const onRemoveSource = (selectedList, removedItem) => {
+  //   setSelectedSource(selectedList);
+  // };
 
   const onSelectTags = (selectedList, selectedItem) => {
     setSelectedTags(selectedList);
@@ -81,11 +92,27 @@ export default function AddAnime() {
     setSelectedAgeRating(e.target.value);
   };
 
+  const handleTypeChange = (e) => {
+    setSelectedType(e.target.value);
+  };
+
+  const handleDemoChange = (e) => {
+    setSelectedDemographic(e.target.value);
+  };
+
+  const handleSourceChange = (e) => {
+    setSelectedSource(e.target.value);
+  };
+
+  const handleSeasonChange = (e) => {
+    setSelectedSeasons(e.target.value);
+  };
+
   const seasonsOptions = [
-    { name: "summer", id: 1 },
-    { name: "fall", id: 2 },
-    { name: "winter", id: 3 },
-    { name: "spring", id: 4 },
+    "summer",
+    "fall",
+    "winter",
+    "spring",
   ];
   const ageRatingOptions = [
     "PG - Children",
@@ -97,21 +124,41 @@ export default function AddAnime() {
   ];
 
   const dempgraphicOptions = [
-    { name: "Shounen", id: 1 },
-    { name: "Shoujo", id: 2 },
-    { name: "Josei", id: 3 },
-    { name: "Seinen", id: 4 },
-    { name: "Kids", id: 5 },
+    "Shounen",
+    "Shoujo",
+    "Josei",
+    "Seinen",
+    "Kids",
   ];
 
   const typeOptions = [
-    { name: "TV", id: 1 },
-    { name: "Special", id: 2 },
-    { name: "ONA", id: 3 },
-    { name: "Music", id: 4 },
-    { name: "Movie", id: 5 },
-    { name: "TV Special", id: 6 },
-    { name: "OVA", id: 7 },
+    "TV", 
+    "Special", 
+    "ONA",
+    "Music",
+    "Movie",
+    "TV Special",
+    "OVA",
+  ];
+
+  const sourceOptions = [
+    "4-koma manga",
+    "Music",
+    "Book",
+    "Novel",
+    "Web novel",
+    "Mixed media",
+    "Visual novel",
+    "Other",
+    "Unknown",
+    "Web manga",
+    "Manga",
+    "Light novel",
+    "Picture book",
+    "Game",
+    "Card game",
+    "Original",
+    "Radio",
   ];
 
   const userEmail = localStorage.getItem("email");
@@ -152,11 +199,71 @@ export default function AddAnime() {
     }
   }
 
-  const handleAddAnime = (e) => {
+  const handleAddAnime = async(e) => {
+    // e.preventDefault();
+    // console.log(selectedDemographic);
+    // console.log(selectedType);
+    // console.log("Add Anime");
     e.preventDefault();
-    console.log(selectedDemographic);
-    console.log(selectedType);
-    console.log("Add Anime");
+    //setLoading(true);
+    //console.log("Search String: ", searchString);
+    // console.log(
+    //   "Seasons: ",
+    //   selectedSeasons.map((item) => item.name).join(", ")
+    // );
+    console.log("Genres: ", selectedGenres);
+    console.log("Year: ", year);
+    console.log("Age Rating: ", selectedAgeRating);
+    //console.log("Rating: ", rating);
+    console.log("Types: ", selectedType);
+    console.log("Demographic: ", selectedDemographic);
+    console.log("Source: ", selectedSource);
+    console.log("Episodes: ", episodes);
+    console.log("Characters: ", characters);
+
+    //const searchSeasons = selectedSeasons.map((item) => item.name).join(", ");
+    const searchGenres = selectedGenres
+      .map((item) => item.genre_name)
+      .join(", ");
+    //const searchTypes = selectedType.map((item) => item.name).join(", ");
+    // const searchDemographic = selectedDemographic
+    //   .map((item) => item.name)
+    //   .join(", ");
+    // const searchSource = selectedSource
+    //   .map((item) => item.anime_source)
+    //   .join(", ");
+    const searchTags = selectedTags
+    .map((item) => item.tag_name)
+    .join(", ");
+
+    const res = await axios.post(`http://localhost:3000/addAnime`, {
+      anime_name: anime_name,
+      title_screen: image,
+      total_episodes: total_episodes,
+      description: description,
+
+     // searchString: searchString,
+      season: selectedSeasons,
+      genre: searchGenres,
+      tag: searchTags,
+      year: year,
+      ageRating: selectedAgeRating,
+      //rating: rating,
+      type: selectedType,
+      demographic: selectedDemographic,
+      source: selectedSource,
+      opening_soundtrack:opening_soundtrack,
+      ending_soundtrack: ending_soundtrack,
+      streaming_sites: streaming_sites,
+      mal_score: mal_score,
+      //episodeCount: episodes,
+      //characters: characters,
+      userEmail: userEmail,
+    });
+    // setAnimeList(res.data);
+    // setIsAnime(true);
+    // console.log(res.data);
+    // setLoading(false);
   };
 
   useEffect(() => {
@@ -172,7 +279,8 @@ export default function AddAnime() {
   return (
     <>
       <form className="mt-20">
-        <input className="form-control" type="text" placeholder="Title" />
+        <input className="form-control" type="text" placeholder="Title" value={anime_name}
+          onChange={(e) => set_anime_name(e.target.value)} />
         <label htmlFor="ageRating">Select Age Rating</label>
         <Select
           className="mt-2"
@@ -204,6 +312,8 @@ export default function AddAnime() {
             id="outlined-number"
             label="Total Episodes"
             type="number"
+            value={total_episodes}
+            onChange={(e) => set_total_episodes(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
@@ -227,32 +337,44 @@ export default function AddAnime() {
           rows={4}
           variant="outlined"
           label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           placeholder="Description"
           fullWidth
         />
         <div>
-          <MultiSelect
-            options={typeOptions}
-            displayValue="name"
-            onSelect={onSelectType}
-            onRemove={onRemoveType}
-            selectedValues={selectedType}
-            placeholder="Select Type"
-          />
-          <br />
-          <br />
+        <label htmlFor="Type">Select Type</label>
+        <Select
+          className="mt-2"
+          id="Type"
+          value={selectedType}
+          label="Select Type"
+          onChange={handleTypeChange}
+          fullWidth
+        >
+          {typeOptions.map((option, index) => (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
         </div>
         <div>
-          <MultiSelect
-            options={seasonsOptions}
-            displayValue="name"
-            onSelect={onSelect}
-            onRemove={onRemove}
-            selectedValues={selectedSeasons}
-            placeholder="Select Seasons"
-          />
-          <br />
-          <br />
+        <label htmlFor="Season">Select Season</label>
+        <Select
+          className="mt-2"
+          id="Season"
+          value={selectedSeasons}
+          label="Select Season"
+          onChange={handleSeasonChange}
+          fullWidth
+        >
+          {seasonsOptions.map((option, index) => (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
         </div>
         <TextField
           type="number"
@@ -261,20 +383,23 @@ export default function AddAnime() {
           value={year}
           onChange={(e) => setYear(e.target.value)}
         />
-        <TextField type="text" label="Studio" placeholder="Studio" />
-        <TextField type="text" label="Duration" placeholder="Duration" />
-        <div>
-          <MultiSelect
-            options={dempgraphicOptions}
-            displayValue="name"
-            onSelect={onSelectDemo}
-            onRemove={onRemoveDemo}
-            selectedValues={selectedDemographic}
-            placeholder="Select Demographic"
-          />
-          <br />
-          <br />
-        </div>
+        {/* <TextField type="text" label="Studio" placeholder="Studio" />
+        <TextField type="text" label="Duration" placeholder="Duration" /> */}
+        <label htmlFor="Demographic">Select Demographic</label>
+         <Select
+          className="mt-2"
+          id="Demographic"
+          value={selectedDemographic}
+          label="Select Demographic"
+          onChange={handleDemoChange}
+          fullWidth
+        >
+          {dempgraphicOptions.map((option, index) => (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
         <div>
           <MultiSelect
             options={tags}
@@ -287,45 +412,56 @@ export default function AddAnime() {
           <br />
           <br />
         </div>
-        <MultiSelect
-          options={source}
-          displayValue="anime_source"
-          onSelect={onSelectSource}
-          onRemove={onRemoveSource}
-          selectedValues={selectedSource}
-          placeholder="Select Source"
-        />
+        <label htmlFor="Source">Select Source</label>
+        <Select
+          className="mt-2"
+          id="source"
+          value={selectedSource}
+          label="Select Source"
+          onChange={handleSourceChange}
+          fullWidth
+        >
+          {sourceOptions.map((option, index) => (
+            <MenuItem key={index} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
         <br />
         <br />
         <div className="row">
           <div className="col">
-            <input type="text" className="form-control" placeholder="Opening" />
+            <input type="text" className="form-control" placeholder="Opening Soundtrack" value={opening_soundtrack}
+          onChange={(e) => set_opening_soundtrack(e.target.value)}/>
           </div>
-          <div className="col">
+          {/* <div className="col">
             <input
               type="text"
               className="form-control"
               placeholder="Opening Band"
             />
-          </div>
+          </div> */}
           <div className="col">
-            <input type="text" className="form-control" placeholder="Ending" />
+            <input type="text" className="form-control" placeholder="Ending Soundtrack" value={ending_soundtrack}
+          onChange={(e) => set_ending_soundtrack(e.target.value)} />
           </div>
-          <div className="col">
+          {/* <div className="col">
             <input
               type="text"
               className="form-control"
               placeholder="Ending Band"
             />
-          </div>
+          </div> */}
         </div>
         <input
           className="form-control"
           type="text"
           placeholder="Streaming Sites"
+          value={streaming_sites}
+          onChange={(e) => set_streaming_sites(e.target.value)}
         />
         <div className="form-row">
-          <div className="form-group col">
+          {/* <div className="form-group col">
             <input
               type="text"
               className="form-control"
@@ -341,12 +477,14 @@ export default function AddAnime() {
               className="form-control"
               placeholder="Producers"
             />
-          </div>
+          </div> */}
           <div className="form-group col">
             <input
               type="number"
               className="form-control"
               placeholder="Mal Score"
+              value={mal_score}
+              onChange={(e) => set_mal_score(e.target.value)}
             />
           </div>
         </div>

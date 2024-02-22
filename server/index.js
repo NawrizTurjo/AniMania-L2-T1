@@ -2231,3 +2231,109 @@ app.post("/getNotifications", async (req, res) => {
     console.error(error.message);
   }
 });
+
+
+app.post("/addAnime", async (req, res) => {
+  const {
+      anime_name,
+      title_screen,
+      total_episodes,
+      description,
+
+     // searchString: searchString,
+      season,
+      genre,
+      tag,
+      year,
+      ageRating,
+      //rating: rating,
+      type,
+      demographic,
+      source,
+      opening_soundtrack,
+      ending_soundtrack,
+      streaming_sites,
+      mal_score,
+      //episodeCount: episodes,
+      //characters: characters,
+      userEmail,
+  } = req.body;
+  console.log(userEmail);
+  try {
+    // const ani_id= await pool.query(
+    //   `select max(anime_id)+1
+    //   from anime`
+
+    // );
+    // console.log(ani_id);
+    const yearIn = isNaN(parseInt(year)) ? 0 : parseInt(year);
+const number_of_episodes_In = isNaN(parseInt(total_episodes)) ? 0 : parseInt(total_episodes);
+const mal_score_In = isNaN(parseInt(mal_score)) ? 0 : parseInt(mal_score);
+
+
+    const newAnimeRes = await pool.query(
+      'INSERT INTO anime (anime_name, title_screen, number_of_episodes, description, year, age_rating, anime_type, demographic, anime_source, streaming_sites, mal_score, season) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING anime_id',
+      [anime_name, title_screen, number_of_episodes_In, description, yearIn, ageRating, type, demographic, source,  streaming_sites, mal_score_In,season]
+  );
+  const ani_id = newAnimeRes.rows[0].anime_id;
+  console.log(ani_id);
+  const newsOound = await pool.query(
+    `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`, [ani_id, opening_soundtrack]
+  );
+  const newsEound = await pool.query(
+    `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`, [ani_id, ending_soundtrack]
+  );
+
+
+for (const genreName of genre.split(', ')) {
+  const genreResult = await pool.query(
+    `SELECT genre_id FROM genres WHERE genre_name=$1`, [genreName]
+  );
+  // Extract the genre_id from the result
+  if (genreResult.rows.length > 0) {
+    const genreId = genreResult.rows[0].genre_id;
+    await pool.query('INSERT INTO genre_anime_relationship (anime_id, genre_id) VALUES ($1, $2)', [ani_id, genreId]);
+  } else {
+    // Handle the case where the genre does not exist, if necessary
+    console.log(`Genre not found: ${genreName}`);
+  }
+}
+
+for (const tagName of tag.split(', ')) {
+  const tagResult = await pool.query(
+    `SELECT tag_id FROM tags WHERE tag_name=$1`, [tagName]
+  );
+  // Extract the tag_id from the result
+  if (tagResult.rows.length > 0) {
+    const tagId = tagResult.rows[0].tag_id;
+    await pool.query('INSERT INTO tag_id_table(anime_id, tag_id) VALUES ($1, $2)', [ani_id, tagId]);
+  } else {
+    // Handle the case where the tag does not exist, if necessary
+    console.log(`Tag not found: ${tagName}`);
+  }
+}
+
+const user_id = await pool.query(
+  `
+  SELECT "id"
+  FROM person
+  WHERE email = $1
+  `,
+  [userEmail]
+);
+const id = user_id.rows[0].id;
+
+const updateanimeadd = await pool.query(
+  `
+  update moderator set added_series= added_series+1 where moderator_id=$1
+  `,
+  [id]
+);
+
+res.json({ message: 'Anime added successfully!' });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
