@@ -228,12 +228,15 @@ function UserDashboard() {
   const goToHome = () => {
     window.location.href = "/home";
   };
+
+
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
     try {
+      console.log(email);
       const response = await axios.put(
         `http://localhost:3000/deleteAccount`,
-        JSON.stringify({ user, email }),
+        JSON.stringify({ email }),
         {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
@@ -241,6 +244,7 @@ function UserDashboard() {
       );
     localStorage.removeItem("user");
     localStorage.removeItem("email");
+    console.log(email);
     localStorage.removeItem("userRole");
     localStorage.removeItem("img_url");
     goToHome();
@@ -415,7 +419,7 @@ function UserDashboard() {
               <p>
                 <strong>Active Time:</strong> {active_time}
               </p>
-              <Button variant="contained" color="error" onClick={handleDeleteAccount}>Remove Account</Button>
+              <Button variant="contained" color="error" onClick={(e) => handleDeleteAccount(e)}>Remove Account</Button>
             </Paper>
           </div>
 
