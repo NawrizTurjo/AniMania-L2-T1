@@ -26,6 +26,9 @@ import History from "./Components/getHistory";
 import AdvancedSearch from "./pages/advancedSearch";
 import VideoPlayer from "./Components/dateFormatter";
 import Notifications from "./pages/notifications";
+import AddAnime from "./pages/addAnime";
+import AddEpisode from "./pages/addEpisode";
+import DatePickerValue from "./Components/dateComp";
 
 function App() {
   const navigate = useNavigate();
