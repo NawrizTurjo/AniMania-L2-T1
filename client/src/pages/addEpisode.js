@@ -18,6 +18,7 @@ export default function AddEpisode() {
   const [videoUrl, setVideoUrl] = useState("");
   const [releaseDate, setReleaseDate] = useState(null);
   const [thumbnail, setThumbnail] = useState("");
+  const [streamingSites, setStreamingSites] = useState("");
 
   const animeId = useParams().id;
 
@@ -36,7 +37,7 @@ export default function AddEpisode() {
 
   const handleImageChange = async (event) => {
     if (event.target.files[0]) {
-    //   setThumbnail(event.target.files[0]);
+      //   setThumbnail(event.target.files[0]);
       try {
         const imageUrl = await uploadImage(event.target.files[0]);
         console.log("Uploaded image URL:", thumbnail);
@@ -86,6 +87,15 @@ export default function AddEpisode() {
         placeholder="Video URL"
         value={videoUrl}
         onChange={(e) => setVideoUrl(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+
+      <TextField
+        type="text"
+        placeholder="Streaming Site"
+        value={streamingSites}
+        onChange={(e) => setStreamingSites(e.target.value)}
         fullWidth
         margin="normal"
       />

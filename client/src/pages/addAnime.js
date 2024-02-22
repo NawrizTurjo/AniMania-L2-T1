@@ -264,7 +264,7 @@ export default function AddAnime() {
         <TextField type="text" label="Studio" placeholder="Studio" />
         <TextField type="text" label="Duration" placeholder="Duration" />
         <div>
-          <MultipleSelect
+          <MultiSelect
             options={dempgraphicOptions}
             displayValue="name"
             onSelect={onSelectDemo}
