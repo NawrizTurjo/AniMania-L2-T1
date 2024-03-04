@@ -2267,8 +2267,8 @@ app.post("/addAnime", async (req, res) => {
     // );
     // console.log(ani_id);
     const yearIn = isNaN(parseInt(year)) ? 0 : parseInt(year);
-const number_of_episodes_In = isNaN(parseInt(total_episodes)) ? 0 : parseInt(total_episodes);
-const mal_score_In = isNaN(parseInt(mal_score)) ? 0 : parseInt(mal_score);
+    const number_of_episodes_In = isNaN(parseInt(total_episodes)) ? 0 : parseInt(total_episodes);
+    const mal_score_In = isNaN(parseInt(mal_score)) ? 0 : parseInt(mal_score);
 
 
     const newAnimeRes = await pool.query(
