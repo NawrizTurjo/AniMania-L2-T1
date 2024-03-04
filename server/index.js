@@ -114,6 +114,7 @@ app.post("/AdvancedSearch", async (req, res) => {
     userEmail,
   } = req.body;
   console.log(userEmail);
+  console.log(req.body);
   try {
     let query = `
     with T AS(
@@ -1025,11 +1026,11 @@ app.put("/userDash/updateBio", async (req, res) => {
     await pool.query(
       `
     UPDATE "USER"
-  SET
-    bio = $1
-  WHERE user_id = (
-    SELECT EMAIL_TO_ID($1) as "id"
-  )
+    SET
+      bio = $1
+    WHERE user_id = (
+      SELECT EMAIL_TO_ID($2) as "id"
+    )
     `,
       [bio, email]
     );
