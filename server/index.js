@@ -2366,3 +2366,42 @@ app.post("/addAnime", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+app.put("/deleteAnime", async (req, res) => {
+  try {
+    const { email, anime_id } = req.body;
+    console.log( email, anime_id);
+    const user_res = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+
+    const user_id = user_res.rows[0].id;
+    
+    const response = await pool.query(
+      `
+      delete from anime where anime_id= $1
+      `,
+      [anime_id]
+    );
+
+    const response2 = await pool.query(
+      `
+      update moderator
+      set
+        deleted_series = deleted_series + 1
+        where
+        moderator_id = $1
+      `,
+      [user_id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});

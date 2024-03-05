@@ -183,6 +183,18 @@ const AnimeListItem = ({
 
   const handleAgree = async () => {
     toggleRerender();
+    try {
+      const response = await axios.put("http://localhost:3000/deleteAnime", {
+        //status: newStat,
+        email: email,
+        anime_id: anime_id,
+      });
+      //toast.success(`Anime ${title} status updated to ${newStat}`);
+      // toggleRerender();
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
+    }
   };
 
   const handlePopoverOpen = (event) => {
