@@ -115,6 +115,22 @@ function Notifications() {
     }
   };
 
+  //const Notifications = ({ notifications }) => {
+    const getTimeAgo = (trackDate) => {
+      const trackTime = new Date(trackDate).getTime();
+      const currentTime = new Date().getTime();
+      const elapsedTime = currentTime - trackTime;
+      const seconds = Math.floor(elapsedTime / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+  
+      if (days > 0) return `${days} day(s) ago`;
+      if (hours > 0) return `${hours} hour(s) ago`;
+      if (minutes > 0) return `${minutes} minute(s) ago`;
+      return `${seconds} second(s) ago`;
+    };
+
   useEffect(() => {
     let isMounted = true; // Flag to prevent state updates after unmounting
 
@@ -144,6 +160,8 @@ function Notifications() {
       // }
     };
 
+    
+
     const interval = setInterval(fetchNotifications, 10000); // Fetch reviews every 60 seconds
 
     fetchNotifications(); // Fetch reviews on component mount
@@ -164,6 +182,8 @@ function Notifications() {
     getNotifications();
   }, [notifications]);
 
+  
+
   if (loading) {
     return <h2>Loading...</h2>;
   }
@@ -175,13 +195,15 @@ function Notifications() {
         <Table>
           <TableHead>
             <TableRow>
-              {/* <TableCell>Notifications For You</TableCell> */}
+              <TableCell>Notification</TableCell>
+              <TableCell>Time</TableCell> {/* New column for time ago */}
             </TableRow>
           </TableHead>
           <TableBody>
             {notifications.map((notification, index) => (
               <TableRow key={index}>
                 <TableCell>{notification.notifications}</TableCell>
+                <TableCell>{getTimeAgo(notification.track_date)}</TableCell> {/* Display time ago */}
               </TableRow>
             ))}
           </TableBody>
