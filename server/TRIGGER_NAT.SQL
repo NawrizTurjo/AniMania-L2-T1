@@ -170,3 +170,5 @@ CREATE INDEX ON episodes (anime_id);
 CREATE INDEX ON ANIME (mal_score);
 
 CREATE INDEX ON ANIME (YEAR);
+
+CREATE INDEX ON person(EMAIL);

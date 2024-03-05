@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import MultiSelect from "multiselect-react-dropdown";
-import { Select, MenuItem, TextField, Input } from "@mui/material";
+import { Select, MenuItem, TextField, Input, Button } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MultipleSelect from "../Components/multipleSelect";
 import { useHistory } from "react-router-dom";
@@ -20,16 +20,13 @@ export default function AddAnime() {
   const [characters, setCharacters] = useState("");
   const [image, setImage] = useState("");
 
-
   const [anime_name, set_anime_name] = useState("");
   const [total_episodes, set_total_episodes] = useState("");
-  const [description, setDescription] = useState ("");
+  const [description, setDescription] = useState("");
   const [opening_soundtrack, set_opening_soundtrack] = useState("");
   const [ending_soundtrack, set_ending_soundtrack] = useState("");
   const [streaming_sites, set_streaming_sites] = useState("");
   const [mal_score, set_mal_score] = useState("");
-
-
 
   const [selectedSeasons, setSelectedSeasons] = useState("");
   const [selectedGenres, setSelectedGenres] = useState([]);
@@ -113,12 +110,7 @@ export default function AddAnime() {
     setSelectedSeasons(e.target.value);
   };
 
-  const seasonsOptions = [
-    "summer",
-    "fall",
-    "winter",
-    "spring",
-  ];
+  const seasonsOptions = ["summer", "fall", "winter", "spring"];
   const ageRatingOptions = [
     "PG - Children",
     "PG-13 - Teens 13 or older",
@@ -128,17 +120,11 @@ export default function AddAnime() {
     "G - All Ages",
   ];
 
-  const dempgraphicOptions = [
-    "Shounen",
-    "Shoujo",
-    "Josei",
-    "Seinen",
-    "Kids",
-  ];
+  const dempgraphicOptions = ["Shounen", "Shoujo", "Josei", "Seinen", "Kids"];
 
   const typeOptions = [
-    "TV", 
-    "Special", 
+    "TV",
+    "Special",
     "ONA",
     "Music",
     "Movie",
@@ -204,7 +190,7 @@ export default function AddAnime() {
     }
   }
 
-  const handleAddAnime = async(e) => {
+  const handleAddAnime = async (e) => {
     // e.preventDefault();
     // console.log(selectedDemographic);
     // console.log(selectedType);
@@ -237,9 +223,7 @@ export default function AddAnime() {
     // const searchSource = selectedSource
     //   .map((item) => item.anime_source)
     //   .join(", ");
-    const searchTags = selectedTags
-    .map((item) => item.tag_name)
-    .join(", ");
+    const searchTags = selectedTags.map((item) => item.tag_name).join(", ");
 
     const res = await axios.post(`http://localhost:3000/addAnime`, {
       anime_name: anime_name,
@@ -247,7 +231,7 @@ export default function AddAnime() {
       total_episodes: total_episodes,
       description: description,
 
-     // searchString: searchString,
+      // searchString: searchString,
       season: selectedSeasons,
       genre: searchGenres,
       tag: searchTags,
@@ -257,7 +241,7 @@ export default function AddAnime() {
       type: selectedType,
       demographic: selectedDemographic,
       source: selectedSource,
-      opening_soundtrack:opening_soundtrack,
+      opening_soundtrack: opening_soundtrack,
       ending_soundtrack: ending_soundtrack,
       streaming_sites: streaming_sites,
       mal_score: mal_score,
@@ -269,7 +253,6 @@ export default function AddAnime() {
     // setIsAnime(true);
     // console.log(res.data);
     // setLoading(false);
-    
   };
 
   useEffect(() => {
@@ -285,8 +268,13 @@ export default function AddAnime() {
   return (
     <>
       <form className="mt-20">
-        <input className="form-control" type="text" placeholder="Title" value={anime_name}
-          onChange={(e) => set_anime_name(e.target.value)} />
+        <input
+          className="form-control"
+          type="text"
+          placeholder="Title"
+          value={anime_name}
+          onChange={(e) => set_anime_name(e.target.value)}
+        />
         <label htmlFor="ageRating">Select Age Rating</label>
         <Select
           className="mt-2"
@@ -349,38 +337,38 @@ export default function AddAnime() {
           fullWidth
         />
         <div>
-        <label htmlFor="Type">Select Type</label>
-        <Select
-          className="mt-2"
-          id="Type"
-          value={selectedType}
-          label="Select Type"
-          onChange={handleTypeChange}
-          fullWidth
-        >
-          {typeOptions.map((option, index) => (
-            <MenuItem key={index} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
+          <label htmlFor="Type">Select Type</label>
+          <Select
+            className="mt-2"
+            id="Type"
+            value={selectedType}
+            label="Select Type"
+            onChange={handleTypeChange}
+            fullWidth
+          >
+            {typeOptions.map((option, index) => (
+              <MenuItem key={index} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
         </div>
         <div>
-        <label htmlFor="Season">Select Season</label>
-        <Select
-          className="mt-2"
-          id="Season"
-          value={selectedSeasons}
-          label="Select Season"
-          onChange={handleSeasonChange}
-          fullWidth
-        >
-          {seasonsOptions.map((option, index) => (
-            <MenuItem key={index} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </Select>
+          <label htmlFor="Season">Select Season</label>
+          <Select
+            className="mt-2"
+            id="Season"
+            value={selectedSeasons}
+            label="Select Season"
+            onChange={handleSeasonChange}
+            fullWidth
+          >
+            {seasonsOptions.map((option, index) => (
+              <MenuItem key={index} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
         </div>
         <TextField
           type="number"
@@ -392,7 +380,7 @@ export default function AddAnime() {
         {/* <TextField type="text" label="Studio" placeholder="Studio" />
         <TextField type="text" label="Duration" placeholder="Duration" /> */}
         <label htmlFor="Demographic">Select Demographic</label>
-         <Select
+        <Select
           className="mt-2"
           id="Demographic"
           value={selectedDemographic}
@@ -437,8 +425,13 @@ export default function AddAnime() {
         <br />
         <div className="row">
           <div className="col">
-            <input type="text" className="form-control" placeholder="Opening Soundtrack" value={opening_soundtrack}
-          onChange={(e) => set_opening_soundtrack(e.target.value)}/>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Opening Soundtrack"
+              value={opening_soundtrack}
+              onChange={(e) => set_opening_soundtrack(e.target.value)}
+            />
           </div>
           {/* <div className="col">
             <input
@@ -448,8 +441,13 @@ export default function AddAnime() {
             />
           </div> */}
           <div className="col">
-            <input type="text" className="form-control" placeholder="Ending Soundtrack" value={ending_soundtrack}
-          onChange={(e) => set_ending_soundtrack(e.target.value)} />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Ending Soundtrack"
+              value={ending_soundtrack}
+              onChange={(e) => set_ending_soundtrack(e.target.value)}
+            />
           </div>
           {/* <div className="col">
             <input
@@ -495,9 +493,15 @@ export default function AddAnime() {
           </div>
         </div>
 
-        <button type="button" onClick={handleAddAnime}>
-          <Link to="/home">Add Anime</Link>
-        </button>
+        <Button
+          variant="contained"
+          onClick={handleAddAnime}
+          style={{ color: "white" }}
+        >
+          <Link to="/home" style={{ textDecoration: "none", color: "white" }}>
+            Add Anime
+          </Link>
+        </Button>
       </form>
     </>
   );

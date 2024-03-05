@@ -69,6 +69,46 @@ app.post("/sign_up", async (req, res) => {
   }
 });
 
+app.post("/:id/addEpisode", async (req, res) => {
+  try {
+    // const {animeId} = req.params;
+    const {
+      animeId,
+      episodeName,
+      episodeNumber,
+      videoUrl,
+      episodeLength,
+      thumbnail,
+      releaseDate,
+      streamingSites,
+    } = req.body;
+    // console.log(email);
+    console.log(
+      animeId,
+      episodeName,
+      episodeNumber,
+      videoUrl,
+      episodeLength,
+      thumbnail,
+      releaseDate,
+      streamingSites
+    );
+    console.log(releaseDate);
+    const response = await pool.query(
+      `
+      INSERT INTO episodes (anime_id,episode_no,episode_title,thumbnail,"LENGTH",release_date,availability,streaming_sites)
+      values ($1,$2,$3,$4,$5,$6,'Y',$7)
+      `,
+      [animeId, episodeNumber, episodeName,thumbnail, episodeLength, releaseDate,streamingSites]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.post("/getKarma", async (req, res) => {
   try {
     const { email } = req.body;
@@ -2370,7 +2410,7 @@ app.post("/addAnime", async (req, res) => {
 app.put("/deleteAnime", async (req, res) => {
   try {
     const { email, anime_id } = req.body;
-    console.log( email, anime_id);
+    console.log(email, anime_id);
     const user_res = await pool.query(
       `
       SELECT EMAIL_TO_ID($1) as "id"
@@ -2379,7 +2419,7 @@ app.put("/deleteAnime", async (req, res) => {
     );
 
     const user_id = user_res.rows[0].id;
-    
+
     const response = await pool.query(
       `
       delete from anime where anime_id= $1
