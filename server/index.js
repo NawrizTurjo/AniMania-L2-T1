@@ -99,7 +99,15 @@ app.post("/:id/addEpisode", async (req, res) => {
       INSERT INTO episodes (anime_id,episode_no,episode_title,thumbnail,"LENGTH",release_date,availability,streaming_sites)
       values ($1,$2,$3,$4,$5,$6,'Y',$7)
       `,
-      [animeId, episodeNumber, episodeName,thumbnail, episodeLength, releaseDate,streamingSites]
+      [
+        animeId,
+        episodeNumber,
+        episodeName,
+        thumbnail,
+        episodeLength,
+        releaseDate,
+        streamingSites,
+      ]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
@@ -1523,8 +1531,6 @@ app.put("/anime/:id", async (req, res) => {
   }
 });
 
-
-
 app.get("/anime/:id/ep", async (req, res) => {
   try {
     const idAnime = await pool.query(
@@ -2461,13 +2467,12 @@ app.put("/deleteAnime", async (req, res) => {
   }
 });
 
-
 app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
   try {
-    const {email} = req.body;
+    const { email } = req.body;
     //console.log( email, anime_id);
     const anime_id = parseInt(req.params.id);
-    const episode_no =parseInt(req.params.selectedEpisode);
+    const episode_no = parseInt(req.params.selectedEpisode);
 
     const user_res = await pool.query(
       `
@@ -2477,7 +2482,7 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
     );
 
     const user_id = user_res.rows[0].id;
-    
+
     const response = await pool.query(
       `
       delete from episodes where anime_id= $1 and episode_no = $2
@@ -2499,6 +2504,18 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
     // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/admin/getAnimeSize", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM anime`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
   } catch (error) {
     console.error(error.message);
   }

@@ -76,6 +76,8 @@ const AnimeListItem = ({
     routeImgUrl || localStorage.getItem("img_url") || ""
   );
 
+  let animeList = localStorage.getItem("animeList");
+
   const getContribution = async (email) => {
     // e.preventDefault();
     try {
@@ -237,6 +239,26 @@ const AnimeListItem = ({
   //     toast.success(`Added ${title} to favorites`);
   //   }
   // };
+  // const getAnimeList = async () => {
+  //   try {
+  //     const animes = await axios.post(
+  //       `http://localhost:3000/userDash/getAnimeList`,
+  //       JSON.stringify({ email }),
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         withCredentials: true,
+  //       }
+  //     );
+
+  //     // setAnimeList(animes.data);
+  //     // console.log(animes.data);
+  //     // setLoading(false);
+  //     // console.log(animeList);
+  //     localStorage.setItem("animeList", JSON.stringify(animes.data));
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
+  // };
   const handleFavorite = async () => {
     try {
       const response = await axios.put("http://localhost:3000/home", {
@@ -245,6 +267,9 @@ const AnimeListItem = ({
         anime_id: anime_id,
       });
       await getContribution(email);
+      // await getAnimeList();
+      toggleRerender();
+      
 
       console.log("This is fav state: ", fav);
       if (response.status === 200) {

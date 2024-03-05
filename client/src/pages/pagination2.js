@@ -12,6 +12,7 @@ const MaterialPagination = ({
 
   const handleChange = (event, value) => {
     paginate(value);
+    window.scrollTo(0, 0);
     toggleRerender();
   };
 

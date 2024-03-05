@@ -121,8 +121,9 @@ export default function AddEpisode() {
           margin="normal"
         />
         <TextField
-          type="text"
+          // type="text"
           placeholder="Episode Number"
+          type="number"
           value={episodeNumber}
           onChange={(e) => setEpisodeNumber(e.target.value)}
           // fullWidth
@@ -130,8 +131,9 @@ export default function AddEpisode() {
           margin="normal"
         />
         <TextField
-          type="text"
+          // type="text"
           placeholder="Length in minutes"
+          type="number"
           value={episodeLength}
           onChange={(e) => setEpisodeLength(e.target.value)}
           // fullWidth
