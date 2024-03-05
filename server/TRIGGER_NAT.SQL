@@ -156,3 +156,17 @@ RETURN CONT;
 END;
 $$ LANGUAGE plpgsql;
 /
+
+CREATE INDEX ON ANIME (anime_id);
+
+CREATE INDEX ON ANIME (anime_name);
+
+CREATE INDEX ON "characters" (CHARACTER_NAME);
+
+CREATE INDEX ON tags (TAG_NAME);
+
+CREATE INDEX ON episodes (anime_id);
+
+CREATE INDEX ON ANIME (mal_score);
+
+CREATE INDEX ON ANIME (YEAR);

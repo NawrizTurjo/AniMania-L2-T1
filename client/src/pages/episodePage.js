@@ -86,7 +86,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
     }
   };
   const handleSubmitReview = async (event) => {
-    // event.preventDefault();
+    event.preventDefault();
     console.log("Review:", review, "by ", user);
     // const oldReviews = reviews;
     try {
@@ -273,10 +273,10 @@ export default function Episodes({ toggleRerender, setProgress }) {
                         <strong>Year:</strong> {anime.year}
                       </li>
                       <li className="list-group-item">
-                        <strong>Source:</strong> {anime.SOURCE}
+                        <strong>Source:</strong> {anime.anime_source}
                       </li>
                       <li className="list-group-item">
-                        <strong>Type:</strong> {anime.TYPE}
+                        <strong>Type:</strong> {anime.anime_type}
                       </li>
                       <li className="list-group-item">
                         <strong>Tags:</strong> {anime.tags}

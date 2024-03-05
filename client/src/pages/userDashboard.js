@@ -213,10 +213,10 @@ function UserDashboard() {
           withCredentials: true,
         }
       );
-      let updatedBio = response.data[0].bio;
-      setBio(updatedBio); // Update img_url in state
-      console.log(updatedBio);
-      localStorage.setItem("bio", updatedBio);
+      // let updatedBio = response.data[0].bio;
+      // setBio(updatedBio); // Update img_url in state
+      // console.log(updatedBio);
+      localStorage.setItem("bio", bio);
       // console.log(animeList)
       //   setUser(name);
       //   localStorage.setItem("user", name);

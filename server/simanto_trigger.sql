@@ -72,6 +72,7 @@ BEGIN
     DELETE FROM watch_history WHERE user_id = OLD."id";
     DELETE FROM users_anime_list WHERE user_id = OLD."id";
     DELETE FROM comments WHERE user_id = OLD."id";
+    DELETE FROM review WHERE user_id = OLD."id";
     DELETE FROM reaction WHERE user_id = OLD."id";
     DELETE FROM notifications WHERE users_id = OLD."id";
     DELETE FROM "USER" WHERE user_id = OLD."id";

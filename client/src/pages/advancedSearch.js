@@ -202,7 +202,7 @@ function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
     const searchSource = selectedSource
       .map((item) => item.anime_source)
       .join(", ");
-    const searchTags = "";
+    const searchTags = selectedTags.map((item) => item.tag_name).join(", ");
 
     const res = await axios.post(`http://localhost:3000/AdvancedSearch`, {
       searchString: searchString,
