@@ -4,6 +4,9 @@ import MultiSelect from "multiselect-react-dropdown";
 import { Select, MenuItem, TextField, Input } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MultipleSelect from "../Components/multipleSelect";
+import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 export default function AddAnime() {
   const [currentSeasons, setCurrentSeasons] = useState("");
@@ -39,6 +42,8 @@ export default function AddAnime() {
   const [loadingGenres, setLoadingGenres] = useState(false);
   const [loadingTags, setLoadingTags] = useState(false);
   const [loadingSources, setLoadingSources] = useState(false);
+
+  //const history = useHistory();
 
   const onSelect = (selectedList, selectedItem) => {
     setSelectedSeasons(selectedList);
@@ -264,6 +269,7 @@ export default function AddAnime() {
     // setIsAnime(true);
     // console.log(res.data);
     // setLoading(false);
+    
   };
 
   useEffect(() => {
@@ -489,8 +495,8 @@ export default function AddAnime() {
           </div>
         </div>
 
-        <button type="submit" onClick={handleAddAnime}>
-          Add Anime
+        <button type="button" onClick={handleAddAnime}>
+          <Link to="/home">Add Anime</Link>
         </button>
       </form>
     </>

@@ -9,6 +9,7 @@ import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typography from "@mui/material/Typography";
+import { useHistory } from "react-router-dom";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -44,6 +45,7 @@ export default function ModeratorDash() {
     review_verifications: 0,
     role: "",
   });
+  
 
   let getPerson = async () => {
     try {
@@ -493,6 +495,11 @@ export default function ModeratorDash() {
                 <Button variant="contained" color="success" href="/home">
                   Edit and delete anime
                 </Button>
+                <div style={{ marginTop: "10px" }}>
+                  <Button variant="contained" color="primary" href="/addAnime">
+                    Add Anime
+                  </Button>
+              </div>
               </div>
             </form>
           </div>
