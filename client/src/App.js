@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./navbar";
 import About from "./pages/about";
 import Home from "./pages/home";
-import Season from "./pages/season";
+import TopAnime from "./pages/topAnime";
 import Genre from "./pages/genre";
 import Landing from "./pages/landing";
 import Footer from "./footer";
@@ -29,6 +29,7 @@ import Notifications from "./pages/notifications";
 import AddAnime from "./pages/addAnime";
 import AddEpisode from "./pages/addEpisode";
 import DatePickerValue from "./Components/dateComp";
+import Characters from "./pages/characters";
 
 function App() {
   const navigate = useNavigate();
@@ -39,6 +40,9 @@ function App() {
   const toggleRerender = () => {
     setForceRerender((prev) => !prev);
   };
+
+  localStorage.setItem("forceRerender", forceRerender);
+  localStorage.setItem("toggleRerender", toggleRerender);
 
   // Effect to log whenever forceRerender changes
   useEffect(() => {
@@ -77,7 +81,16 @@ function App() {
               }
             />
             <Route path="/about" element={<About />} />
-            <Route path="/season" element={<Season />} />
+            <Route
+              path="/top100"
+              element={
+                <TopAnime
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            />
             <Route
               path="/genre"
               element={<Genre setProgress={setProgress} />}
@@ -143,6 +156,7 @@ function App() {
             <Route path="/addAnime" element={<AddAnime />} />
             <Route path="/:id/addEpisode" element={<AddEpisode />} />
             <Route path="/DatePickerValue" element={<DatePickerValue />} />
+            <Route path="/:id/characters" element={<Characters />} />
           </Routes>
         </AnimatePresence>
       </div>

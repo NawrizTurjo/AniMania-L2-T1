@@ -17,6 +17,7 @@ import { motion } from "framer-motion/dist/framer-motion";
 import { Link } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import Alert from "@mui/material/Alert";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function Episodes({ toggleRerender, setProgress }) {
   const { id } = useParams();
@@ -34,6 +35,8 @@ export default function Episodes({ toggleRerender, setProgress }) {
   const [editedText, setEditedText] = useState("");
   const [value, setValue] = useState(0);
   const [updatedRating, setUpdatedRating] = useState(0);
+  const [studio, setStudio] = useState("");
+  const [music, setMusic] = useState("");
   //const { user, email } = location.state || {};
   const {
     user: routeUser,
@@ -60,6 +63,27 @@ export default function Episodes({ toggleRerender, setProgress }) {
 
   //   console.log(user, email, img_url, userRole);
   let [cleanedText, setCleanedText] = useState("");
+
+  const getAssets = async () => {
+    try {
+      setLoading(true);
+      const res1 = await axios.post(`http://localhost:3000/getStudio`, {
+        id: id,
+      });
+      const res2 = await axios.post(`http://localhost:3000/getSoundtracks`, {
+        id: id,
+      });
+      setStudio(res1.data[0].studio_name);
+      setMusic(res2.data[0].title);
+      console.log(res1.data[0].studio_name);
+      console.log(res2.data[0].title);
+      // console.log(res1.data[0].studio_name.join(", "));
+      // console.log(res2.data[0].title.join(", "));
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   const getAnime = async () => {
     try {
@@ -196,6 +220,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
 
   useEffect(() => {
     getAnime();
+    getAssets();
     // toggleRerender();
   }, []); // Log reviews whenever it changes
   // if (loading || reviewloading) {
@@ -205,11 +230,18 @@ export default function Episodes({ toggleRerender, setProgress }) {
   const handleUpdateReview = async (reviewId, reviewText, newRating) => {
     console.log("Review:", review, "by ", user);
     try {
-      await axios.put(`http://localhost:3000/updateReview`, {
-        review_id: reviewId,
-        review_text: reviewText,
-        rating: newRating,
-      });
+      await toast.promise(
+        axios.put(`http://localhost:3000/updateReview`, {
+          review_id: reviewId,
+          review_text: reviewText,
+          rating: newRating,
+        }),
+        {
+          loading: 'Updating review...',
+          success: <b>Review updated!</b>,
+          error: <b>Could not update review.</b>,
+        }
+      );
       setEditedText("");
       setUpdatedRating(0);
 
@@ -231,6 +263,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Toaster position="bottom-right" reverseOrder={true} />
       {!loading ? (
         <div className="row justify-content-center">
           <div className="col-lg-4">
@@ -303,6 +336,12 @@ export default function Episodes({ toggleRerender, setProgress }) {
                       </li>
                       <li className="list-group-item">
                         <strong>Season:</strong> {anime.season}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Studio(s):</strong> {studio}
+                      </li>
+                      <li className="list-group-item">
+                        <strong>Music:</strong> {music}
                       </li>
                     </ul>
                   </div>

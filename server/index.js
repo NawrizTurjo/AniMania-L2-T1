@@ -69,6 +69,147 @@ app.post("/sign_up", async (req, res) => {
   }
 });
 
+app.post("/top100", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    console.log(userEmail);
+
+    const allAnimes = await pool.query(
+      `
+      with T AS(
+        SELECT DISTINCT (anime_id),user_id,status
+        FROM users_anime_list ua
+        where user_id = (
+          SELECT EMAIL_TO_ID($1) as "id"
+        )
+        )
+        
+        (
+        SELECT
+            a.*
+            ,
+            string_agg(DISTINCT g.genre_name, ',') AS genres,
+            ta.user_id AS user_id
+            ,
+            CASE WHEN ta.user_id IS NOT NULL THEN true ELSE false END AS is_favorite,
+						CASE WHEN ta.user_id IS NOT NULL THEN ta.status ELSE NULL END AS status
+        FROM 
+            anime a
+        LEFT JOIN 
+            genre_anime_relationship ga ON ga.anime_id = a.anime_id
+        LEFT JOIN 
+            genres g ON g.genre_id = ga.genre_id
+        LEFT JOIN 
+            T ta on ta.anime_id = a.anime_id
+				WHERE
+						a.mal_score IS NOT NULL
+        GROUP BY 
+            a.anime_id,ta.user_id,ta.status
+        ORDER BY 
+            a.mal_score DESC 
+        LIMIT 100
+            );
+
+      `,
+      [userEmail]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(allAnimes.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getStudio", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+
+    const studios = await pool.query(
+      `
+      SELECT string_agg(S.studio_name,',') AS studio_name
+      FROM studio S JOIN anime_studio_relationship A ON S.studio_id = A.studio_id
+      WHERE A.anime_id = $1
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(studios.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getStaffs", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+
+    const staffs = await pool.query(
+      `
+      SELECT *
+      from staffs
+      WHERE anime_id = $1;
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(staffs.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getSoundtracks", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+
+    const music = await pool.query(
+      `
+      SELECT string_agg(title,',') as title
+      FROM sound_tracks
+      WHERE ANIME_ID = $1
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(music.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getCharacters", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+
+    const characters = await pool.query(
+      `
+      SELECT C.*
+      FROM "characters" C JOIN character_anime_relationship CA ON C.character_id = CA.character_id
+      WHERE CA.anime_id = $1;
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/:id/addEpisode", async (req, res) => {
   try {
     // const {animeId} = req.params;
@@ -1253,25 +1394,25 @@ app.get("/watch/anime/episodes/:id", async (req, res) => {
     const anime = await pool.query(
       `
       SELECT
-    a.*,
-    string_agg(DISTINCT(g.genre_name),',') AS genres,
-    string_agg(DISTINCT(s.studio_name),',') AS studios,
-		string_agg(DISTINCT(t.tag_name),',') AS tags
-    ,
-		string_agg(DISTINCT(c.character_name),',') AS "characters"
+      a.*,
+      string_agg(DISTINCT(g.genre_name),',') AS genres,
+      string_agg(DISTINCT(s.studio_name),',') AS studios,
+      string_agg(DISTINCT(t.tag_name),',') AS tags
+      ,
+      string_agg(DISTINCT(c.character_name),',') AS "characters"
 
-    FROM anime a
-    LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
-    LEFT JOIN studio s ON s.studio_id = ast.studio_id
-    LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
-    LEFT JOIN genres g ON g.genre_id = ga.genre_id
-    LEFT JOIN tag_id_table ti on (ti.anime_id = a.anime_id)
-    LEFT JOIN tags t on (t.tag_id = ti.tag_id)
-    LEFT JOIN character_anime_relationship ca on (a.anime_id=ca.anime_id)
-    LEFT JOIN "characters" c on (ca.character_id=c.character_id)
+      FROM anime a
+      LEFT JOIN anime_studio_relationship ast ON a.anime_id = ast.anime_id
+      LEFT JOIN studio s ON s.studio_id = ast.studio_id
+      LEFT JOIN genre_anime_relationship ga ON ga.anime_id = a.anime_id
+      LEFT JOIN genres g ON g.genre_id = ga.genre_id
+      LEFT JOIN tag_id_table ti on (ti.anime_id = a.anime_id)
+      LEFT JOIN tags t on (t.tag_id = ti.tag_id)
+      LEFT JOIN character_anime_relationship ca on (a.anime_id=ca.anime_id)
+      LEFT JOIN "characters" c on (ca.character_id=c.character_id)
 
-    WHERE a.anime_id = $1
-    GROUP BY a.anime_id
+      WHERE a.anime_id = $1
+      GROUP BY a.anime_id
       `,
       [id]
     );
