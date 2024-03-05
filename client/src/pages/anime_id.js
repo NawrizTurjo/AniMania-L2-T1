@@ -419,7 +419,7 @@ const AnimePage = ({ toggleRerender }) => {
             style={{ color: "white" }}
           >
             <Link
-              to={`/anime/${id}/addEpisode`}
+              to={`/${id}/addEpisode`}
               style={{ textDecoration: "none", color: "white" }}
             >
               Add Episodes
