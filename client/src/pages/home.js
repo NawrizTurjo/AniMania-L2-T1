@@ -53,6 +53,9 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
     routeImgUrl || localStorage.getItem("img_url") || ""
   );
 
+  let karma = localStorage.getItem("karma");
+  let contribution = localStorage.getItem("contribution");
+
   //const { username } = useParams();
   const [animes, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,6 +79,45 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
+  };
+
+  const getKarma = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getKarma`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      localStorage.setItem("karma", res.data[0].get_karma);
+      console.log("Karma: ", res.data[0].get_karma);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getContribution = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getContribution`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+
+      localStorage.setItem("contribution", res.data[0].get_contribution);
+      return res.data[0].get_contribution;
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   const open = Boolean(anchorEl);
@@ -123,6 +165,8 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
     setTimeout(() => {
       setProgress(100);
     }, 500);
+    getKarma(email);
+    getContribution(email);
   }, [forceRerender]);
 
   // useEffect(() => {
@@ -177,7 +221,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const handleClick2 = (event) => {
     if (user !== "" && userRole === "U")
       navigate("/notifications", { state: { user, email } });
-  }
+  };
 
   const handleLogout = async (e) => {
     // e.preventDefault();
@@ -235,23 +279,23 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         </h4>
       </div>
       <div className="flex-row flex-wrap ">
-      {userRole === 'U' && (
-  <Button
-    color="action"
-    variant="contained"
-    onClick={handleClick2}
-    style={{ float: "right" }}
-    onMouseEnter={(event) => {
-      setAnchorE3(event.currentTarget);
-    }}
-    onMouseLeave={() => {
-      setAnchorE3(null);
-    }}
-  >
-    {isNotification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
-    {/* <NotificationsIcon /> */}
-  </Button>
-)}
+        {userRole === "U" && (
+          <Button
+            color="action"
+            variant="contained"
+            onClick={handleClick2}
+            style={{ float: "right" }}
+            onMouseEnter={(event) => {
+              setAnchorE3(event.currentTarget);
+            }}
+            onMouseLeave={() => {
+              setAnchorE3(null);
+            }}
+          >
+            {isNotification ? <NotificationsIcon /> : <NotificationsNoneIcon />}
+            {/* <NotificationsIcon /> */}
+          </Button>
+        )}
 
         <Button
           color="action"
@@ -308,13 +352,19 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
             )}
             {userRole === "U" && (
               <div>
-                <h3>User Content</h3>
+                <h3>
+                  <b>Contributions: </b>
+                  {contribution}
+                </h3>
               </div>
             )}
 
             {userRole === "M" && (
               <div>
-                <h3>Moderator Content</h3>
+                <h3>
+                  <b>Karma: </b>
+                  {karma}
+                </h3>
               </div>
             )}
           </Typography>
@@ -355,30 +405,30 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         >
           <Typography sx={{ p: 1 }}>Logout</Typography>
         </Popover>
-        {userRole === 'U' && (
-  <Popover
-    id="mouse-over-popover"
-    sx={{
-      pointerEvents: "none",
-    }}
-    open={open3}
-    anchorEl={anchorE3}
-    anchorOrigin={{
-      vertical: "bottom",
-      horizontal: "left",
-    }}
-    transformOrigin={{
-      vertical: "top",
-      horizontal: "left",
-    }}
-    onClose={() => {
-      setAnchorE3(null);
-    }}
-    disableRestoreFocus
-  >
-    <Typography sx={{ p: 1 }}>Notifications</Typography>
-  </Popover>
-)}
+        {userRole === "U" && (
+          <Popover
+            id="mouse-over-popover"
+            sx={{
+              pointerEvents: "none",
+            }}
+            open={open3}
+            anchorEl={anchorE3}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            onClose={() => {
+              setAnchorE3(null);
+            }}
+            disableRestoreFocus
+          >
+            <Typography sx={{ p: 1 }}>Notifications</Typography>
+          </Popover>
+        )}
 
         <img
           src="./images/AniMania.png"

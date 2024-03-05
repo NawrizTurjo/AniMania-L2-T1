@@ -75,6 +75,44 @@ const SignUp = () => {
     setErrMsg("");
   }, [user, pwd, matchPwd]);
 
+  const getKarma = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getKarma`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      localStorage.setItem("karma", res.data[0].get_karma);
+      console.log("Karma: ", res.data[0].get_karma);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getContribution = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getContribution`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+
+      localStorage.setItem("contribution", res.data[0].get_contribution);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -109,7 +147,13 @@ const SignUp = () => {
       localStorage.setItem("email", email);
       localStorage.setItem("userRole", userRole);
       localStorage.setItem("img_url", img_url);
-      console.log(user,email,userRole,img_url);
+      console.log(user, email, userRole, img_url);
+      if (userRole === "M") {
+        const karma = await getKarma(email);
+        // localStorage.setItem("karma", karma);
+      } else {
+        await getContribution(email);
+      }
       navigate("/Home");
       setUser("");
       setPwd("");
