@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import { ToastContainer, toast } from "react-toastify";
-import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
+import { Slide, Zoom, Flip, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 const LOGIN_URL = "/auth";
@@ -29,6 +29,44 @@ const Login = () => {
   useEffect(() => {
     setErrMsg("");
   }, [user, pwd]);
+
+  const getKarma = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getKarma`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+      localStorage.setItem("karma", res.data[0].get_karma);
+      console.log("Karma: ", res.data[0].get_karma);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getContribution = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getContribution`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+
+      localStorage.setItem("contribution", res.data[0].get_contribution);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +103,13 @@ const Login = () => {
         localStorage.setItem("userRole", role);
         localStorage.setItem("img_url", img_url);
 
+        if (role === "M") {
+          await getKarma(email);
+          // localStorage.setItem("karma", karma);
+        } else {
+          await getContribution(email);
+        }
+
         // Redirect to home page with user information
         setUser("");
         setPwd("");
@@ -81,10 +126,8 @@ const Login = () => {
         });
         setTimeout(() => {
           navigate("/Home");
-      }
-      , 2000);
-      setSuccess(true);
-
+        }, 2000);
+        setSuccess(true);
       } else {
         setErrMsg("Invalid Username or Password");
       }
@@ -111,7 +154,7 @@ const Login = () => {
       {success ? (
         <section>
           <h1>You are logged in!</h1>
-          <ToastContainer/>
+          <ToastContainer />
         </section>
       ) : (
         <section>

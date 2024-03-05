@@ -76,6 +76,25 @@ const AnimeListItem = ({
     routeImgUrl || localStorage.getItem("img_url") || ""
   );
 
+  const getContribution = async (email) => {
+    // e.preventDefault();
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/getContribution`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(res.data);
+
+      localStorage.setItem("contribution", res.data[0].get_contribution);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     setFav(is_favorite);
   }, [id]);
@@ -213,6 +232,7 @@ const AnimeListItem = ({
         favString: JSON.stringify(!fav),
         anime_id: anime_id,
       });
+      await getContribution(email);
 
       console.log("This is fav state: ", fav);
       if (response.status === 200) {
