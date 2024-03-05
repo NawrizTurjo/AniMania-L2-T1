@@ -1523,6 +1523,21 @@ app.put("/anime/:id", async (req, res) => {
   }
 });
 
+
+
+app.get("/anime/:id/ep", async (req, res) => {
+  try {
+    const idAnime = await pool.query(
+      "SELECT * FROM episodes where ANIME_ID = $1",
+      [req.params.id]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(idAnime.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 // -----------------------------------------------creating anime
 // ANIME_ID INT PRIMARY KEY ,
 // ANIME_NAME VARCHAR(255),
@@ -2432,6 +2447,49 @@ app.put("/deleteAnime", async (req, res) => {
       update moderator
       set
         deleted_series = deleted_series + 1
+        where
+        moderator_id = $1
+      `,
+      [user_id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json();
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+
+app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
+  try {
+    const {email} = req.body;
+    //console.log( email, anime_id);
+    const anime_id = parseInt(req.params.id);
+    const episode_no =parseInt(req.params.selectedEpisode);
+
+    const user_res = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+
+    const user_id = user_res.rows[0].id;
+    
+    const response = await pool.query(
+      `
+      delete from episodes where anime_id= $1 and episode_no = $2
+      `,
+      [anime_id, episode_no]
+    );
+
+    const response2 = await pool.query(
+      `
+      update moderator
+      set
+        deleted_episodes = deleted_episodes + 1
         where
         moderator_id = $1
       `,

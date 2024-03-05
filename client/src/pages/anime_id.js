@@ -3,7 +3,7 @@ import axios from "axios";
 import { useParams,useNavigate  } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import { Button, TextField, Typography, MenuItem, Select, InputLabel, FormControl, TextareaAutosize, FormControlLabel,FormGroup, Grid } from '@mui/material';
-
+import { json, useLocation } from "react-router";
 
 const AnimePage = ({toggleRerender}) => {
   const [anime, setAnime] = useState({
@@ -22,6 +22,34 @@ const AnimePage = ({toggleRerender}) => {
   });
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [episodes, setEpisodes] = useState([]);
+  const [selectedEpisode, setSelectedEpisode] = useState("");
+
+  const location = useLocation();
+  //const { user, email } = location.state || {};
+  const {
+    user: routeUser,
+    email: routeEmail,
+    userRole: routeUserRole,
+    img_url: routeImgUrl,
+  } = location.state || {};
+
+  // Use local state to store user information
+  const [user, setUser] = useState(
+    routeUser || localStorage.getItem("user") || ""
+  );
+  const [email, setEmail] = useState(
+    routeEmail || localStorage.getItem("email") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    routeUserRole || localStorage.getItem("userRole") || ""
+  );
+
+  const [img_url, setImgUrl] = useState(
+    routeImgUrl || localStorage.getItem("img_url") || ""
+  );
+
   const getAnime = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/anime/${id}`);
@@ -36,8 +64,26 @@ const AnimePage = ({toggleRerender}) => {
     }
   };
 
+  const getAnimeEpisodes = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/anime/${id}/ep`);
+      // setTimeout(() => {
+      //   setLoading(false);
+      // }, 1000);
+      setEpisodes(res.data);
+      setLoading(false);
+      console.log(res.data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
   useEffect(() => {
     getAnime();
+  }, [id]);
+
+  useEffect(() => {
+    getAnimeEpisodes();
   }, [id]);
 
 
@@ -58,6 +104,16 @@ const AnimePage = ({toggleRerender}) => {
         },
       });
       console.log("Anime updated successfully!",res.data);
+
+
+      if (selectedEpisode !== '') {
+        await axios.put(`http://localhost:3000/anime/${id}/episode_delete/${selectedEpisode}`,
+        {
+          email: email,
+        });
+        //console.log(`Episode ${selectedEpisode} deleted successfully`);
+      }
+
       goToHome();
       toggleRerender();
     } catch (error) {
@@ -249,16 +305,7 @@ const AnimePage = ({toggleRerender}) => {
     label="Description"
     labelPlacement="top"
   />
-</FormGroup>
-
-
-
-
-
-
-
-
-  
+</FormGroup>  
           <TextField
             label="Thumbnail Url"
             name="title_screen"
@@ -294,6 +341,22 @@ const AnimePage = ({toggleRerender}) => {
           size="large"
           />
           <br />
+          <FormControl variant="outlined" fullWidth size="large" margin="normal">
+          <InputLabel htmlFor="episode-select">Select Episode To Delete </InputLabel>
+          <Select
+            id="episode-select"
+            name="episode"
+            value={selectedEpisode}
+            onChange={(e) => setSelectedEpisode(e.target.value)}
+            label="Select Episode"
+          >
+            {episodes.map((episode) => (
+              <MenuItem key={episode.episode_no} value={episode.episode_no}>
+                {`Episode ${episode.episode_no}: ${episode.episode_title}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
   
           <Button
             variant="contained"
