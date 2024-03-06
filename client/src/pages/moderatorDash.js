@@ -19,6 +19,7 @@ export default function ModeratorDash() {
   let [deleted_episodes, setDeletedEpisodes] = useState("");
   let [review_verifications, setReviewVerifications] = useState("");
   let [filtered_comments, setFileteredComments] = useState("");
+  let [others, setOthers] = useState("");
   const [karma, setKarma] = useState(0);
   let [loading, setLoading] = useState(true);
   let location = useLocation();
@@ -31,6 +32,7 @@ export default function ModeratorDash() {
 
   let [pendingReviews, setPendingReviews] = useState([]);
   let [pendingComments, setPendingComments] = useState([]);
+  let [pendingChar, setPendingChar] = useState([]);
 
   user = state && state.user;
   let email = state && state.email;
@@ -43,6 +45,7 @@ export default function ModeratorDash() {
     deleted_series: 0,
     filtered_comments: 0,
     review_verifications: 0,
+    others: 0,
     role: "",
   });
   
@@ -68,6 +71,7 @@ export default function ModeratorDash() {
         deleted_episodes: personData?.deleted_episodes || 0,
         review_verifications: personData?.review_verifications || 0,
         filtered_comments: personData?.filtered_comments || 0,
+        others: personData?.others || 0,
         img_url: personData?.img_url || "",
       };
 
@@ -80,6 +84,7 @@ export default function ModeratorDash() {
       setDeletedEpisodes(person.deleted_episodes);
       setReviewVerifications(person.review_verifications);
       setFileteredComments(person.filtered_comments);
+      setOthers(person.others);
       setImgUrl(person.img_url);
       setLoading(false);
       setStat((prev) => !prev);
@@ -180,6 +185,26 @@ export default function ModeratorDash() {
     }
   };
 
+  const handleApproveCharacter = async (e, char_id) => {
+    e.preventDefault();
+    try {
+      console.log(char_id);
+      const response = await axios.post(
+        `http://localhost:3000/approveCharacters`,
+        JSON.stringify({ char_id, email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
   const handleDeclineReview = async (e, updatedId) => {
     e.preventDefault();
     try {
@@ -206,6 +231,26 @@ export default function ModeratorDash() {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/comment/decline`,
+        JSON.stringify({ updatedId, email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
+  const handleDeclineCharacter = async (e, updatedId) => {
+    e.preventDefault();
+    try {
+      console.log(updatedId);
+      const response = await axios.put(
+        `http://localhost:3000/chardecline`,
         JSON.stringify({ updatedId, email }),
         {
           headers: { "Content-Type": "application/json" },
@@ -252,8 +297,26 @@ export default function ModeratorDash() {
     }
   };
 
+  const getChars = async (event) => {
+    try {
+      // event.preventDefault();
+      let response = await axios.post(
+        `http://localhost:3000/getReqCharacters`
+      );
+      // console.log(response.data);
+      // setTimeout(()=>{
+
+      // },500);
+      setPendingChar(response.data);
+      console.log(pendingChar);
+    } catch (error) {
+      console.error("Error fetching Reviews");
+    }
+  };
+
   useEffect(() => {
     getReviews();
+    getChars();
   }, [stat]);
 
   useEffect(() => {
@@ -363,6 +426,63 @@ export default function ModeratorDash() {
                 </div>
               ))}
             </div>
+           {/* Pending Characters Box */}
+<div
+  style={{
+    border: "0.5px solid #cccccc",
+    width: "400px",
+    height: "500px",
+    marginTop: "10px",
+    marginRight: "auto",
+    overflow: "auto",
+  }}
+>
+  {/* Content of the box */}
+  {pendingChar.map((character, index) => (
+    <div key={index} style={{ marginBottom: "20px" }}>
+      <Typography variant="body1">
+        Character ID: {character.id}
+      </Typography>
+      <Typography variant="body1">
+        Anime ID: {character.anime_id}
+      </Typography>
+      <Typography variant="body1">
+        Character Name: {character.character_name}
+      </Typography>
+      <Typography variant="body1">
+        Role: {character.role}
+      </Typography>
+      <Typography variant="body1">
+        Gender: {character.gender}
+      </Typography>
+      <Typography variant="body1">
+        Profile Picture: {character.profile_picture}
+      </Typography>
+      <Typography variant="body1">
+        User Email: {character.user_email}
+      </Typography>
+      <Typography variant="body1">
+        Request Date: {character.req_date}
+      </Typography>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={(e) => handleApproveCharacter(e, character.id)}
+        style={{ marginRight: "10px" }}
+      >
+        Approve
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={(e) => handleDeclineCharacter(e, character.id)}
+      >
+        Decline
+      </Button>
+    </div>
+  ))}
+</div>
+
 
             {/* <div
               style={{
@@ -383,7 +503,7 @@ export default function ModeratorDash() {
           <div
             style={{
               borderLeft: "0.5px solid #cccccc",
-              height: "800px",
+              height: "1300px",
               margin: "10px",
             }}
           ></div>
@@ -483,6 +603,14 @@ export default function ModeratorDash() {
                   </span>
                 </label>
               </div>
+              {/* <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Other Contributions:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {others}
+                  </span>
+                </label>
+              </div> */}
               <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
                 <label>
                   <strong>Karma:</strong>
@@ -508,7 +636,7 @@ export default function ModeratorDash() {
           <div
             style={{
               borderLeft: "0.5px solid #cccccc",
-              height: "800px",
+              height: "1300px",
               margin: "10px",
             }}
           ></div>

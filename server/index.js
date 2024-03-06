@@ -243,27 +243,31 @@ app.post("/approveCharacters", async (req, res) => {
   try {
     const { char_id, email } = req.body;
 
-    const res = await pool.query(
+    const result = await pool.query(
       `
-        SELECT email_to_id( $1 ) as "id"
+        SELECT email_to_id($1) as "id"
       `,
       [email]
     );
 
-    const m_id = res.rows[0].id;
+    const m_id = result.rows[0].id;
     const response = await pool.query(
       `
-      update USER_REQ_CHARACTER set moderator_id = $1 where "id" = $2;
-      `[m_id,char_id]
+      UPDATE USER_REQ_CHARACTER SET moderator_id = $1 WHERE "id" = $2;
+      `,
+      [m_id, char_id]
     );
 
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    // Set response headers using set method
+    res.set("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 app.post("/getReqCharacters", async (req, res) => {
   try {
@@ -3045,6 +3049,42 @@ app.post("/admin/getanimehighestreviewCount", async (req, res) => {
   }
 });
 
+app.put("/chardecline", async (req, res) => {
+  try {
+    const { updatedId, email } = req.body;
+    //console.log(review_id);
+    console.log(email);
 
+    const moderator_id = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+    const id = moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      DELETE FROM user_req_character
+      WHERE
+        "id" = $1
+      `,
+      [updatedId]
+    );
+    const updateModeratorQuery = await pool.query(
+      `
+      update moderator
+      set
+      others = others + 1
+      where moderator_id = $1
+      `,
+      [id]
+    );
 
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
 
