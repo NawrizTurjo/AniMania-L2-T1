@@ -118,9 +118,11 @@ export default function Staffs() {
         ))}
       </ul>
 
+      {userRole === "M" && (
       <Button variant="primary" onClick={handleShow}>
         {string}
       </Button>
+    )}
 
       <Modal
         size="lg"
