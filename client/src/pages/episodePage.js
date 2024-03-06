@@ -18,6 +18,9 @@ import { Link } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import Alert from "@mui/material/Alert";
 import { toast, Toaster } from "react-hot-toast";
+import VerifiedIcon from "@mui/icons-material/Verified";
+// import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 export default function Episodes({ toggleRerender, setProgress }) {
   const { id } = useParams();
@@ -63,6 +66,11 @@ export default function Episodes({ toggleRerender, setProgress }) {
 
   //   console.log(user, email, img_url, userRole);
   let [cleanedText, setCleanedText] = useState("");
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const getAssets = async () => {
     try {
@@ -135,6 +143,11 @@ export default function Episodes({ toggleRerender, setProgress }) {
       console.log(err.message);
       if (err.message === "Request failed with status code 500") {
         alert("You cannot post multiple reviews for the same anime.");
+        // setTimeout(() => {
+        //   toast.error("This didn't work.");
+        //   // setProgress(100);
+        // }, 1000);
+        handleShow();
         setReview("");
         // setReviews(oldReviews);
         // getReview();
@@ -142,6 +155,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
         // return(
         //   <Alert severity="error">"You cannot post multiple reviews for the same anime."</Alert>
         //   )
+        window.location.reload();
       }
     }
     // toggleRerender();
@@ -237,7 +251,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
           rating: newRating,
         }),
         {
-          loading: 'Updating review...',
+          loading: "Updating review...",
           success: <b>Review updated!</b>,
           error: <b>Could not update review.</b>,
         }
@@ -263,7 +277,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      <Toaster position="bottom-right" reverseOrder={true} />
+      <Toaster position="top-center" reverseOrder={false} />
       {!loading ? (
         <div className="row justify-content-center">
           <div className="col-lg-4">
@@ -437,9 +451,9 @@ export default function Episodes({ toggleRerender, setProgress }) {
                     justifyContent: "center",
                   }}
                 >
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar alt={review.reviewer} src={review.img_src} />
-                    <Typography variant="body1">{review.reviewer}</Typography>
+                  <Stack direction="row" spacing={2} alignItems="center" >
+                    <Avatar alt={review.reviewer} src={review.img_src}/>
+                    <Typography variant="body1"  style={{marginRight:"10px"}}>{review.reviewer}</Typography>
                     {DateFormatter({ date: review.review_time })}
                     {email === review.email ? (
                       <Rating
@@ -453,6 +467,9 @@ export default function Episodes({ toggleRerender, setProgress }) {
                       />
                     ) : (
                       <Rating name="read-only" value={review.rating} readOnly />
+                    )}
+                    {review.status === "approved" && (
+                      <VerifiedIcon color="success" />
                     )}
                   </Stack>
                 </Box>
@@ -512,6 +529,20 @@ export default function Episodes({ toggleRerender, setProgress }) {
           <h3>No reviews yet...</h3>
         )}
       </div>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </motion.div>
   );
 }

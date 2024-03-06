@@ -247,3 +247,24 @@ ON USER_REQ_CHARACTER
 FOR EACH ROW
 EXECUTE FUNCTION update_acc_date();
 /
+/
+CREATE OR REPLACE FUNCTION update_review_notification()
+RETURNS TRIGGER AS $$
+DECLARE
+    A_NAME VARCHAR(100);
+BEGIN
+    SELECT ANIME_NAME INTO A_NAME FROM ANIME WHERE ANIME_ID = OLD.ANIME_ID;
+    
+    INSERT INTO notifications (users_id, NOTIFICATIONS, TRACK_DATE)
+    VALUES (OLD.user_id, 'Your review on anime ' || A_NAME || ' - '|| OLD.review_text || ' has been approved!!', CURRENT_TIMESTAMP);
+		  
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+/
+CREATE TRIGGER before_update_review_status
+BEFORE UPDATE OF status
+ON review
+FOR EACH ROW
+EXECUTE FUNCTION update_review_notification();
+/
