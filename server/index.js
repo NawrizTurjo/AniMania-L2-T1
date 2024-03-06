@@ -3088,3 +3088,79 @@ app.put("/chardecline", async (req, res) => {
   }
 });
 
+app.post("/getStaffs", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+
+    const characters = await pool.query(
+      `
+      SELECT *
+      FROM staffs
+      WHERE anime_id = $1;
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.post("/addStaff", async (req, res) => {
+  try {
+    const { name, role, gender, profile_picture, userRole, email, anime_id } =
+      req.body;
+    console.log(name, role, gender, profile_picture);
+
+    const moderator_id = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+    const id = moderator_id.rows[0].id;
+
+
+    const max_s_id = await pool.query(
+      `
+      select max(staff_id+1)
+      from staffs
+      `
+    );
+
+    const staff_id = max_s_id.rows[0].max;
+    
+    console.log(staff_id);
+
+    const characters = await pool.query(
+      `
+      insert into staffs
+        (name, role, gender, profile_picture, anime_id)
+        values
+        ($1, $2, $3, $4, $5)
+      `,
+      [name, role, gender, profile_picture,anime_id]
+    );
+
+    const updateModeratorQuery = await pool.query(
+      `
+      update moderator
+      set
+      others = others + 1
+      where moderator_id = $1
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
