@@ -114,17 +114,17 @@ const Login = () => {
         // Redirect to home page with user information
         setUser("");
         setPwd("");
-        toast.success(`You are now logged in...`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Zoom,
-        });
+        // toast.success(`You are now logged in...`, {
+        //   position: "top-right",
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "colored",
+        //   transition: Zoom,
+        // });
         setTimeout(() => {
           navigate("/Home");
         }, 2000);

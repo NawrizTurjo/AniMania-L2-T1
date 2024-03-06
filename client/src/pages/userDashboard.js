@@ -229,7 +229,6 @@ function UserDashboard() {
     window.location.href = "/home";
   };
 
-
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
     try {
@@ -238,23 +237,23 @@ function UserDashboard() {
         `http://localhost:3000/deleteAccount`,
         JSON.stringify({ email }),
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
-    localStorage.removeItem("user");
-    localStorage.removeItem("email");
-    console.log(email);
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("img_url");
-    goToHome();
-    // setUser("");
-    // setEmail("");
-    // setUserRole("");
-    // setImgUrl("");
-    // toggleRerender();
+      localStorage.removeItem("user");
+      localStorage.removeItem("email");
+      console.log(email);
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("img_url");
+      goToHome();
+      // setUser("");
+      // setEmail("");
+      // setUserRole("");
+      // setImgUrl("");
+      // toggleRerender();
 
-    // navigate("/login");
+      // navigate("/login");
     } catch (err) {
       console.error(err.message);
     }
@@ -272,7 +271,11 @@ function UserDashboard() {
 
   return (
     <motion.div
-      style={{ display: "flex", justifyContent: "flex-start" }}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
@@ -419,7 +422,13 @@ function UserDashboard() {
               <p>
                 <strong>Active Time:</strong> {active_time}
               </p>
-              <Button variant="contained" color="error" onClick={(e) => handleDeleteAccount(e)}>Remove Account</Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={(e) => handleDeleteAccount(e)}
+              >
+                Remove Account
+              </Button>
             </Paper>
           </div>
 

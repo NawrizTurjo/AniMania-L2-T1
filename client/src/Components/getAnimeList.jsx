@@ -42,7 +42,7 @@ export default function AnimeList({ toggleRerender }) {
 
   useEffect(() => {
     getAnimeList();
-  }, [toggleRerender]);
+  }, []);
   return (
     <>
       <Typography variant="h4" component="h2" gutterBottom>

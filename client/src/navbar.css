@@ -1,85 +1,108 @@
 .nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 1rem; */
+  /* background-color: #ffffff; */
+  background: linear-gradient(to right, #190f04, #494547);
+  /* border-bottom: 1px solid #ccc; */
+  animation: gradientAnimation 5s linear infinite;
+  /* transition: background 2s ease-out; */
+  animation-duration: 2.2s;
+  animation-name: paragato;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-timing-function: ease-in-out;
+}
+
+/* @keyframes gradientAnimation {
+  0% {
+    background: linear-gradient(to right, #190f04, #494547);
+  }
+  25% {
+    background: linear-gradient(to right, #190f04, #352e2a);
+  }
+  50% {
+    background: linear-gradient(to right, #352e2a, #494547);
+  }
+  75% {
+    background: linear-gradient(to right, #494547, #352e2a);
+  }
+  100% {
+    background: linear-gradient(to right, #352e2a, #190f04);
+  }
+} */
+
+.site-title {
+  text-decoration: none;
+  color: #ffc6c6;
+}
+
+.logo {
+  margin-left: 0;
+}
+
+.menu-icon {
+  display: none; /* Hide menu icon by default */
+  cursor: pointer;
+}
+
+.menu-options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.menu-options li {
+  /* margin-right: 1rem; */
+}
+
+.menu-options li:last-child {
+  margin-right: 0;
+}
+
+.menu-options li a {
+  text-decoration: none;
+  color: #ffc6c6;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block; /* Show menu icon on smaller screens */
+  }
+
+  .menu-options {
+    display: none; /* Hide menu options by default on smaller screens */
+    flex-direction: column;
+    position: absolute;
+    top: 70px; /* Adjust as needed */
+    left: 0;
     background-color: #ffffff;
+    width: 100%;
+    padding: 1rem;
     border-bottom: 1px solid #ccc;
   }
-  
-  .site-title {
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .logo {
-    width: 150px;
-    height: 60px;
-  }
-  
-  .menu-icon {
-    display: none; /* Hide menu icon by default */
-    cursor: pointer;
-  }
-  
-  .menu-options {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-  }
-  
+
   .menu-options li {
-    margin-right: 1rem;
-  }
-  
-  .menu-options li:last-child {
     margin-right: 0;
   }
-  
+
+  .menu-options li:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+
   .menu-options li a {
-    text-decoration: none;
     color: #333;
   }
-  
 
-  
-  /* Media query for smaller screens */
-  @media (max-width: 768px) {
-    .menu-icon {
-      display: block; /* Show menu icon on smaller screens */
-    }
-  
-    .menu-options {
-      display: none; /* Hide menu options by default on smaller screens */
-      flex-direction: column;
-      position: absolute;
-      top: 70px; /* Adjust as needed */
-      left: 0;
-      background-color: #ffffff;
-      width: 100%;
-      padding: 1rem;
-      border-bottom: 1px solid #ccc;
-    }
-  
-    .menu-options li {
-      margin-right: 0;
-    }
-  
-    .menu-options li:not(:last-child) {
-      margin-bottom: 0.5rem;
-    }
-  
-    .menu-options li a {
-      color: #333;
-    }
-  
-    .menu-options.active {
-      display: flex; /* Show menu options when menu icon is clicked */
-    }
-  
-    .search-bar {
-      display: none; /* Hide search bar on smaller screens by default */
-    }
+  .menu-options.active {
+    display: flex; /* Show menu options when menu icon is clicked */
   }
-  
+
+  .search-bar {
+    display: none; /* Hide search bar on smaller screens by default */
+  }
+}

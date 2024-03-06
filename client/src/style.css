@@ -60,19 +60,24 @@ body {
   background-color: #555;
 }
 
-/* .nav li:hover{
-    font-family: 'Nunito';
-    background-color: #777;
-    font-display: swap;
-    transition: background-color 0.5s ease;
-    font-weight: bold;
-  } */
+.nav li:hover {
+  font-family: "Nunito";
+  background-color: #777;
+  font-display: swap;
+  transition: background-color 0.5s ease;
+  font-weight: bold;
+}
 
 .nav li {
   transition: background-color 0.5s ease; /* Apply transition to all list items */
 }
 
 .nav li:hover {
+  background-color: #777;
+  font-weight: bold;
+}
+
+.nav li:active {
   background-color: #777;
   font-weight: bold;
 }
@@ -161,6 +166,16 @@ img:hover {
   height: 50px;
   display: block;
   clear: both;
+  background: linear-gradient(to left, #190f04, #494547);
+  /* border-bottom: 1px solid #ccc; */
+  animation: gradientAnimation 5s linear infinite;
+  /* transition: background 2s ease-out; */
+  animation-duration: 2.2s;
+  animation-name: paragato;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-timing-function: ease-in-out;
 }
 
 .anime-list {
