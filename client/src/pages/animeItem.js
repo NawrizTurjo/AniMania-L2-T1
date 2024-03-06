@@ -460,7 +460,7 @@ const AnimeListItem = ({
               {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </IconButton>
           )}
-          {userRole === "U" && fav == true && (
+          {userRole === "U" && fav === true && (
             <Dropdown>
               {newStatus === "Planned" && (
                 <Dropdown.Toggle variant="primary" id="dropdown-basic">

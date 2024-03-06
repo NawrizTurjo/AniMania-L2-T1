@@ -110,7 +110,12 @@ function App() {
             />
             <Route
               path="/searchAnime/:searchTerm"
-              element={<SearchAnime forceRerender={forceRerender} toggleRerender={toggleRerender}/>}
+              element={
+                <SearchAnime
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                />
+              }
             />
             {/* <Route path="/home/:username" component={Home} /> */}
             <Route

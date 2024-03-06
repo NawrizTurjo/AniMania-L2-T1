@@ -1,0 +1,49 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.sign-up-page {
+  min-height: 100vh;
+  background: url("bg-fotor.jpg") no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.sign-up-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.wrapper.sign-up-body {
+  margin-top: 50px;
+  width: auto;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(9px);
+  color: #fff;
+  border-radius: 12px;
+  padding: 30px 40px;
+}
+
+/* ... rest of your CSS ... */
+
+.wrapper .login-link {
+  font-size: 14.5px;
+  text-align: center;
+  margin: 20px 0 15px;
+}
+
+.login-link p a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link p a:hover {
+  text-decoration: underline;
+}

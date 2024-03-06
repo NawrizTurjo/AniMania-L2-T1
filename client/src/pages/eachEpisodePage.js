@@ -8,6 +8,13 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
+import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
+import ReplyIcon from "@mui/icons-material/Reply";
+import { IconButton } from "@mui/material";
 
 export default function Episode({ toggleRerender, setProgress }) {
   const { id, id2 } = useParams();
@@ -546,9 +553,19 @@ export default function Episode({ toggleRerender, setProgress }) {
                 >
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Avatar alt={comment.reviewer} src={comment.img_src} />
-                    <Typography variant="body1">{comment.reviewer}</Typography>
+                    <Typography
+                      // variant="body1"
+                      fontSize={"h6.fontSize"}
+                      fontWeight={"bold"}
+                      fontFamily={"Monospace"}
+                    >
+                      {comment.reviewer}
+                    </Typography>
                     &nbsp;
                     {DateFormatter({ date: comment.comment_time })}
+                    {comment.status === "approved" && (
+                      <VerifiedIcon color="success" />
+                    )}
                   </Stack>
                 </Box>
                 {/* <div style={{ marginBottom: '10px' }}>
@@ -675,7 +692,7 @@ export default function Episode({ toggleRerender, setProgress }) {
                         marginRight: "10px",
                       }}
                     >
-                      <Button
+                      {/* <Button
                         onClick={(e) =>
                           handleSubmitLikes(e, comment.comment_id)
                         }
@@ -690,7 +707,21 @@ export default function Episode({ toggleRerender, setProgress }) {
                         {likedComments.includes(comment.comment_id)
                           ? "Liked"
                           : "Like"}
-                      </Button>
+                      </Button> */}
+
+                      <IconButton
+                        onClick={(e) =>
+                          handleSubmitLikes(e, comment.comment_id)
+                        }
+                        style={{ color: "green" }}
+                      >
+                        {likedComments.includes(comment.comment_id) ? (
+                          <ThumbUpAltIcon />
+                        ) : (
+                          <ThumbUpOffAltIcon />
+                        )}
+                      </IconButton>
+
                       <Typography
                         variant="body1"
                         style={{ marginRight: "10px" }}
@@ -705,7 +736,7 @@ export default function Episode({ toggleRerender, setProgress }) {
                         marginRight: "10px",
                       }}
                     >
-                      <Button
+                      {/* <Button
                         onClick={(e) =>
                           handleSubmitDisLikes(e, comment.comment_id)
                         }
@@ -720,19 +751,42 @@ export default function Episode({ toggleRerender, setProgress }) {
                         {dislikedComments.includes(comment.comment_id)
                           ? "Disliked"
                           : "Dislike"}
-                      </Button>
+                      </Button> */}
+
+                      <IconButton
+                        onClick={(e) =>
+                          handleSubmitDisLikes(e, comment.comment_id)
+                        }
+                        style={{ color: "red" }}
+                      >
+                        {dislikedComments.includes(comment.comment_id) ? (
+                          <ThumbDownAltIcon />
+                        ) : (
+                          <ThumbDownOffAltIcon />
+                        )}
+                      </IconButton>
+
                       <Typography variant="body1">
                         {dislikes[comment.comment_id] || 0}
                       </Typography>
                     </div>
-                    <Button
+                    {/* <Button
                       variant="contained"
                       color="primary"
                       onClick={() => setReplyIndex(index)}
                       style={{ marginLeft: "10px" }}
                     >
                       Reply
-                    </Button>
+                    </Button> */}
+
+                    <IconButton
+                      color="secondary"
+                      aria-label="add an alarm"
+                      style={{ color: "orange" }}
+                      onClick={() => setReplyIndex(index)}
+                    >
+                      <ReplyIcon />
+                    </IconButton>
                   </div>
                 )}
 
@@ -757,11 +811,19 @@ export default function Episode({ toggleRerender, setProgress }) {
                             alignItems="center"
                           >
                             <Avatar alt={reply.reviewer} src={reply.img_src} />
-                            <Typography variant="body1">
+                            <Typography
+                              variant="body1"
+                              fontSize={"h6.fontSize"}
+                              fontWeight={"bold"}
+                              fontFamily={"Monospace"}
+                            >
                               {reply.reviewer}
                             </Typography>
                             &nbsp;
                             {DateFormatter({ date: comment.comment_time })}
+                            {reply.status === "approved" && (
+                              <VerifiedIcon color="success" />
+                            )}
                           </Stack>
                         </Box>
                         <Box sx={{ mt: 2, textAlign: "center" }}>
@@ -791,7 +853,7 @@ export default function Episode({ toggleRerender, setProgress }) {
                               marginRight: "10px",
                             }}
                           >
-                            <Button
+                            {/* <Button
                               onClick={(e) =>
                                 handleSubmitLikes(e, reply.comment_id)
                               }
@@ -806,7 +868,21 @@ export default function Episode({ toggleRerender, setProgress }) {
                               {likedComments.includes(reply.comment_id)
                                 ? "Liked"
                                 : "Like"}
-                            </Button>
+                            </Button> */}
+
+                            <IconButton
+                              onClick={(e) =>
+                                handleSubmitLikes(e, reply.comment_id)
+                              }
+                              style={{ color: "green" }}
+                            >
+                              {likedComments.includes(reply.comment_id) ? (
+                                <ThumbUpAltIcon />
+                              ) : (
+                                <ThumbUpOffAltIcon />
+                              )}
+                            </IconButton>
+
                             <Typography
                               variant="body1"
                               style={{ marginRight: "10px" }}
@@ -821,7 +897,7 @@ export default function Episode({ toggleRerender, setProgress }) {
                               marginRight: "10px",
                             }}
                           >
-                            <Button
+                            {/* <Button
                               onClick={(e) =>
                                 handleSubmitDisLikes(e, reply.comment_id)
                               }
@@ -836,7 +912,20 @@ export default function Episode({ toggleRerender, setProgress }) {
                               {dislikedComments.includes(reply.comment_id)
                                 ? "Disliked"
                                 : "Dislike"}
-                            </Button>
+                            </Button> */}
+                            <IconButton
+                              onClick={(e) =>
+                                handleSubmitDisLikes(e, reply.comment_id)
+                              }
+                              style={{ color: "red" }}
+                            >
+                              {dislikedComments.includes(reply.comment_id) ? (
+                                <ThumbDownAltIcon />
+                              ) : (
+                                <ThumbDownOffAltIcon />
+                              )}
+                            </IconButton>
+
                             <Typography variant="body1">
                               {dislikes[reply.comment_id] || 0}
                             </Typography>
