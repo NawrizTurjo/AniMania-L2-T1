@@ -8,9 +8,10 @@ import Modal from "react-bootstrap/Modal";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import { InputLabel, MenuItem, Select } from "@mui/material";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Characters() {
-  const id = useParams().id;
+  const anime_id = useParams().id;
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalShow, setModalShow] = useState(false);
@@ -23,12 +24,40 @@ export default function Characters() {
   const [profile_picture, setProfilePicture] = useState("");
   const [gender, setGender] = useState("");
 
+  let userRole = localStorage.getItem("userRole");
+  let email = localStorage.getItem("email");
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Submitted");
-    console.log(name, role, profile_picture, gender);
+    console.log(name, role, profile_picture, gender,userRole, email, anime_id);
+    if (name === "" || role === "") {
+      toast.error("You must fill the required items");
+    } else {
+      try {
+        await toast.promise(
+          axios.post("http://localhost:3000/addCharacter", {
+            name,
+            role,
+            gender,
+            profile_picture,
+            userRole,
+            email,
+            anime_id,
+          }),
+          {
+            loading: "Adding Character...",
+            success: <b>Character Added!</b>,
+            error: <b>Could not add character.</b>,
+          }
+        );
+      } catch (err) {
+        toast.error("Could not add character");
+      }
+      handleClose();
+    }
   };
 
   const openModal = () => {
@@ -40,8 +69,6 @@ export default function Characters() {
     setIsModalOpen(false);
   };
 
-  let userRole = localStorage.getItem("userRole");
-
   const string =
     userRole === "M" ? "Add Character" : "Request Character Addition";
 
@@ -50,7 +77,7 @@ export default function Characters() {
       setLoading(true);
       const characters = await axios.post(
         `http://localhost:3000/getCharacters`,
-        { id }
+        { id: anime_id }
       );
       setCharacter(characters.data);
       console.log(characters.data);
@@ -75,7 +102,8 @@ export default function Characters() {
   if (loading) return <div>Loading...</div>;
   return (
     <div>
-      <h1>{id}</h1>
+      <Toaster position="top-right" reverseOrder={false} />
+      {/* <h1>{id}</h1> */}
       <ul className="list-group list-group-horizontal-md flex-row flex-wrap">
         {character.map((C, index) => (
           <ImgMediaCard
@@ -134,6 +162,16 @@ export default function Characters() {
               onChange={(e) => setRole(e.target.value)}
             />
             {/* <InputLabel id="demo-simple-select-label">Gender</InputLabel> */}
+            <label>
+              <b
+                style={{
+                  textAlign: "center",
+                  fontFamily: "Courier New, monospace",
+                }}
+              >
+                Add Gender
+              </b>
+            </label>
             <Select
               className="mt-2"
               id="gender"

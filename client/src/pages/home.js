@@ -466,7 +466,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         </div>
         {userRole === "U" && (
           <div>
-            <AnimeList toggleRerender={toggleRerender}/>
+            <AnimeList toggleRerender={toggleRerender} />
           </div>
         )}
       </div>

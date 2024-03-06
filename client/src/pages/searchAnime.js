@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typewriter from "typewriter-effect";
 
-export default function SearchAnime({ forceRerender }) {
+export default function SearchAnime({ forceRerender, toggleRerender }) {
   const location = useLocation();
   const { searchTerm } = location.state || {};
 
@@ -146,7 +146,12 @@ export default function SearchAnime({ forceRerender }) {
         </section> */}
         <section>
           <div className="anime-list-container">
-            <AnimeItem currentanimes={currentanimes} loading={loading} />
+            <AnimeItem
+              currentanimes={currentanimes}
+              loading={loading}
+              forceRerender={forceRerender}
+              toggleRerender={toggleRerender}
+            />
           </div>
         </section>
         <section className="pagination-container">
@@ -154,6 +159,7 @@ export default function SearchAnime({ forceRerender }) {
             animePerPage={animePerPage}
             totalAnimes={animes.length}
             paginate={paginate}
+            toggleRerender={toggleRerender}
           />
         </section>
         {/* <section className="col-md-6 watched-anime-part" style={{ float: 'left' }}>
