@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { CustomLink } from "../navbar";
 import { motion } from "framer-motion/dist/framer-motion";
+// import { Link } from 'react-router';
+// import styled from 'styled-components';
 export default function Landing({ setProgress }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
 //   useEffect(() => {
