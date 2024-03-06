@@ -2971,27 +2971,48 @@ app.post("/admin/getmoderatorsdeletingepCount", async (req, res) => {
 app.post("/admin/getmoderatorkarmaCount", async (req, res) => {
   try {
     // const { id } = req.body;
-    const episodes = await pool.query(`
-    SELECT *, (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3) as karma
-    from moderator m join person p on m.moderator_id=p. id
-    WHERE (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3)=(SELECT max((review_verifications*2)+(filtered_comments*1)+(deleted_series*4)+(added_series*5)+(deleted_episodes*2)+(added_episodes*3))
-    from moderator)`);
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-    res.json(episodes.rows[0]);
-    console.log(episodes.rows[0]);
-  } catch (error) {
-    console.error(error.message);
-  }
-});
-// to get user who has highest con
-app.post("/admin/getmoderatorkarmaCount", async (req, res) => {
-  try {
-    // const { id } = req.body;
-    const episodes = await pool.query(`
-    SELECT *, (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3) as karma
-    from moderator m join person p on m.moderator_id=p. id
-    WHERE (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3)=(SELECT max((review_verifications*2)+(filtered_comments*1)+(deleted_series*4)+(added_series*5)+(deleted_episodes*2)+(added_episodes*3))
-    from moderator)`);
+    const episodes = await pool.query(`SELECT *,
+    (m.review_verifications * 2) +
+    (m.filtered_comments * 1) +
+    (m.deleted_series * 4) +
+    (m.added_series * 5) +
+    (m.deleted_episodes * 2) +
+    (m.added_episodes * 3) +
+    (COALESCE(m.others, 0) * 3) +
+    (COALESCE(acc_req_count, 0) * 1.5) AS karma
+FROM moderator m
+JOIN person p ON m.moderator_id = p.id
+LEFT JOIN (
+ SELECT moderator_id, COUNT(*) AS acc_req_count
+ FROM user_req_character
+ WHERE req_status = 'ACCEPTED'
+ GROUP BY moderator_id
+) urc ON m.moderator_id = urc.moderator_id
+WHERE (m.review_verifications * 2) +
+   (m.filtered_comments * 1) +
+   (m.deleted_series * 4) +
+   (m.added_series * 5) +
+   (m.deleted_episodes * 2) +
+   (m.added_episodes * 3) +
+   (COALESCE(m.others, 0) * 3) +
+   (COALESCE(urc.acc_req_count, 0) * 1.5) = (
+       SELECT MAX((review_verifications * 2) +
+                  (filtered_comments * 1) +
+                  (deleted_series * 4) +
+                  (added_series * 5) +
+                  (deleted_episodes * 2) +
+                  (added_episodes * 3) +
+                  (COALESCE(others, 0) * 3) +
+                  (COALESCE(acc_req_count, 0) * 1.5))
+       FROM moderator
+       LEFT JOIN (
+           SELECT moderator_id, COUNT(*) AS acc_req_count
+           FROM user_req_character
+           WHERE req_status = 'ACCEPTED'
+           GROUP BY moderator_id
+       ) urc ON moderator.moderator_id = urc.moderator_id
+   );
+`);
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(episodes.rows[0]);
     console.log(episodes.rows[0]);
