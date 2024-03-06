@@ -30,8 +30,7 @@ import AddAnime from "./pages/addAnime";
 import AddEpisode from "./pages/addEpisode";
 import DatePickerValue from "./Components/dateComp";
 import Characters from "./pages/characters";
-import LoginComponent from "./Components/loginComponent";
-import SignUpComponent from "./Components/signUpComponent";
+import Staffs from "./pages/staffs";
 
 function App() {
   const navigate = useNavigate();
@@ -164,8 +163,7 @@ function App() {
             <Route path="/:id/addEpisode" element={<AddEpisode />} />
             <Route path="/DatePickerValue" element={<DatePickerValue />} />
             <Route path="/:id/characters" element={<Characters />} />
-            <Route path="/logTest" element={<LoginComponent />} />
-            <Route path="/signTest" element={<SignUpComponent />} />
+            <Route path="/:id/staffs" element={<Staffs />} />
           </Routes>
         </AnimatePresence>
       </div>
