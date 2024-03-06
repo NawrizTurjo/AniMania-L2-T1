@@ -37,26 +37,26 @@ export default function AddEpisode() {
 
   const addEpisode = async (episode) => {
     console.log(episode);
-    try {
-      await toast.promise(
-        await axios.post(
-          `http://localhost:3000/${animeId}/addEpisode`,
-          JSON.stringify(episode),
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        ),
+    // try {
+    await toast.promise(
+      await axios.post(
+        `http://localhost:3000/${animeId}/addEpisode`,
+        JSON.stringify(episode),
         {
-          loading: "Adding Episodes...",
-          success: <b>Episode Added!</b>,
-          error: <b>Could not add episode.</b>,
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
-      );
-      // console.log(res.data);
-    } catch (err) {
-      console.error(err.message);
-    }
+      ),
+      {
+        loading: "Adding Episodes...",
+        success: <b>Episode Added!</b>,
+        error: <b>Could not add episode.</b>,
+      }
+    );
+    // console.log(res.data);
+    // } catch (err) {
+    //   console.error(err.message);
+    // }
   };
 
   const handleSubmit = async (event) => {
@@ -75,11 +75,29 @@ export default function AddEpisode() {
     console.log("New Episode:", newEpisode);
 
     try {
-      // Call addEpisode with the new episode
-      await addEpisode(newEpisode);
+      // // Call addEpisode with the new episode
+      // await addEpisode(newEpisode);
 
-      // Update the local state with the new episode
-      setEpisode([...episode, newEpisode]);
+      // // Update the local state with the new episode
+      // setEpisode([...episode, newEpisode]);
+
+      await toast.promise(
+        axios.post(`http://localhost:3000/${animeId}/addEpisode`, {
+          animeId,
+          episodeName,
+          episodeNumber,
+          videoUrl,
+          episodeLength,
+          thumbnail,
+          releaseDate,
+          streamingSites,
+        }),
+        {
+          loading: "Adding Episodes...",
+          success: <b>Episode Added!</b>,
+          error: <b>Could not add episode.</b>,
+        }
+      );
 
       // Clear the form fields if needed
       setEpisodeName("");
@@ -90,7 +108,7 @@ export default function AddEpisode() {
       setStreamingSites("");
       setEpisodeLength("");
 
-      toast.success("Episode added successfully!");
+      // toast.success("Episode added successfully!");
     } catch (error) {
       console.error("Error adding episode:", error);
       toast.error("Failed to add episode.");

@@ -210,6 +210,84 @@ app.post("/getCharacters", async (req, res) => {
   }
 });
 
+app.post("/addCharacter", async (req, res) => {
+  try {
+    const { name, role, gender, profile_picture, userRole, email, anime_id } =
+      req.body;
+    console.log(name, role, gender, profile_picture);
+
+    const characters = await pool.query(
+      `
+      CALL insert_character(
+        $1, -- p_name
+        $2,     -- p_role
+        $3,     -- p_gender
+        $4, -- p_profile_picture
+        $5,        -- p_user_role
+        $6, -- p_email
+        $7      -- p_anime_id
+    )
+      `,
+      [name, role, gender, profile_picture, userRole, email, anime_id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/approveCharacters", async (req, res) => {
+  try {
+    const { char_id, email } = req.body;
+
+    const res = await pool.query(
+      `
+        SELECT email_to_id( $1 ) as "id"
+      `,
+      [email]
+    );
+
+    const m_id = res.rows[0].id;
+    const response = await pool.query(
+      `
+      update USER_REQ_CHARACTER set moderator_id = $1 where "id" = $2;
+      `[m_id,char_id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getReqCharacters", async (req, res) => {
+  try {
+    // const { name, role, gender, profile_picture } = req.body;
+    // console.log(name, role, gender, profile_picture);
+
+    const reqCharacters = await pool.query(
+      `
+      SELECT *
+      FROM USER_REQ_CHARACTER
+      WHERE REQ_STATUS = 'pending'
+      ORDER BY REQ_DATE DESC
+      
+      `
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(reqCharacters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/:id/addEpisode", async (req, res) => {
   try {
     // const {animeId} = req.params;

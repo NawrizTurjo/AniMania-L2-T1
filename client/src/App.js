@@ -41,8 +41,8 @@ function App() {
     setForceRerender((prev) => !prev);
   };
 
-  localStorage.setItem("forceRerender", forceRerender);
-  localStorage.setItem("toggleRerender", toggleRerender);
+  // localStorage.setItem("forceRerender", forceRerender);
+  // localStorage.setItem("toggleRerender", toggleRerender);
 
   // Effect to log whenever forceRerender changes
   useEffect(() => {
@@ -108,17 +108,17 @@ function App() {
             />
             <Route
               path="/searchAnime/:searchTerm"
-              element={<SearchAnime forceRerender={forceRerender} />}
+              element={<SearchAnime forceRerender={forceRerender} toggleRerender={toggleRerender}/>}
             />
             {/* <Route path="/home/:username" component={Home} /> */}
             <Route
               path="/Home"
               element={<Home forceRerender={forceRerender} />}
             />
-            <Route
+            {/* <Route
               path="/searchAnime"
               element={<SearchAnime forceRerender={forceRerender} />}
-            />
+            /> */}
             <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
             <Route path="/userDash" element={<UserDash />}></Route>
             <Route path="/notifications" element={<Notifications />}></Route>
