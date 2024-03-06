@@ -1,3 +1,4 @@
+import "./loginCom.css";
 import React from "react";
 import { useRef, useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
@@ -145,60 +146,88 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    // Add class to body when component mounts
+    document.body.classList.add("login-page");
+    return () => {
+      // Remove class from body when component unmounts
+      document.body.classList.remove("login-page");
+    };
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      {success ? (
-        <section>
-          <h1>You are logged in!</h1>
-          <ToastContainer />
-        </section>
-      ) : (
-        <section>
-          <p
-            ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
-            aria-live="assertive"
-          >
-            {errMsg}
-          </p>
-          <h1>Sign In</h1>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="username">E-mail:</label>
-            <input
-              type="text"
-              id="username"
-              ref={userRef}
-              autoComplete="off"
-              onChange={(e) => setUser(e.target.value)}
-              value={user}
-              required
-            />
-            <br />
+      <div className="login-container ">
+        <div className="wrapper login-body">
+          {success ? (
+            <section>
+              <h1>You are logged in!</h1>
+              <ToastContainer />
+            </section>
+          ) : (
+            <section>
+              <p
+                ref={errRef}
+                className={errMsg ? "errmsg" : "offscreen"}
+                aria-live="assertive"
+              >
+                {errMsg}
+              </p>
+              <h1>Login</h1>
+              <form onSubmit={handleSubmit}>
+                {/* <label htmlFor="username">E-mail:</label> */}
+                <div className="input-box">
+                  <input
+                    type="text"
+                    id="username"
+                    placeholder="Email"
+                    ref={userRef}
+                    autoComplete="off"
+                    onChange={(e) => setUser(e.target.value)}
+                    value={user}
+                    required
+                  />
+                  <i className="bx bxs-user"></i>
+                </div>
+                {/* <br /> */}
 
-            <label htmlFor="password">Enter Password:</label>
-            <input
-              type="password"
-              id="password"
-              onChange={(e) => setPwd(e.target.value)}
-              value={pwd}
-              required
-            />
-            <br />
-            <button type="submit">Sign In</button>
-          </form>
-          <p>
-            Need an Account?
-            <br />
-            <span className="line">
-              <Link to="/sign_up">Sign Up</Link>
-            </span>
-          </p>
-        </section>
-      )}
+                {/* <label htmlFor="password">Enter Password:</label> */}
+                <div className="input-box">
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    onChange={(e) => setPwd(e.target.value)}
+                    value={pwd}
+                    required
+                  />
+                  <i className="bx bxs-user"></i>
+                </div>
+                {/* <div className="remember-forgot">
+                  <label>
+                    <input type="checkbox" />
+                    Remember Me
+                  </label>
+                  <a href="#">Forgot Password</a>
+                </div> */}
+                <button type="submit" className="btn">
+                  Sign In
+                </button>
+              </form>
+              <div className="register-link">
+                <p>
+                  Need an Account?
+                  <Link to="/sign_up">Sign Up</Link>
+                </p>
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
     </motion.div>
   );
 };
