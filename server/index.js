@@ -2649,8 +2649,8 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
     console.error(error.message);
   }
 });
-
-app.post("/admin/getAnimeSize", async (req, res) => {
+//to get total anime
+app.post("/admin/getAnimesCount", async (req, res) => {
   try {
     // const { id } = req.body;
     const episodes = await pool.query(`SELECT count(*) FROM anime`);
@@ -2661,3 +2661,291 @@ app.post("/admin/getAnimeSize", async (req, res) => {
     console.error(error.message);
   }
 });
+//to get total epsisode
+app.post("/admin/getEpisodesCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM episodes`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total character
+app.post("/admin/getCharactersCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM characters`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total staff
+app.post("/admin/getStaffsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM staffs`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total review
+app.post("/admin/getReviewsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM review`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total comment
+app.post("/admin/getCommentsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM comments`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total genre
+app.post("/admin/getGenresCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM genres`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total tag
+app.post("/admin/getTagsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM tags`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total studio
+app.post("/admin/getStudiosCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM studio`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total sound_track
+app.post("/admin/getSoundTracksCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM sound_tracks`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total user
+app.post("/admin/getUsersCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM "USER"`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total moderator
+app.post("/admin/getmoderatorsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM moderator`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get moderator who filetered highest comments
+app.post("/admin/getmoderatorsfilteredCommentsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.filtered_comments=(SELECT max(filtered_comments)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get mod who filetered highest reviews
+app.post("/admin/getmoderatorsfilteredreviewsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.review_verifications=(SELECT max(review_verifications)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who added highest series
+app.post("/admin/getmoderatorsaddingseriesCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.added_series=(SELECT max(added_series)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who deleted highest series
+app.post("/admin/getmoderatorsdeletingseriesCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.deleted_series=(SELECT max(deleted_series)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who added highest ep
+app.post("/admin/getmoderatorsaddingepCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`   
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.added_episodes=(SELECT max(added_episodes)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who deleted highest ep
+app.post("/admin/getmoderatorsdeletingepCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.deleted_episodes=(SELECT max(deleted_episodes)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who has highest karma
+app.post("/admin/getmoderatorkarmaCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *, (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3) as karma
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3)=(SELECT max((review_verifications*2)+(filtered_comments*1)+(deleted_series*4)+(added_series*5)+(deleted_episodes*2)+(added_episodes*3))
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get user who has highest con
+app.post("/admin/getmoderatorkarmaCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *, (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3) as karma
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE (m.review_verifications*2)+(m.filtered_comments*1)+(m.deleted_series*4)+(m.added_series*5)+(m.deleted_episodes*2)+(m.added_episodes*3)=(SELECT max((review_verifications*2)+(filtered_comments*1)+(deleted_series*4)+(added_series*5)+(deleted_episodes*2)+(added_episodes*3))
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get anime having highest reviews
+app.post("/admin/getanimehighestreviewCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT
+    a.anime_id,
+    a.anime_name,
+    COUNT(r.review_id) AS review_count
+    FROM
+    anime a
+    JOIN
+    review r ON a.anime_id = r.anime_id
+    GROUP BY
+    a.anime_id
+    ORDER BY
+    review_count DESC`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+
+
+
