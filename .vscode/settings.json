@@ -9,5 +9,6 @@
       "database": "animania",
       "username": "postgres"
     }
-  ]
+  ],
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
