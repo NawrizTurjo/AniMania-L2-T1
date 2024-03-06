@@ -38,15 +38,22 @@ export default function AddEpisode() {
   const addEpisode = async (episode) => {
     console.log(episode);
     try {
-      const res = await axios.post(
-        `http://localhost:3000/${animeId}/addEpisode`,
-        JSON.stringify(episode),
+      await toast.promise(
+        await axios.post(
+          `http://localhost:3000/${animeId}/addEpisode`,
+          JSON.stringify(episode),
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        ),
         {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
+          loading: "Adding Episodes...",
+          success: <b>Episode Added!</b>,
+          error: <b>Could not add episode.</b>,
         }
       );
-      console.log(res.data);
+      // console.log(res.data);
     } catch (err) {
       console.error(err.message);
     }
@@ -121,8 +128,9 @@ export default function AddEpisode() {
           margin="normal"
         />
         <TextField
-          type="text"
+          // type="text"
           placeholder="Episode Number"
+          type="number"
           value={episodeNumber}
           onChange={(e) => setEpisodeNumber(e.target.value)}
           // fullWidth
@@ -130,8 +138,9 @@ export default function AddEpisode() {
           margin="normal"
         />
         <TextField
-          type="text"
+          // type="text"
           placeholder="Length in minutes"
+          type="number"
           value={episodeLength}
           onChange={(e) => setEpisodeLength(e.target.value)}
           // fullWidth

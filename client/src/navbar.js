@@ -60,8 +60,8 @@ export default function Navbar() {
           <CustomLink to="/genre" onClick={toggleMenu}>
             Genre
           </CustomLink>
-          <CustomLink to="/season" onClick={toggleMenu}>
-            Season
+          <CustomLink to="/Top100" onClick={toggleMenu}>
+            Top 100 Anime
           </CustomLink>
           <CustomLink to="/about" onClick={toggleMenu}>
             About Us

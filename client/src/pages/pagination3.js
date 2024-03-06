@@ -21,7 +21,15 @@ const MaterialPagination = ({
       style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
     >
       <Stack spacing={2}>
-        <Pagination count={pageCount} color="primary" onChange={handleChange} />
+        <Pagination
+          count={10}
+          variant="outlined"
+          color="primary"
+          shape="rounded"
+          showFirstButton
+          showLastButton
+          onChange={handleChange}
+        />
       </Stack>
     </div>
   );

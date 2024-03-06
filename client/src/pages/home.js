@@ -56,6 +56,8 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
   let karma = localStorage.getItem("karma");
   let contribution = localStorage.getItem("contribution");
 
+  const [forceRerender2, toggleRerender2] = useState(false);
+
   //const { username } = useParams();
   const [animes, setAnime] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -338,7 +340,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
               {user && (
                 <div>
                   <h3 className="d-flex ml-4">
-                    <b></b> {user}
+                    <b style={{ fontFamily: "Consolas" }}>{user}</b>
                   </h3>
                 </div>
               )}
@@ -464,7 +466,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         </div>
         {userRole === "U" && (
           <div>
-            <AnimeList />
+            <AnimeList toggleRerender={toggleRerender}/>
           </div>
         )}
       </div>

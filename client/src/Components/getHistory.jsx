@@ -45,6 +45,16 @@ export default function History() {
   useEffect(() => {
     getHistory();
   }, []);
+  if (history.length === 0) {
+    return (
+      <div>
+        <Typography variant="h4" component="h2" gutterBottom>
+          You have not watched any anime yet
+          <hr />
+        </Typography>
+      </div>
+    );
+  }
   return (
     <div>
       <Typography variant="h4" component="h2" gutterBottom>
@@ -75,6 +85,7 @@ export default function History() {
           </ImageListItem>
         ))}
       </ImageList>
+      <hr />
     </div>
   );
 }
