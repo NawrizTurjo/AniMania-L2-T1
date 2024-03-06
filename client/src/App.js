@@ -31,6 +31,7 @@ import AddEpisode from "./pages/addEpisode";
 import DatePickerValue from "./Components/dateComp";
 import Characters from "./pages/characters";
 import Staffs from "./pages/staffs";
+import Admin from "./pages/admin"
 
 function App() {
   const navigate = useNavigate();
@@ -155,6 +156,7 @@ function App() {
             />
             <Route path="/VideoPlayer" element={<VideoPlayer />} />
             <Route path="/addAnime" element={<AddAnime />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/:id/addEpisode" element={<AddEpisode />} />
             <Route path="/DatePickerValue" element={<DatePickerValue />} />
             <Route path="/:id/characters" element={<Characters />} />

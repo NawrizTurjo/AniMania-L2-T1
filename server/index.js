@@ -3110,6 +3110,28 @@ app.post("/getStaffs", async (req, res) => {
   }
 });
 
+app.post("/getInterMod", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    // console.log(id);
+
+    const characters = await pool.query(
+      `
+      SELECT *
+      FROM person
+      WHERE "role"='M_not';
+      `
+    );
+    console.log(characters.rows);
+    console.log(1);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 app.post("/addStaff", async (req, res) => {
   try {
@@ -3134,7 +3156,7 @@ app.post("/addStaff", async (req, res) => {
     );
 
     const staff_id = max_s_id.rows[0].max;
-    
+
     console.log(staff_id);
 
     const characters = await pool.query(
@@ -3162,5 +3184,92 @@ app.post("/addStaff", async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put("/declinemod", async (req, res) => {
+  try {
+    const {updatedId} = req.body;
+    //console.log(review_id);
+    //console.log(email);
+
+    // const moderator_id = await pool.query(
+    //   `
+    //   SELECT EMAIL_TO_ID($1) as "id"
+    //   `,
+    //   [email]
+    // );
+    //const id = moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      DELETE FROM moderator
+      WHERE
+        moderator_id = $1
+      `,
+      [updatedId]
+    );
+    const response2 = await pool.query(
+      `
+      DELETE FROM person
+      WHERE
+        "id" = $1
+      `,
+      [updatedId]
+    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   update moderator
+    //   set
+    //   others = others + 1
+    //   where moderator_id = $1
+    //   `,
+    //   [id]
+    // );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/approvemod", async (req, res) => {
+  try {
+    const {updatedId} = req.body;
+    //console.log(review_id);
+    //console.log(email);
+
+    // const moderator_id = await pool.query(
+    //   `
+    //   SELECT EMAIL_TO_ID($1) as "id"
+    //   `,
+    //   [email]
+    // );
+    //const id = moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      update person
+       set role= 'M'
+      WHERE
+        "id" = $1
+      `,
+      [updatedId]
+    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   update moderator
+    //   set
+    //   others = others + 1
+    //   where moderator_id = $1
+    //   `,
+    //   [id]
+    // );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
   }
 });
