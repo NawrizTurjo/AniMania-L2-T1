@@ -14,6 +14,7 @@ import { useHistory } from "react-router-dom";
 export default function Admin() {
 
     const [moderators, setModerators] = useState([]);
+    const [logs, setLogs] = useState([]);
     const [loading, setLoading]= useState(false);
     let [stat, setStat] = useState(false);
 
@@ -30,6 +31,18 @@ export default function Admin() {
     }
   };
 
+  const getLogs = async () => {
+    try {
+        setLoading(true);
+        const response = await axios.post("http://localhost:3000/admin/getLog");
+        setLogs(response.data);
+        console.log(response.data);
+        setLoading(false);
+} catch (error) {
+  console.error("Error fetching moderators:", error.message);
+}
+};
+
   const handleApproveMod = async (e, updatedId) => {
     e.preventDefault();
     try {
@@ -43,6 +56,7 @@ export default function Admin() {
         }
       );
       getModerators();
+      getLogs();
       setStat((prev) => !prev);
       //setUpdatedId(0);
     } catch (error) {
@@ -63,6 +77,7 @@ export default function Admin() {
         }
       );
       getModerators();
+      getLogs();
       setStat((prev) => !prev);
       //setUpdatedId(0);
       //getModeratorsCount();
@@ -74,6 +89,10 @@ export default function Admin() {
     useEffect(() => {
       getModerators();
     }, [stat]);
+
+    useEffect(() => {
+        getLogs();
+      }, [stat]);
 
     const [animeCount, setAnimeCount] = useState(0);
 
@@ -436,6 +455,48 @@ export default function Admin() {
       {/* Third vertical bar */}
       <Box sx={{ flex: "1 1 50%", padding: "20px" }}>
         {/* Third area content here, similar structure with maxHeight and overflowY for scrolling */}
+        <Paper elevation={3} sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}>
+          {/* First area content */}
+          <h2>List of Functions/Procedure Called</h2>
+          {/* Render list of moderators */}
+          {logs.map((comment, index) => (
+            <div key={index} style={{ marginBottom: "20px" }}>
+              <Typography variant="body1">
+                Log ID: {comment.log_id}
+              </Typography>
+              <Typography variant="body1">
+                Person ID: {comment.person_id}
+              </Typography>
+              <Typography variant="body1">
+                Anime ID: {comment.anime_id}
+              </Typography>
+              <Typography variant="body1">
+                Episode No. : {comment.episode_no}
+              </Typography>
+              <Typography variant="body1">
+                Comment ID: {comment.comment_id}
+              </Typography>
+              <Typography variant="body1">
+                Track Date: {comment.track_date}
+              </Typography>
+              {/* <Button
+                variant="contained"
+                color="primary"
+                onClick={(e) => handleApproveMod(e, comment.id)}
+                style={{ marginRight: "10px" }}
+              >
+                Approve
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={(e) => handleDeclineMod(e, comment.id)}
+              >
+                Decline
+              </Button> */}
+            </div>
+          ))}
+        </Paper>
       </Box>
     </Box>
   );

@@ -3495,3 +3495,17 @@ app.put("/approvemod", async (req, res) => {
     console.error(error.message);
   }
 });
+
+app.post("/admin/getLog", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from log_table`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
