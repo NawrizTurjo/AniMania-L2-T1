@@ -26,6 +26,20 @@ body {
   font-family: "Times New Roman", Times, serif;
 }
 
+.gray-background {
+  background-color: rgba(128, 128, 128, 0.5); /* 50% transparent gray */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.gray-background:hover {
+  background-color: rgba(
+    128,
+    128,
+    128,
+    0.8
+  ); /* Less transparent gray on hover */
+}
+
 .nav {
   background-color: #333333;
   color: white;

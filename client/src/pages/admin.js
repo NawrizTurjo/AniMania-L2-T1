@@ -12,7 +12,6 @@ import Typography from "@mui/material/Typography";
 // import { useHistory } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import ErrorIcon from "@mui/icons-material/Error";
-//import { useNavigate } from "react-router-dom";
 
 export default function Admin() {
   const [moderators, setModerators] = useState([]);
@@ -456,7 +455,7 @@ export default function Admin() {
   if (loading) return <div>Loading...</div>;
   return (
     <>
-    <Modal
+      <Modal
         show={show}
         onHide={handleClose}
         backdrop="static"
@@ -467,7 +466,7 @@ export default function Admin() {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <ErrorIcon style={{ color: "red" }} />
+            <ErrorTwoToneIcon style={{ color: "red" }} fontSize="large" />
             {"  Invalid Entry  "}
           </Modal.Title>
         </Modal.Header>
@@ -489,121 +488,133 @@ export default function Admin() {
           {/* <Button variant="primary">Understood</Button> */}
         </Modal.Footer>
       </Modal>
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      {/* First vertical bar */}
-      <Box sx={{ flex: "1 1 50%", borderRight: "1px solid #ccc", padding: "20px" }}>
-        <Paper elevation={3} sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}>
-          {/* First area content */}
-          <h2>List of Moderators</h2>
-          {/* Render list of moderators */}
-          {moderators.map((comment, index) => (
-            <div key={index} style={{ marginBottom: "20px" }}>
-              <Typography variant="body1">
-                ID: {comment.id}
-              </Typography>
-              <Typography variant="body1">
-                Name: {comment.user_name}
-              </Typography>
-              <Typography variant="body1">
-                Email: {comment.email}
-              </Typography>
-              
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={(e) => handleApproveMod(e, comment.id)}
-                style={{ marginRight: "10px" }}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={(e) => handleDeclineMod(e, comment.id)}
-              >
-                Decline
-              </Button>
-            </div>
-          ))}
-        </Paper>
-      </Box>
-  
-      {/* Second vertical bar */}
-      <Box sx={{ flex: "1 1 50%", borderRight: "1px solid #ccc", padding: "20px" }}>
-  {/* Second area content here */}
-  <div style={{ maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}>
-  <h2>Total Counts</h2>
-  <ul style={{ listStyle: "none", padding: 0 }}>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Animes: {animeCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Episodes: {episodesCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Characters: {charactersCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Staffs: {staffCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Reviews: {reviewsCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Comments: {commentsCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Genres: {genresCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Tags: {tagsCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Studios: {studiosCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Soundtracks: {soundtracksCount}</h3>
-    </li>
-    <li style={{ marginBottom: "20px" }}>
-      <h3>Users: {usersCount}</h3>
-    </li>
-  </ul>
-</div>
+      <Box sx={{ display: "flex", height: "100vh" }}>
+        {/* First vertical bar */}
+        <Box
+          sx={{
+            flex: "1 1 50%",
+            borderRight: "1px solid #ccc",
+            padding: "20px",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}
+          >
+            {/* First area content */}
+            <h2>List of Moderators</h2>
+            {/* Render list of moderators */}
+            {moderators.map((comment, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <Typography variant="body1">ID: {comment.id}</Typography>
+                <Typography variant="body1">
+                  Name: {comment.user_name}
+                </Typography>
+                <Typography variant="body1">Email: {comment.email}</Typography>
 
-</Box>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={(e) => handleApproveMod(e, comment.id)}
+                  style={{ marginRight: "10px" }}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={(e) => handleDeclineMod(e, comment.id)}
+                >
+                  Decline
+                </Button>
+              </div>
+            ))}
+          </Paper>
+        </Box>
 
-      
-      {/* Third vertical bar */}
-      <Box sx={{ flex: "1 1 50%", padding: "20px" }}>
-        {/* Third area content here, similar structure with maxHeight and overflowY for scrolling */}
-        <Paper elevation={3} sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}>
-          {/* First area content */}
-          <h2>List of Functions/Procedure Called</h2>
-          {/* Render list of moderators */}
-          {logs.map((comment, index) => (
-            <div key={index} style={{ marginBottom: "20px" }}>
-              <Typography variant="body1">
-                Log ID: {comment.log_id}
-              </Typography>
-              <Typography variant="body1">
-                Function/ Procedure Name: {comment.function_or_procedure_name}
-              </Typography>
-              <Typography variant="body1">
-                Person ID: {comment.person_id}
-              </Typography>
-              <Typography variant="body1">
-                Anime ID: {comment.anime_id}
-              </Typography>
-              <Typography variant="body1">
-                Episode No. : {comment.episode_no}
-              </Typography>
-              <Typography variant="body1">
-                Comment ID: {comment.comment_id}
-              </Typography>
-              <Typography variant="body1">
-                Track Date: {comment.track_date}
-              </Typography>
-              {/* <Button
+        {/* Second vertical bar */}
+        <Box
+          sx={{
+            flex: "1 1 50%",
+            borderRight: "1px solid #ccc",
+            padding: "20px",
+          }}
+        >
+          {/* Second area content here */}
+          <div style={{ maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}>
+            <h2>Total Counts</h2>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Animes: {animeCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Episodes: {episodesCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Characters: {charactersCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Staffs: {staffCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Reviews: {reviewsCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Comments: {commentsCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Genres: {genresCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Tags: {tagsCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Studios: {studiosCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Soundtracks: {soundtracksCount}</h3>
+              </li>
+              <li style={{ marginBottom: "20px" }}>
+                <h3>Users: {usersCount}</h3>
+              </li>
+            </ul>
+          </div>
+        </Box>
+
+        {/* Third vertical bar */}
+        <Box sx={{ flex: "1 1 50%", padding: "20px" }}>
+          {/* Third area content here, similar structure with maxHeight and overflowY for scrolling */}
+          <Paper
+            elevation={3}
+            sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}
+          >
+            {/* First area content */}
+            <h2>List of Functions/Procedure Called</h2>
+            {/* Render list of moderators */}
+            {logs.map((comment, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <Typography variant="body1">
+                  Log ID: {comment.log_id}
+                </Typography>
+                <Typography variant="body1">
+                  Function/ Procedure Name: {comment.function_or_procedure_name}
+                </Typography>
+                <Typography variant="body1">
+                  Person ID: {comment.person_id}
+                </Typography>
+                <Typography variant="body1">
+                  Anime ID: {comment.anime_id}
+                </Typography>
+                <Typography variant="body1">
+                  Episode No. : {comment.episode_no}
+                </Typography>
+                <Typography variant="body1">
+                  Comment ID: {comment.comment_id}
+                </Typography>
+                <Typography variant="body1">
+                  Track Date: {comment.track_date}
+                </Typography>
+                {/* <Button
                 variant="contained"
                 color="primary"
                 onClick={(e) => handleApproveMod(e, comment.id)}
