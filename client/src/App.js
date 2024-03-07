@@ -31,9 +31,10 @@ import AddEpisode from "./pages/addEpisode";
 import DatePickerValue from "./Components/dateComp";
 import Characters from "./pages/characters";
 import Staffs from "./pages/staffs";
-import Admin from "./pages/admin"
+import Admin from "./pages/admin";
 import LoginComponent from "./Components/loginComponent";
 import ContactUsComponent from "./Components/contactUsComponent";
+import Plans from "./pages/plans";
 
 function App() {
   const navigate = useNavigate();
@@ -161,7 +162,7 @@ function App() {
                 />
               }
             />
-            <Route path="/contact" element={<ContactUsComponent />} />
+            {/* <Route path="/contact" element={<ContactUsComponent />} /> */}
             <Route path="/VideoPlayer" element={<VideoPlayer />} />
             <Route path="/addAnime" element={<AddAnime />} />
             <Route path="/admin" element={<Admin />} />
@@ -169,6 +170,7 @@ function App() {
             <Route path="/DatePickerValue" element={<DatePickerValue />} />
             <Route path="/:id/characters" element={<Characters />} />
             <Route path="/:id/staffs" element={<Staffs />} />
+            <Route path="/plans" element={<Plans />} />
           </Routes>
         </AnimatePresence>
       </div>

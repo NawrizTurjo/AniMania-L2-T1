@@ -75,6 +75,9 @@ export default function Navbar() {
           <CustomLink to="/AdvancedSearch" onClick={toggleMenu}>
             Advanced Search
           </CustomLink>
+          <CustomLink to="/Plans" onClick={toggleMenu}>
+            Plans
+          </CustomLink>
         </ul>
       )}
       {!isSearchAnimePage && windowWidth > 768 && (

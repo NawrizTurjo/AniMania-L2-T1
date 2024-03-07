@@ -103,3 +103,48 @@
 //     </div>
 //   );
 // }
+
+// import React from 'react';
+// import './contactUsComponent.css';
+
+// const ContactUs = () => {
+//   return (
+//     <div className="contact-container">
+//       <h1>Contact Us</h1>
+//       <div className="contact-content">
+//         <div className="creator-info left">
+//           <img src="creator1.jpg" alt="Creator 1" />
+//           <h3>John Doe</h3>
+//           <p>Lead Developer</p>
+//           <p>john@example.com</p>
+//         </div>
+//         <div className="contact-form">
+//           <h3>Send a Message</h3>
+//           <form>
+//             <div className="form-group">
+//               <label htmlFor="name">Name:</label>
+//               <input type="text" id="name" />
+//             </div>
+//             <div className="form-group">
+//               <label htmlFor="email">Email:</label>
+//               <input type="email" id="email" />
+//             </div>
+//             <div className="form-group">
+//               <label htmlFor="message">Message:</label>
+//               <textarea id="message"></textarea>
+//             </div>
+//             <button type="submit-contact">Submit</button>
+//           </form>
+//         </div>
+//         <div className="creator-info right">
+//           <img src="creator2.jpg" alt="Creator 2" />
+//           <h3>Jane Smith</h3>
+//           <p>UI/UX Designer</p>
+//           <p>jane@example.com</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ContactUs;

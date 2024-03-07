@@ -69,6 +69,212 @@ app.post("/sign_up", async (req, res) => {
   }
 });
 
+app.post("/getCurrentPlan", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const currentPlan = await pool.query(
+      `
+      SELECT 
+        CASE 
+          WHEN current_plan IS NULL THEN 'Trial'
+          ELSE (
+            SELECT PLAN_NAME
+            FROM PLANS
+            WHERE PLAN_ID = current_plan
+          )
+        END as PLAN_NAME,
+        TO_CHAR(plan_end_date, 'YYYY-MM-DD HH24:MI:SS') AS plan_end_date,
+        WALLET_BALANCE
+      FROM "USER"
+      WHERE user_id = $1;
+
+      `,
+      [userId]
+    );
+
+    console.log(currentPlan.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(currentPlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/addPlans", async (req, res) => {
+  try {
+    const { userEmail, interval, value, name } = req.body;
+    console.log(userEmail, interval, value, name);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const currentPlan = await pool.query(
+      `
+      INSERT INTO PLANS 
+        (PLAN_INTERVAL,PLAN_VALUE,PLAN_NAME) 
+          VALUES  
+          ($1,$2,$3);
+      `,
+      [interval, value, name]
+    );
+
+    const modUpdate = await pool.query(
+      `
+      UPDATE moderator
+      SET OTHERS = OTHERS + 1
+      WHERE moderator_id = $1;
+      `,
+      [userId]
+    );
+
+    console.log(currentPlan.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(currentPlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/getAllPlans", async (req, res) => {
+  try {
+    // const { userEmail } = req.body;
+    // console.log(userEmail);
+
+    // const response = await pool.query(
+    //   `
+    //   SELECT EMAIL_TO_ID($1) as "id"
+    //   `,
+    //   [userEmail]
+    // );
+
+    // const userId = response.rows[0].id;
+
+    const allPlans = await pool.query(
+      `
+      SELECT *
+      FROM PLANS;
+
+      `
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(allPlans.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getbalance", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const balance = await pool.query(
+      `
+      SELECT WALLET_BALANCE
+        FROM "USER"
+        WHERE USER_ID = $1;
+      `,
+      [userId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(balance.rows[0].wallet_balance);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/updatePlan", async (req, res) => {
+  try {
+    const { userEmail, planId } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const updatePlan = await pool.query(
+      `
+      CALL ADD_PLAN ($1,$2)
+      `,
+      [userId, planId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(updatePlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/addNewPlan", async (req, res) => {
+  try {
+    const { userEmail, planName, planInterval, planValue } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const addNewPlan = await pool.query(
+      `
+      CALL ADD_NEW_PLAN ($1,$2,$3,$4);
+      `,
+      [userId, planName, planValue, planInterval]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(addNewPlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/top100", async (req, res) => {
   try {
     const { userEmail } = req.body;
@@ -266,8 +472,6 @@ app.post("/approveCharacters", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 app.post("/getReqCharacters", async (req, res) => {
   try {
@@ -3132,7 +3336,6 @@ app.post("/getInterMod", async (req, res) => {
   }
 });
 
-
 app.post("/addStaff", async (req, res) => {
   try {
     const { name, role, gender, profile_picture, userRole, email, anime_id } =
@@ -3146,7 +3349,6 @@ app.post("/addStaff", async (req, res) => {
       [email]
     );
     const id = moderator_id.rows[0].id;
-
 
     const max_s_id = await pool.query(
       `
@@ -3166,7 +3368,7 @@ app.post("/addStaff", async (req, res) => {
         values
         ($1, $2, $3, $4, $5)
       `,
-      [name, role, gender, profile_picture,anime_id]
+      [name, role, gender, profile_picture, anime_id]
     );
 
     const updateModeratorQuery = await pool.query(
@@ -3189,7 +3391,7 @@ app.post("/addStaff", async (req, res) => {
 
 app.put("/declinemod", async (req, res) => {
   try {
-    const {updatedId} = req.body;
+    const { updatedId } = req.body;
     //console.log(review_id);
     //console.log(email);
 
@@ -3236,7 +3438,7 @@ app.put("/declinemod", async (req, res) => {
 
 app.put("/approvemod", async (req, res) => {
   try {
-    const {updatedId} = req.body;
+    const { updatedId } = req.body;
     //console.log(review_id);
     //console.log(email);
 
