@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { TextField } from "@mui/material";
 
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 const fadeInAnimation = keyframes`
   0% {
@@ -47,7 +47,9 @@ const PlanHeading = styled.h1`
   font-size: 3rem;
   text-align: center;
   margin-bottom: 2rem;
-  animation: ${fadeInAnimation} 1s ease-in-out, ${shadowAnimation} 3s ease-in-out infinite, ${colorAnimation} 5s ease-in-out infinite;
+  animation: ${fadeInAnimation} 1s ease-in-out,
+    ${shadowAnimation} 3s ease-in-out infinite,
+    ${colorAnimation} 5s ease-in-out infinite;
 `;
 
 export default function Plans() {
@@ -78,9 +80,10 @@ export default function Plans() {
 
   const handleAddPlan = async () => {
     try {
-      await axios.post("http://localhost:3000/addNewPlan", 
-        {userEmail, ...newPlan},
-      );
+      await axios.post("http://localhost:3000/addNewPlan", {
+        userEmail,
+        ...newPlan,
+      });
       console.log(newPlan);
       handleClose();
       setNewPlan({
@@ -94,8 +97,11 @@ export default function Plans() {
     }
   };
 
+  localStorage.setItem("update", update);
+
   const toggleUpdate = () => {
     setUpdate((prev) => !prev);
+    localStorage.setItem("update", update);
   };
 
   let userRole = localStorage.getItem("userRole");
@@ -114,13 +120,22 @@ export default function Plans() {
   const getCurrentPlan = async () => {
     try {
       setLoading(true);
-      const getCurrentPlan = await axios.post(
+      const getCurrentPlans = await axios.post(
         `http://localhost:3000/getCurrentPlan`,
         { userEmail }
       );
-      setCurrentPlan(getCurrentPlan.data[0]);
-      console.log(getCurrentPlan.data);
-      console.log(getCurrentPlan.data[0].plan_name);
+      setCurrentPlan(getCurrentPlans.data[0]);
+      console.log(getCurrentPlans.data);
+      console.log(getCurrentPlans.data[0]);
+      localStorage.setItem(
+        "currentPlanName",
+        getCurrentPlans.data[0].plan_name
+      );
+      localStorage.setItem(
+        "currentPlanEnd",
+        getCurrentPlans.data[0].plan_end_date
+      );
+      localStorage.setItem("balance", getCurrentPlans.data[0].wallet_balance);
       setLoading(false);
     } catch (err) {
       console.log(err.message);
@@ -203,8 +218,16 @@ export default function Plans() {
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="contained" onClick={handleAddPlan}
-            style={{backgroundColor: "green", color: "white", fontWeight: "bold", outline: "none", border: "none"}}
+            <Button
+              variant="contained"
+              onClick={handleAddPlan}
+              style={{
+                backgroundColor: "green",
+                color: "white",
+                fontWeight: "bold",
+                outline: "none",
+                border: "none",
+              }}
             >
               Add Plan
             </Button>

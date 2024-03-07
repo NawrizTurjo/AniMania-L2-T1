@@ -72,8 +72,13 @@ function UserDashboard() {
       let personData = response.data[0];
       const activeTime = personData?.active_time || {}; // Initialize activeTime as an object
       console.log(activeTime);
+      const days = activeTime.days || 0;
+      const hours = activeTime.hours || 0;
+      const minutes = activeTime.minutes || 0;
+      const seconds = activeTime.seconds || 0;
+      const milliseconds = activeTime.milliseconds || 0;
       // const formattedInterval = formatActiveTime(activeTime); // Format the active time
-      const formattedActiveTime = `${activeTime.days} day(s) ${activeTime.hours}h ${activeTime.minutes}m ${activeTime.seconds}s ${activeTime.milliseconds}ms`;
+      const formattedActiveTime = `${days} day(s) ${hours}h ${minutes}m ${seconds}s ${milliseconds}ms`;
       console.log(formattedActiveTime);
 
       person = {

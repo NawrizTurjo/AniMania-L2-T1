@@ -57,7 +57,7 @@ export default function AnimeList({ toggleRerender }) {
           <ListSubheader component="div">{date.getMonth}</ListSubheader>
         </ImageListItem>
         {animeList.map((anime) => (
-          <ImageListItem key={anime.img}>
+          <ImageListItem key={anime.anime_id}>
             <Link to={`/watch/anime/episodes/${anime.anime_id}`}>
               <img
                 srcSet={`${anime.title_screen}?w=248&fit=crop&auto=format`}

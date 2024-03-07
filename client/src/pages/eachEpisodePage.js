@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
-import { useLocation, useParams } from "react-router";
+import { Navigate, useLocation, useParams } from "react-router";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
@@ -15,6 +15,8 @@ import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import ReplyIcon from "@mui/icons-material/Reply";
 import { IconButton } from "@mui/material";
+import Modal from "react-bootstrap/Modal";
+import { useNavigate } from "react-router-dom";
 
 export default function Episode({ toggleRerender, setProgress }) {
   const { id, id2 } = useParams();
@@ -82,6 +84,57 @@ export default function Episode({ toggleRerender, setProgress }) {
       console.error(err.message);
     }
   };
+
+  const [show, setShow] = useState(false);
+
+  const history = useNavigate();
+
+  const handleClose = () => {
+    setShow(false);
+    history("/plans");
+  };
+  const handleShow = () => setShow(true);
+
+  const [currentPlan, setCurrentPlan] = useState({});
+
+  let update = localStorage.getItem("update");
+
+  let balance = localStorage.getItem("balance");
+  let planName = localStorage.getItem("currentPlanName");
+  let planEnd = localStorage.getItem("currentPlanEnd");
+
+  const getCurrentPlan = async () => {
+    try {
+      setLoading(true);
+      const getCurrentPlans = await axios.post(
+        `http://localhost:3000/getCurrentPlan`,
+        { userEmail: email }
+      );
+      setCurrentPlan(getCurrentPlans.data[0]);
+      console.log(getCurrentPlans.data);
+      console.log(getCurrentPlans.data[0]);
+      localStorage.setItem(
+        "currentPlanName",
+        getCurrentPlans.data[0].plan_name
+      );
+      localStorage.setItem(
+        "currentPlanEnd",
+        getCurrentPlans.data[0].plan_end_date
+      );
+      localStorage.setItem("balance", getCurrentPlans.data[0].wallet_balance);
+      setLoading(false);
+      if (new Date(getCurrentPlans.data[0].plan_end_date) < new Date()) {
+        console.log("Plan Expired");
+        setShow(true);
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getCurrentPlan();
+  }, [update]);
 
   const handleSubmitComments = async (event) => {
     event.preventDefault();
@@ -461,6 +514,55 @@ export default function Episode({ toggleRerender, setProgress }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Oops Your Subscription seems to have ended 😞
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Your subscription has expired. Please consider{" "}
+          <Link
+            to={"/plans"}
+            style={{
+              // no underline
+              textDecoration: "none",
+              // bold font
+              fontWeight: "bold",
+              // color black
+              color: "black",
+            }}
+          >
+            renewing
+          </Link>{" "}
+          your subscription to continue enjoying our services! 🔄💳
+          <br />
+          Don't worry, we're here to help you get back on track! 🚀✨
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              fontWeight: "bold",
+              outline: "none",
+              border: "none",
+            }}
+          >
+            Go To Plans
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div className="row justify-content-center">
         <div className="col-lg-8">
           <div className="d-flex justify-content-center mb-4">

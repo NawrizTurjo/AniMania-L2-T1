@@ -83,6 +83,43 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
     setAnchorEl(null);
   };
 
+  const [currentPlan, setCurrentPlan] = useState({});
+
+  let update = localStorage.getItem("update");
+
+  let balance = localStorage.getItem("balance");
+  let planName = localStorage.getItem("currentPlanName");
+  let planEnd = localStorage.getItem("currentPlanEnd");
+
+  const getCurrentPlan = async () => {
+    try {
+      setLoading(true);
+      const getCurrentPlans = await axios.post(
+        `http://localhost:3000/getCurrentPlan`,
+        { userEmail: email }
+      );
+      setCurrentPlan(getCurrentPlans.data[0]);
+      console.log(getCurrentPlans.data);
+      console.log(getCurrentPlans.data[0]);
+      localStorage.setItem(
+        "currentPlanName",
+        getCurrentPlans.data[0].plan_name
+      );
+      localStorage.setItem(
+        "currentPlanEnd",
+        getCurrentPlans.data[0].plan_end_date
+      );
+      localStorage.setItem("balance", getCurrentPlans.data[0].wallet_balance);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getCurrentPlan();
+  }, [update]);
+
   const getKarma = async (email) => {
     // e.preventDefault();
     try {
@@ -357,6 +394,18 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
                 <h3>
                   <b>Contributions: </b>
                   {contribution}
+                </h3>
+                <h3>
+                  <b>Balance: </b>
+                  {balance}
+                </h3>
+                <h3>
+                  <b>Plan: </b>
+                  {planName}
+                </h3>
+                <h3>
+                  <b>Expiring on: </b>
+                  {new Date(planEnd) > new Date() ? planEnd : "expired"}
                 </h3>
               </div>
             )}

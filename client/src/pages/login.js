@@ -158,8 +158,8 @@ const Login = () => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      animate={{ opacity: 1, transition: { ease: "easeOut", duration: 2 } }}
+      exit={{ opacity: 0 }}
     >
       <div className="login-container ">
         <div className="wrapper login-body">

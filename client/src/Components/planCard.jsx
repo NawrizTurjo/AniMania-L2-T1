@@ -122,6 +122,7 @@ const PlanCard = ({ plans, toggleUpdate }) => {
       });
       setBalance(balance.data);
       console.log(balance.data);
+      localStorage.setItem("balance", balance.data);
     } catch (err) {
       console.log(err.message);
     }
@@ -275,6 +276,13 @@ const PlanCard = ({ plans, toggleUpdate }) => {
                   //   handleClose();
                   handleUpdatePlan();
                 }}
+                style={{
+                  backgroundColor: "green",
+                  color: "white",
+                  fontWeight: "bold",
+                  outline: "none",
+                  border: "none",
+                }}
               >
                 Subscribe
               </Button>
@@ -284,6 +292,13 @@ const PlanCard = ({ plans, toggleUpdate }) => {
                 onClick={() => {
                   //   console.log("clicked");
                   handleShow1();
+                }}
+                style={{
+                  backgroundColor: "ORANGE",
+                  color: "BLUE",
+                  fontWeight: "bold",
+                  outline: "none",
+                  border: "none",
                 }}
                 // disabled
               >
@@ -336,10 +351,30 @@ const PlanCard = ({ plans, toggleUpdate }) => {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose1}>
+          <Button
+            variant="secondary"
+            onClick={handleClose1}
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              fontWeight: "bold",
+              outline: "none",
+              border: "none",
+            }}
+          >
             No, I'm good.
           </Button>
-          <Button variant="primary" onClick={addBalance}>
+          <Button
+            variant="primary"
+            onClick={addBalance}
+            style={{
+              backgroundColor: "green",
+              color: "white",
+              fontWeight: "bold",
+              outline: "none",
+              border: "none",
+            }}
+          >
             Confirm
           </Button>
         </Modal.Footer>
