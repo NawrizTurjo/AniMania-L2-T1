@@ -2971,6 +2971,7 @@ app.put("/deleteAnime", async (req, res) => { //--------------------------------
   try {
     const { email, anime_id } = req.body;
     console.log(email, anime_id);
+
     const user_res = await pool.query(
       `
       SELECT EMAIL_TO_ID($1) as "id"
@@ -2979,6 +2980,7 @@ app.put("/deleteAnime", async (req, res) => { //--------------------------------
     );
 
     const user_id = user_res.rows[0].id;
+    console.log(user_id);
 
     const response3 = await pool.query(
       `
