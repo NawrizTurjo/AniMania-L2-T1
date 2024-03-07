@@ -40,6 +40,20 @@ body {
   ); /* Less transparent gray on hover */
 }
 
+.notification-bg {
+  background-color: rgba(217, 217, 217, 0.5); /* 50% transparent gray */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.notification-bg:hover {
+  background-color: rgba(
+    215,
+    213,
+    213,
+    0.8
+  ); /* Less transparent gray on hover */
+}
+
 .nav {
   background-color: #333333;
   color: white;

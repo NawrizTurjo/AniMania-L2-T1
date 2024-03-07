@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Pagination from "./pagination2";
 import AnimeItem from "./animeItem";
@@ -25,6 +25,7 @@ import AnimeList from "../Components/getAnimeList";
 import History from "../Components/getHistory";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const [isNotification, setIsNotification] = useState(false);
@@ -108,7 +109,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       console.log(res.data[0].is_unseen);
       if (res.data[0].is_unseen === "TRUE") {
         setIsNotification(true);
-        // console.log("a");
+        console.log("a");
         console.log(userRole);
       } else {
         setIsNotification(false);
@@ -118,54 +119,56 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       console.error(err.message);
     }
   };
-  useEffect(() => {
-    let email = localStorage.getItem("email");
-    getUnseenNotifications(email);
-  }, []);
-
   // useEffect(() => {
-  //   let isMounted = true; // Flag to prevent state updates after unmounting
+  //   let email = localStorage.getItem("email");
+  //   getUnseenNotifications(email);
+  // }, []);
 
-  //   const fetchNotifications = async () => {
-  //     let email = localStorage.getItem("email");
+  const prevIsNotificationRef = useRef(); // Ref to store the previous value
 
-  //     const newNotifications = getUnseenNotifications(email);
+  useEffect(() => {
+    prevIsNotificationRef.current = isNotification; // Update the ref with the current value
+  }, [isNotification]); // Run whenever isNotification changes
 
-  //     console.log(newNotifications);
-  //     if (isMounted) {
-  //       const oldTime = isNotification;
-  //       const newTime = newNotifications;
+  useEffect(() => {
+    let isMounted = true; // Flag to prevent state updates after unmounting
 
-  //       if (
-  //         JSON.stringify(isNotification) !== JSON.stringify(newNotifications)
-  //       ) {
-  //         setLoading(true);
-  //         setIsNotification(newNotifications);
-  //         // setTimeout(() => {
-  //         //   setProgress(100);
-  //         // }, 500);
-  //         // setNotifcationsSeen();
-  //         setLoading(false);
-  //       }
-  //     }
-  //     // else {
-  //     //   setReviewLoading(false);
-  //     //   setReviews([]);
-  //     //   setTimeout(() => {
-  //     //     setProgress(100);
-  //     //   }, 500);
-  //     // }
-  //   };
+    const fetchNotifications = async () => {
+      let email = localStorage.getItem("email");
 
-  //   const interval = setInterval(fetchNotifications, 10000); // Fetch reviews every 60 seconds
+      const newNotifications = await getUnseenNotifications(email);
 
-  //   fetchNotifications(); // Fetch reviews on component mount
+      console.log(newNotifications);
+      if (isMounted) {
+        const oldTime = prevIsNotificationRef.current; // Use the ref to get the previous value
+        const newTime = newNotifications==="TRUE";
 
-  //   return () => {
-  //     clearInterval(interval); // Cleanup function to clear the interval
-  //     isMounted = false; // Update the flag to prevent state updates after unmounting
-  //   };
-  // }, [isNotification]); // Fetch reviews when id changes
+        console.log("oldTime", oldTime);
+        console.log("newTime", newTime);
+
+        if (JSON.stringify(oldTime) !== JSON.stringify(newTime)) {
+          setLoading(true);
+          setIsNotification(newTime);
+          console.log(newNotifications);
+          if (newNotifications === "TRUE" && oldTime === false) {
+            toast("You Have new Notification", {
+              icon: "🔔",
+            });
+          }
+          setLoading(false);
+        }
+      }
+    };
+
+    const interval = setInterval(fetchNotifications, 5000); // Fetch notifications every 5 seconds
+
+    fetchNotifications(); // Fetch notifications on component mount
+
+    return () => {
+      clearInterval(interval); // Cleanup function to clear the interval
+      isMounted = false; // Update the flag to prevent state updates after unmounting
+    };
+  }, []); // Run only once when the component mounts
 
   const getCurrentPlan = async () => {
     try {
@@ -375,6 +378,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="typewriter">
         <h4>
           {" "}

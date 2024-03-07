@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 // import { useHistory } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import ErrorIcon from "@mui/icons-material/Error";
+import ErrorTwoToneIcon from '@mui/icons-material/ErrorTwoTone';
 
 export default function Admin() {
   const [moderators, setModerators] = useState([]);

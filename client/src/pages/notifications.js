@@ -170,6 +170,7 @@ function Notifications() {
         if (JSON.stringify(oldTime) !== JSON.stringify(newTime)) {
           setLoading(true);
           setNotifications(newNotifications);
+          // console.log("1 in notifications")
           // setTimeout(() => {
           //   setProgress(100);
           // }, 500);
@@ -202,9 +203,9 @@ function Notifications() {
     //getContribution();
   }, []);
 
-  useEffect(() => {
-    getNotifications();
-  }, [notifications]);
+  // useEffect(() => {
+  //   getNotifications();
+  // }, [notifications]);
 
   if (loading) {
     return <h2>Loading...</h2>;
@@ -234,7 +235,9 @@ function Notifications() {
               <TableRow
                 key={index}
                 className={
-                  notification.is_seen === "f" ? "gray-background" : ""
+                  notification.is_seen === "f"
+                    ? "gray-background"
+                    : "notification-bg"
                 }
               >
                 <TableCell
