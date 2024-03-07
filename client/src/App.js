@@ -35,6 +35,7 @@ import Admin from "./pages/admin";
 import LoginComponent from "./Components/loginComponent";
 import ContactUsComponent from "./Components/contactUsComponent";
 import Plans from "./pages/plans";
+import AdminLogin from "./pages/adminLogin";
 
 function App() {
   const navigate = useNavigate();
@@ -102,6 +103,7 @@ function App() {
             />
             <Route path="/sign_up" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/login/admin" element={<AdminLogin />} />
             <Route
               path="/anime/:id"
               element={<AnimePage toggleRerender={toggleRerender} />}

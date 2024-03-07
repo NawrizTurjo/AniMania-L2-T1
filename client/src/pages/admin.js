@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Box, Button, Paper, TextField } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
@@ -9,23 +9,41 @@ import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typography from "@mui/material/Typography";
-import { useHistory } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
+import ErrorIcon from "@mui/icons-material/Error";
 
 export default function Admin() {
+  const [moderators, setModerators] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  let [stat, setStat] = useState(false);
 
-    const [moderators, setModerators] = useState([]);
-    const [logs, setLogs] = useState([]);
-    const [loading, setLoading]= useState(false);
-    let [stat, setStat] = useState(false);
+  const adminLogin = localStorage.getItem("admin");
+  const [show, setShow] = useState(false);
 
-    
-    const getModerators = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.post("http://localhost:3000/getInterMod");
-            setModerators(response.data);
-            console.log(response.data);
-            setLoading(false);
+  const history = useNavigate();
+
+  const handleClose = () => {
+    setShow(false);
+    history("/login/admin");
+  };
+  const handleShow = () => setShow(true);
+
+  useEffect(() => {
+    console.log(adminLogin);
+    if (adminLogin !== "true") {
+      setShow(true);
+    }
+  }, []);
+
+  const getModerators = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post("http://localhost:3000/getInterMod");
+      setModerators(response.data);
+      console.log(response.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching moderators:", error.message);
     }
@@ -33,15 +51,15 @@ export default function Admin() {
 
   const getLogs = async () => {
     try {
-        setLoading(true);
-        const response = await axios.post("http://localhost:3000/admin/getLog");
-        setLogs(response.data);
-        console.log(response.data);
-        setLoading(false);
-} catch (error) {
-  console.error("Error fetching moderators:", error.message);
-}
-};
+      setLoading(true);
+      const response = await axios.post("http://localhost:3000/admin/getLog");
+      setLogs(response.data);
+      console.log(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching moderators:", error.message);
+    }
+  };
 
   const handleApproveMod = async (e, updatedId) => {
     e.preventDefault();
@@ -49,7 +67,7 @@ export default function Admin() {
       //console.log(char_id);
       const response = await axios.put(
         `http://localhost:3000/approvemod`,
-        JSON.stringify({ updatedId}),
+        JSON.stringify({ updatedId }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -85,28 +103,31 @@ export default function Admin() {
       console.error("Error Updating review");
     }
   };
-  
-    useEffect(() => {
-      getModerators();
-    }, [stat]);
 
-    useEffect(() => {
-        getLogs();
-      }, [stat]);
+  useEffect(() => {
+    getModerators();
+  }, [stat]);
 
-    const [animeCount, setAnimeCount] = useState(0);
+  useEffect(() => {
+    getLogs();
+  }, [stat]);
+
+  const [animeCount, setAnimeCount] = useState(0);
 
   useEffect(() => {
     // Function to fetch anime count
     const fetchAnimeCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getAnimesCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // body: JSON.stringify({ id: 'someId' }), // if you need to send a body
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getAnimesCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // body: JSON.stringify({ id: 'someId' }), // if you need to send a body
+          }
+        );
         const count = await response.json();
         setAnimeCount(count);
       } catch (error) {
@@ -123,13 +144,16 @@ export default function Admin() {
     // Function to fetch episodes count
     const fetchEpisodesCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getEpisodesCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // body: JSON.stringify({ id: 'someId' }), // if you need to send a body
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getEpisodesCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // body: JSON.stringify({ id: 'someId' }), // if you need to send a body
+          }
+        );
         const count = await response.json();
         setEpisodesCount(count);
       } catch (error) {
@@ -138,7 +162,7 @@ export default function Admin() {
     };
 
     fetchEpisodesCount();
-  }, []); 
+  }, []);
 
   const [charactersCount, setCharactersCount] = useState(0);
 
@@ -146,13 +170,16 @@ export default function Admin() {
     // Function to fetch characters count
     const fetchCharactersCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getCharactersCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // body: JSON.stringify({ id: 'someId' }), // if needed
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getCharactersCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // body: JSON.stringify({ id: 'someId' }), // if needed
+          }
+        );
         const count = await response.json();
         setCharactersCount(count);
       } catch (error) {
@@ -161,21 +188,24 @@ export default function Admin() {
     };
 
     fetchCharactersCount();
-  }, []); 
+  }, []);
   const [staffCount, setStaffCount] = useState(0);
 
   useEffect(() => {
     // Function to fetch staff count from the backend
     const fetchStaffCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getStaffsCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If you need to send a body with the request
-          // body: JSON.stringify({ someKey: 'someValue' }),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getStaffsCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If you need to send a body with the request
+            // body: JSON.stringify({ someKey: 'someValue' }),
+          }
+        );
         const count = await response.json();
         setStaffCount(count);
       } catch (error) {
@@ -191,14 +221,17 @@ export default function Admin() {
   useEffect(() => {
     const fetchReviewsCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getReviewsCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If your endpoint requires a request body
-          // body: JSON.stringify({ key: 'value' }),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getReviewsCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If your endpoint requires a request body
+            // body: JSON.stringify({ key: 'value' }),
+          }
+        );
         const count = await response.json();
         setReviewsCount(count);
       } catch (error) {
@@ -207,21 +240,24 @@ export default function Admin() {
     };
 
     fetchReviewsCount();
-  }, []); 
+  }, []);
 
   const [commentsCount, setCommentsCount] = useState(0);
 
   useEffect(() => {
     const fetchCommentsCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getCommentsCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If the endpoint requires a request body, include it here
-          // body: JSON.stringify({ key: 'value' }),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getCommentsCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If the endpoint requires a request body, include it here
+            // body: JSON.stringify({ key: 'value' }),
+          }
+        );
         const count = await response.json();
         setCommentsCount(count);
       } catch (error) {
@@ -230,21 +266,24 @@ export default function Admin() {
     };
 
     fetchCommentsCount();
-  }, []); 
+  }, []);
 
   const [genresCount, setGenresCount] = useState(0);
 
   useEffect(() => {
     const fetchGenresCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getGenresCount', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If the endpoint requires a request body, include it here
-          // body: JSON.stringify({ key: 'value' }),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getGenresCount",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If the endpoint requires a request body, include it here
+            // body: JSON.stringify({ key: 'value' }),
+          }
+        );
         const count = await response.json();
         setGenresCount(count);
       } catch (error) {
@@ -260,19 +299,23 @@ export default function Admin() {
   useEffect(() => {
     const fetchTagsCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getTagsCount', { // Ensure the port matches your frontend's
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If your endpoint expects a body, include it here. If not, this line can be removed.
-          // body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getTagsCount",
+          {
+            // Ensure the port matches your frontend's
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If your endpoint expects a body, include it here. If not, this line can be removed.
+            // body: JSON.stringify({}),
+          }
+        );
         if (response.ok) {
           const count = await response.json();
           setTagsCount(count);
         } else {
-          console.error('Failed to fetch tags count');
+          console.error("Failed to fetch tags count");
         }
       } catch (error) {
         console.error("Error fetching tags count:", error);
@@ -287,19 +330,23 @@ export default function Admin() {
   useEffect(() => {
     const fetchStudiosCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getStudiosCount', { // Ensure the port matches your frontend's
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If your endpoint expects a body, include it here. If not, this line can be removed.
-          // body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getStudiosCount",
+          {
+            // Ensure the port matches your frontend's
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If your endpoint expects a body, include it here. If not, this line can be removed.
+            // body: JSON.stringify({}),
+          }
+        );
         if (response.ok) {
           const count = await response.json();
           setStudiosCount(count);
         } else {
-          console.error('Failed to fetch studios count');
+          console.error("Failed to fetch studios count");
         }
       } catch (error) {
         console.error("Error fetching studios count:", error);
@@ -314,19 +361,23 @@ export default function Admin() {
   useEffect(() => {
     const fetchSoundtracksCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getSoundTracksCount', { // Ensure the port matches your frontend's
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If your endpoint expects a body, include it here. If not, this line can be removed.
-          // body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getSoundTracksCount",
+          {
+            // Ensure the port matches your frontend's
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If your endpoint expects a body, include it here. If not, this line can be removed.
+            // body: JSON.stringify({}),
+          }
+        );
         if (response.ok) {
           const count = await response.json();
           setSoundtracksCount(count);
         } else {
-          console.error('Failed to fetch soundtracks count');
+          console.error("Failed to fetch soundtracks count");
         }
       } catch (error) {
         console.error("Error fetching soundtracks count:", error);
@@ -341,19 +392,23 @@ export default function Admin() {
   useEffect(() => {
     const fetchUsersCount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/admin/getUsersCount', { // Ensure the port matches your frontend's
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // If your endpoint expects a body, include it here. If not, this line can be removed.
-          // body: JSON.stringify({}),
-        });
+        const response = await fetch(
+          "http://localhost:3000/admin/getUsersCount",
+          {
+            // Ensure the port matches your frontend's
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            // If your endpoint expects a body, include it here. If not, this line can be removed.
+            // body: JSON.stringify({}),
+          }
+        );
         if (response.ok) {
           const count = await response.json();
           setUsersCount(count);
         } else {
-          console.error('Failed to fetch users count');
+          console.error("Failed to fetch users count");
         }
       } catch (error) {
         console.error("Error fetching users count:", error);
@@ -363,123 +418,170 @@ export default function Admin() {
     fetchUsersCount();
   }, []);
 
-//   const [moderatorsCount, setModeratorsCount] = useState(0);
+  //   const [moderatorsCount, setModeratorsCount] = useState(0);
 
-//   useEffect(() => {
-//     const fetchModeratorsCount = async () => {
-//       try {
-//         const response = await fetch('http://localhost:3000/admin/getModeratorsCount', {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//         });
-//         if (response.ok) {
-//           const { count } = await response.json();
-//           setModeratorsCount(count);
-//           console.log(count);
-//         } else {
-//           console.error('Failed to fetch moderators count');
-//         }
-//       } catch (error) {
-//         console.error('Error fetching moderators count:', error);
-//       }
-//     };
-  
-//     fetchModeratorsCount();
-//   }, []);
+  //   useEffect(() => {
+  //     const fetchModeratorsCount = async () => {
+  //       try {
+  //         const response = await fetch('http://localhost:3000/admin/getModeratorsCount', {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //         });
+  //         if (response.ok) {
+  //           const { count } = await response.json();
+  //           setModeratorsCount(count);
+  //           console.log(count);
+  //         } else {
+  //           console.error('Failed to fetch moderators count');
+  //         }
+  //       } catch (error) {
+  //         console.error('Error fetching moderators count:', error);
+  //       }
+  //     };
+
+  //     fetchModeratorsCount();
+  //   }, []);
 
   if (loading) return <div>Loading...</div>;
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      {/* First vertical bar */}
-      <Box sx={{ flex: "1 1 50%", borderRight: "1px solid #ccc", padding: "20px" }}>
-        <Paper elevation={3} sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}>
-          {/* First area content */}
-          <h2>List of Moderators</h2>
-          {/* Render list of moderators */}
-          {moderators.map((comment, index) => (
-            <div key={index} style={{ marginBottom: "20px" }}>
-              <Typography variant="body1">
-                ID: {comment.id}
-              </Typography>
-              <Typography variant="body1">
-                Name: {comment.user_name}
-              </Typography>
-              <Typography variant="body1">
-                Email: {comment.email}
-              </Typography>
-              
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={(e) => handleApproveMod(e, comment.id)}
-                style={{ marginRight: "10px" }}
-              >
-                Approve
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={(e) => handleDeclineMod(e, comment.id)}
-              >
-                Decline
-              </Button>
-            </div>
-          ))}
-        </Paper>
-      </Box>
-  
-      {/* Second vertical bar */}
-      <Box sx={{ flex: "1 1 50%", borderRight: "1px solid #ccc", padding: "20px" }}>
-  {/* Second area content here */}
-  <div style={{ maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}>
-    <h2>Total Counts</h2>
-    <div style={{ marginBottom: "10px" }}>
-      <h3>Animes: {animeCount}</h3>
-      <h3>Episodes: {episodesCount}</h3>
-      <h3>Characters: {charactersCount}</h3>
-      <h3>Staffs: {staffCount}</h3>
-      <h3>Reviews: {reviewsCount}</h3>
-      <h3>Comments: {commentsCount}</h3>
-      <h3>Genres: {genresCount}</h3>
-      <h3>Tags: {tagsCount}</h3>
-      <h3>Studios: {studiosCount}</h3>
-      <h3>Soundtracks: {soundtracksCount}</h3>
-      <h3>Users: {usersCount}</h3>
-    </div>
-  </div>
-</Box>
+    <>
+      <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <ErrorIcon style={{ color: "red" }} />
+            {"  Invalid Entry  "}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Login is Required to access admin panel</Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              fontWeight: "bold",
+              outline: "none",
+              border: "none",
+            }}
+          >
+            Close
+          </Button>
+          {/* <Button variant="primary">Understood</Button> */}
+        </Modal.Footer>
+      </Modal>
+      <Box sx={{ display: "flex", height: "100vh" }}>
+        {/* First vertical bar */}
+        <Box
+          sx={{
+            flex: "1 1 50%",
+            borderRight: "1px solid #ccc",
+            padding: "20px",
+          }}
+        >
+          <Paper
+            elevation={3}
+            sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}
+          >
+            {/* First area content */}
+            <h2>List of Moderators</h2>
+            {/* Render list of moderators */}
+            {moderators.map((comment, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <Typography variant="body1">ID: {comment.id}</Typography>
+                <Typography variant="body1">
+                  Name: {comment.user_name}
+                </Typography>
+                <Typography variant="body1">Email: {comment.email}</Typography>
 
-      
-      {/* Third vertical bar */}
-      <Box sx={{ flex: "1 1 50%", padding: "20px" }}>
-        {/* Third area content here, similar structure with maxHeight and overflowY for scrolling */}
-        <Paper elevation={3} sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}>
-          {/* First area content */}
-          <h2>List of Functions/Procedure Called</h2>
-          {/* Render list of moderators */}
-          {logs.map((comment, index) => (
-            <div key={index} style={{ marginBottom: "20px" }}>
-              <Typography variant="body1">
-                Log ID: {comment.log_id}
-              </Typography>
-              <Typography variant="body1">
-                Person ID: {comment.person_id}
-              </Typography>
-              <Typography variant="body1">
-                Anime ID: {comment.anime_id}
-              </Typography>
-              <Typography variant="body1">
-                Episode No. : {comment.episode_no}
-              </Typography>
-              <Typography variant="body1">
-                Comment ID: {comment.comment_id}
-              </Typography>
-              <Typography variant="body1">
-                Track Date: {comment.track_date}
-              </Typography>
-              {/* <Button
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={(e) => handleApproveMod(e, comment.id)}
+                  style={{ marginRight: "10px" }}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={(e) => handleDeclineMod(e, comment.id)}
+                >
+                  Decline
+                </Button>
+              </div>
+            ))}
+          </Paper>
+        </Box>
+
+        {/* Second vertical bar */}
+        <Box
+          sx={{
+            flex: "1 1 50%",
+            borderRight: "1px solid #ccc",
+            padding: "20px",
+          }}
+        >
+          {/* Second area content here */}
+          <div style={{ maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}>
+            <h2>Total Counts</h2>
+            <div style={{ marginBottom: "10px" }}>
+              <h3>Animes: {animeCount}</h3>
+              <h3>Episodes: {episodesCount}</h3>
+              <h3>Characters: {charactersCount}</h3>
+              <h3>Staffs: {staffCount}</h3>
+              <h3>Reviews: {reviewsCount}</h3>
+              <h3>Comments: {commentsCount}</h3>
+              <h3>Genres: {genresCount}</h3>
+              <h3>Tags: {tagsCount}</h3>
+              <h3>Studios: {studiosCount}</h3>
+              <h3>Soundtracks: {soundtracksCount}</h3>
+              <h3>Users: {usersCount}</h3>
+            </div>
+          </div>
+        </Box>
+
+        {/* Third vertical bar */}
+        <Box sx={{ flex: "1 1 50%", padding: "20px" }}>
+          {/* Third area content here, similar structure with maxHeight and overflowY for scrolling */}
+          <Paper
+            elevation={3}
+            sx={{ padding: "20px", maxHeight: "70vh", overflowY: "auto" }}
+          >
+            {/* First area content */}
+            <h2>List of Functions/Procedure Called</h2>
+            {/* Render list of moderators */}
+            {logs.map((comment, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <Typography variant="body1">
+                  Log ID: {comment.log_id}
+                </Typography>
+                <Typography variant="body1">
+                  Person ID: {comment.person_id}
+                </Typography>
+                <Typography variant="body1">
+                  Anime ID: {comment.anime_id}
+                </Typography>
+                <Typography variant="body1">
+                  Episode No. : {comment.episode_no}
+                </Typography>
+                <Typography variant="body1">
+                  Comment ID: {comment.comment_id}
+                </Typography>
+                <Typography variant="body1">
+                  Track Date: {comment.track_date}
+                </Typography>
+                {/* <Button
                 variant="contained"
                 color="primary"
                 onClick={(e) => handleApproveMod(e, comment.id)}
@@ -494,11 +596,11 @@ export default function Admin() {
               >
                 Decline
               </Button> */}
-            </div>
-          ))}
-        </Paper>
+              </div>
+            ))}
+          </Paper>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
-  
 }
