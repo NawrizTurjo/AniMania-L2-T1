@@ -11,7 +11,7 @@ CREATE
 END;
 $$ LANGUAGE plpgsql;
 CREATE TRIGGER beforeDeleteComments BEFORE DELETE ON comments FOR EACH ROW
-EXECUTE FUNCTION before_delete_comments_function ( );
+EXECUTE FUNCTION before_delete_comments_function ( );----------------------------------------------------------------delete 1 (soft)
 
 ----------------------------------------------------------------------------------------BEFORE DELETE ANIMES
 
@@ -36,7 +36,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER before_delete_anime
 BEFORE DELETE ON anime
 FOR EACH ROW
-EXECUTE FUNCTION before_delete_anime_function();
+EXECUTE FUNCTION before_delete_anime_function();------------------------------------------------------delete 2
 
 ----------------------------------------------------------------------------------BEFORE DELETE ANIME episodes
 
@@ -52,7 +52,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER BeforeDeleteEpisode
 BEFORE DELETE ON episodes
 FOR EACH ROW
-EXECUTE FUNCTION before_delete_episode_function();
+EXECUTE FUNCTION before_delete_episode_function();-----------------------------------------------------------delete 3
 
 ----------------------------------------------------------------------------------------CREATE TABLE NOTIFICATIONS
 

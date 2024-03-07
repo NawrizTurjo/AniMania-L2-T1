@@ -18,8 +18,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.post("/sign_up", async (req, res) => {
-  //
+app.post("/sign_up", async (req, res) => {  //------------------------------insert query 1
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
@@ -146,7 +145,7 @@ app.post("/getCurrentPlan", async (req, res) => {
 
     const userId = response.rows[0].id;
 
-    const currentPlan = await pool.query(
+    const currentPlan = await pool.query( //--------------------------------------advanced query (1)
       `
       SELECT 
         CASE 
@@ -200,7 +199,7 @@ app.post("/addPlans", async (req, res) => {
       [userId]
     );
 
-    const currentPlan = await pool.query(
+    const currentPlan = await pool.query( //-------------------------------------------insert query 2
       `
       INSERT INTO PLANS 
         (PLAN_INTERVAL,PLAN_VALUE,PLAN_NAME) 
@@ -210,7 +209,7 @@ app.post("/addPlans", async (req, res) => {
       [interval, value, name]
     );
 
-    const modUpdate = await pool.query(
+    const modUpdate = await pool.query(  //--------------------------------------------------------update query 1
       `
       UPDATE moderator
       SET OTHERS = OTHERS + 1
@@ -423,7 +422,7 @@ app.post("/top100", async (req, res) => {
     const { userEmail } = req.body;
     console.log(userEmail);
 
-    const allAnimes = await pool.query(
+    const allAnimes = await pool.query( //-------------------------------------------------------advanced query joining  3+ tables 1
       `
       with T AS(
         SELECT DISTINCT (anime_id),user_id,status
@@ -588,7 +587,7 @@ app.post("/addCharacter", async (req, res) => {
   }
 });
 
-app.post("/approveCharacters", async (req, res) => {
+app.post("/approveCharacters", async (req, res) => {  //insert in 3+ tables (check triggers) 1
   try {
     const { char_id, email } = req.body;
 
@@ -663,18 +662,18 @@ app.post("/:id/addEpisode", async (req, res) => {
       streamingSites,
     } = req.body;
     // console.log(email);
-    // console.log(
-    //   animeId,
-    //   episodeName,
-    //   episodeNumber,
-    //   videoUrl,
-    //   episodeLength,
-    //   thumbnail,
-    //   releaseDate,
-    //   streamingSites
-    // );
-    // console.log(releaseDate);
-    const response = await pool.query(
+    console.log(
+      animeId,
+      episodeName,
+      episodeNumber,
+      videoUrl,
+      episodeLength,
+      thumbnail,
+      releaseDate,
+      streamingSites
+    );
+    console.log(releaseDate);
+    const response = await pool.query( //insert query 4
       `
       INSERT INTO episodes (anime_id,episode_no,episode_title,thumbnail,"LENGTH",release_date,availability,streaming_sites)
       values ($1,$2,$3,$4,$5,$6,'Y',$7)
@@ -735,7 +734,7 @@ app.post("/getContribution", async (req, res) => {
   }
 });
 
-app.post("/AdvancedSearch", async (req, res) => {
+app.post("/AdvancedSearch", async (req, res) => { //advanced query with params joining 3+ tables 2
   const {
     searchString,
     season,
@@ -992,7 +991,7 @@ app.post("/moderatorDash", async (req, res) => {
   }
 });
 
-app.post("/home", async (req, res) => {
+app.post("/home", async (req, res) => {  //advanced query with 3+tables 3
   try {
     const { userEmail } = req.body;
     console.log(userEmail);
@@ -1257,6 +1256,16 @@ app.put("/updateStatus", async (req, res) => {
       [status, anime_id, user_id]
     );
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id ,track_date)
+     values
+     ('update_users_anime_list_status()', $1, $2 ,current_timestamp)
+      `,
+      [user_id, anime_id]
+    );
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
     // console.log(person.rows);
@@ -1396,7 +1405,7 @@ app.put("/review/approve", async (req, res) => {
   }
 });
 
-app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
+app.get("/watch/anime/episodes/:id/reviews", async (req, res) => { //advanced query 5
   try {
     const id = parseInt(req.params.id);
 
@@ -2794,7 +2803,7 @@ app.get("/moderator/comments", async (req, res) => {
   }
 });
 
-app.put("/comment/approve", async (req, res) => {
+app.put("/comment/approve", async (req, res) => {  //------------------------------update in 2+ tables 2 (check nat.sql line 11), update in 2+ tables 1 (check nat.sql line 250)
   try {
     const { updatedId, email } = req.body;
     //console.log(review_id);
@@ -2954,7 +2963,7 @@ app.put("/deleteAccount", async (req, res) => {
     console.log(id);
     const response = await pool.query(
       `
-      DELETE FROM person
+      DELETE FROM person              
       WHERE
         "id" = $1
       `,
@@ -2982,6 +2991,8 @@ app.post("/getNotifications", async (req, res) => {
     `,
       [email]
     );
+    
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
     console.log(response.rows);
@@ -2990,8 +3001,7 @@ app.post("/getNotifications", async (req, res) => {
   }
 });
 
-app.post("/addAnime", async (req, res) => {
-  //---------------------------------------------------------------------addanime
+app.post("/addAnime", async (req, res) => { //---------------------------------------------------------------------addanime------------insert in 3+table 2
   const {
     anime_name,
     title_screen,
