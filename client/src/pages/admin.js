@@ -446,6 +446,40 @@ export default function Admin() {
 
   if (loading) return <div>Loading...</div>;
   return (
+    <>
+    <Modal
+        show={show}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <ErrorIcon style={{ color: "red" }} />
+            {"  Invalid Entry  "}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Login is Required to access admin panel</Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            style={{
+              backgroundColor: "red",
+              color: "white",
+              fontWeight: "bold",
+              outline: "none",
+              border: "none",
+            }}
+          >
+            Close
+          </Button>
+          {/* <Button variant="primary">Understood</Button> */}
+        </Modal.Footer>
+      </Modal>
     <Box sx={{ display: "flex", height: "100vh" }}>
       {/* First vertical bar */}
       <Box sx={{ flex: "1 1 50%", borderRight: "1px solid #ccc", padding: "20px" }}>
