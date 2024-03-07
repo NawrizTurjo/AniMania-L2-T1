@@ -18,21 +18,19 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.post("/sign_up", async (req, res) => {  //
+app.post("/sign_up", async (req, res) => {
+  //
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
-    if(userRole==='U')
-    {
+    if (userRole === "U") {
       const newModerator = await pool.query(
         "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
         [user, pwd, email, userRole, img_url]
       );
       console.log(1);
       res.json("Successfully signed up");
-    }
-    else
-    {
+    } else {
       const newModerator = await pool.query(
         "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3,'M_not' ,$4) RETURNING id",
         [user, pwd, email, img_url]
@@ -40,8 +38,6 @@ app.post("/sign_up", async (req, res) => {  //
       console.log(1);
       res.json("Successfully signed up");
     }
-    
-    
 
     // if (userRole === "U") {
     //   const userId = newModerator.rows[0].id;
@@ -80,6 +76,59 @@ app.post("/sign_up", async (req, res) => {  //
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/unseenNotifications", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("unseenNotifications", email);
+    const response = await pool.query(
+      `
+        SELECT 
+        CASE WHEN COUNT(*) > 0 
+          THEN 'TRUE'
+          ELSE
+            'FALSE'
+        END
+        AS IS_UNSEEN
+      
+        FROM notifications
+        WHERE USERS_ID = email_to_id($1) and is_seen = 'f'
+        GROUP BY is_seen
+      
+    `,
+      [email]
+    );
+    console.log(response.rows[0].is_unseen);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/setNotificationsSeen", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const response = await pool.query(
+      `
+      UPDATE notifications set is_seen = 't' 
+        where users_id = email_to_id($1) 
+              and is_seen = 'f';
+    `,
+      [email]
+    );
+    console.log(response.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
   }
 });
 
@@ -263,8 +312,6 @@ app.post("/updatePlan", async (req, res) => {
       [userEmail]
     );
 
-    
-
     const userId = response.rows[0].id;
 
     const response3 = await pool.query(
@@ -313,7 +360,6 @@ app.post("/addNewPlan", async (req, res) => {
       `,
       [userEmail]
     );
-    
 
     const userId = response.rows[0].id;
 
@@ -363,7 +409,6 @@ app.post("/addBalance", async (req, res) => {
       `,
       [email, value]
     );
-
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(addBalance.rows);
@@ -553,7 +598,6 @@ app.post("/approveCharacters", async (req, res) => {
       `,
       [email]
     );
-    
 
     const m_id = result.rows[0].id;
 
@@ -619,17 +663,17 @@ app.post("/:id/addEpisode", async (req, res) => {
       streamingSites,
     } = req.body;
     // console.log(email);
-    console.log(
-      animeId,
-      episodeName,
-      episodeNumber,
-      videoUrl,
-      episodeLength,
-      thumbnail,
-      releaseDate,
-      streamingSites
-    );
-    console.log(releaseDate);
+    // console.log(
+    //   animeId,
+    //   episodeName,
+    //   episodeNumber,
+    //   videoUrl,
+    //   episodeLength,
+    //   thumbnail,
+    //   releaseDate,
+    //   streamingSites
+    // );
+    // console.log(releaseDate);
     const response = await pool.query(
       `
       INSERT INTO episodes (anime_id,episode_no,episode_title,thumbnail,"LENGTH",release_date,availability,streaming_sites)
@@ -683,7 +727,6 @@ app.post("/getContribution", async (req, res) => {
       email,
     ]);
 
-    
     console.log(contribution.rows[0].get_contribution);
     res.json(contribution.rows);
   } catch (error) {
@@ -709,7 +752,7 @@ app.post("/AdvancedSearch", async (req, res) => {
     userEmail,
   } = req.body;
   console.log(userEmail);
-  console.log(req.body);
+  // console.log(req.body);
   try {
     let query = `
     with T AS(
@@ -1865,8 +1908,8 @@ app.put("/home", async (req, res) => {
     const userId = await pool.query(`SELECT id FROM person WHERE email = $1`, [
       email,
     ]);
-    console.log(favString);
-    console.log(userId.rows[0].id);
+    // console.log(favString);
+    // console.log(userId.rows[0].id);
     if (favString === "true") {
       await pool.query(
         `INSERT INTO users_anime_list (user_id, anime_id,status,start_date) VALUES ($1, $2,'Watching',CURRENT_TIMESTAMP)`,
@@ -2800,7 +2843,8 @@ app.put("/comment/approve", async (req, res) => {
   }
 });
 
-app.put("/comment/decline", async (req, res) => { //--------------------------------------------------------------delete comment
+app.put("/comment/decline", async (req, res) => {
+  //--------------------------------------------------------------delete comment
   try {
     const { updatedId, email } = req.body;
     //console.log(review_id);
@@ -2881,7 +2925,8 @@ app.put("/comment/decline", async (req, res) => { //----------------------------
   }
 });
 
-app.put("/deleteAccount", async (req, res) => { //----------------------------------------------------------delete account
+app.put("/deleteAccount", async (req, res) => {
+  //----------------------------------------------------------delete account
   try {
     const { email } = req.body;
     //console.log(review_id);
@@ -2929,11 +2974,11 @@ app.post("/getNotifications", async (req, res) => {
     console.log(email);
     const response = await pool.query(
       `
-    SELECT * FROM
-    PERSON P JOIN NOTIFICATIONS N ON N.users_id= P."id"
-    where P.email=$1
-    ORDER BY N.track_date DESC
-    FETCH first 10 rows only;
+        SELECT * FROM
+        PERSON P JOIN NOTIFICATIONS N ON N.users_id= P."id"
+        where P.email=$1
+        ORDER BY N.is_seen ,N.track_date DESC
+        FETCH first 20 rows only;
     `,
       [email]
     );
@@ -2945,7 +2990,8 @@ app.post("/getNotifications", async (req, res) => {
   }
 });
 
-app.post("/addAnime", async (req, res) => { //---------------------------------------------------------------------addanime
+app.post("/addAnime", async (req, res) => {
+  //---------------------------------------------------------------------addanime
   const {
     anime_name,
     title_screen,
@@ -3007,7 +3053,7 @@ app.post("/addAnime", async (req, res) => { //----------------------------------
       `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`,
       [ani_id, opening_soundtrack]
     );
-    
+
     const newsEound = await pool.query(
       `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`,
       [ani_id, ending_soundtrack]
@@ -3083,7 +3129,8 @@ app.post("/addAnime", async (req, res) => { //----------------------------------
   }
 });
 
-app.put("/deleteAnime", async (req, res) => { //--------------------------------------------------------------------before delete anime
+app.put("/deleteAnime", async (req, res) => {
+  //--------------------------------------------------------------------before delete anime
   try {
     const { email, anime_id } = req.body;
     console.log(email, anime_id);
@@ -3134,14 +3181,13 @@ app.put("/deleteAnime", async (req, res) => { //--------------------------------
   }
 });
 
-app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {  //--------------------------------------- episode delete
+app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
+  //--------------------------------------- episode delete
   try {
     const { email } = req.body;
     //console.log( email, anime_id);
     const anime_id = parseInt(req.params.id);
     const episode_no = parseInt(req.params.selectedEpisode);
-
-
 
     const user_res = await pool.query(
       `
@@ -3179,7 +3225,6 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {  //-
       `,
       [user_id]
     );
-
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();

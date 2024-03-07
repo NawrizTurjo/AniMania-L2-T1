@@ -36,6 +36,7 @@ import LoginComponent from "./Components/loginComponent";
 import ContactUsComponent from "./Components/contactUsComponent";
 import Plans from "./pages/plans";
 import AdminLogin from "./pages/adminLogin";
+import Test from "./Components/test";
 
 function App() {
   const navigate = useNavigate();
@@ -173,6 +174,7 @@ function App() {
             <Route path="/:id/characters" element={<Characters />} />
             <Route path="/:id/staffs" element={<Staffs />} />
             <Route path="/plans" element={<Plans />} />
+            <Route path="/test" element={<Test />} />
           </Routes>
         </AnimatePresence>
       </div>
