@@ -12,24 +12,31 @@ import Typography from "@mui/material/Typography";
 // import { useHistory } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import ErrorIcon from "@mui/icons-material/Error";
-import ErrorTwoToneIcon from "@mui/icons-material/ErrorTwoTone";
 
 export default function Admin() {
   const [moderators, setModerators] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   let [stat, setStat] = useState(false);
+  //const { setAuth } = useContext(AuthContext);
 
   const adminLogin = localStorage.getItem("admin");
   const [show, setShow] = useState(false);
 
   const history = useNavigate();
+  
 
   const handleClose = () => {
     setShow(false);
     history("/login/admin");
   };
   const handleShow = () => setShow(true);
+
+  const handleAdminLogout = () => {
+    localStorage.setItem("admin", false);
+    //setAuth(false);
+    history("/login/admin");
+  };
 
   useEffect(() => {
     console.log(adminLogin);
@@ -627,6 +634,43 @@ export default function Admin() {
           </Paper>
         </Box>
       </Box>
+      <div>
+  {/* Other component content */}
+
+  {/* Log Out Button */}
+  <div>
+  {/* Other component content */}
+
+  {/* Log Out Button */}
+  <button
+    onClick={handleAdminLogout}
+    style={{
+      backgroundColor: "#D32F2F", // Red
+      color: "white",
+      fontSize: "16px",
+      fontWeight: "bold",
+      border: "none",
+      cursor: "pointer",
+      padding: "10px 20px",
+      borderRadius: "5px",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      transition: "all 0.3s ease",
+    }}
+    onMouseOver={(e) => {
+      e.target.style.backgroundColor = "#B71C1C"; // Darken on hover, darker red
+      e.target.style.transform = "scale(1.05)";
+    }}
+    onMouseOut={(e) => {
+      e.target.style.backgroundColor = "#D32F2F"; // Back to original red
+      e.target.style.transform = "scale(1)";
+    }}
+  >
+    Log Out
+  </button>
+</div>
+
+</div>
+
     </>
   );
 }
