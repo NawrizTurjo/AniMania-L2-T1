@@ -1,9 +1,44 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { motion } from "framer-motion";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
+
+const fadeInAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const shadowAnimation = keyframes`
+  0% {
+    text-shadow: none;
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: none;
+  }
+`;
+
+const colorAnimation = keyframes`
+  0% {
+    color: #4568dc;
+  }
+  50% {
+    color: #b06ab3;
+  }
+  100% {
+    color: #4568dc;
+  }
+`;
 
 const CardContainer = styled.div`
   display: flex;
@@ -26,12 +61,18 @@ const Card = styled(motion.div)`
   &:hover {
     background: linear-gradient(135deg, #b06ab3, #4568dc);
   }
+  animation: ${fadeInAnimation} 1s ease-in-out,
+    ${shadowAnimation} 3s ease-in-out infinite,
+    ${colorAnimation} 5s ease-in-out infinite;
 `;
 
 const CardTitle = styled.h3`
   margin-top: 0;
   margin-bottom: 1rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: ${fadeInAnimation} 1s ease-in-out,
+    ${shadowAnimation} 3s ease-in-out infinite,
+    ${colorAnimation} 5s ease-in-out infinite;
 `;
 
 const CardText = styled.p`
@@ -52,10 +93,11 @@ const PlanCard = ({ plans, toggleUpdate }) => {
   const handleShow = () => setShow(true);
 
   const handleCardClick = (plan) => {
-    if(userRole === "U")
-    {setSelectedPlan(plan);
-    console.log(plan);
-    setShow(true);}
+    if (userRole === "U") {
+      setSelectedPlan(plan);
+      console.log(plan);
+      setShow(true);
+    }
   };
 
   const handleCloseModal = () => {

@@ -6,6 +6,50 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { TextField } from "@mui/material";
 
+import styled, { keyframes } from 'styled-components';
+
+const fadeInAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const shadowAnimation = keyframes`
+  0% {
+    text-shadow: none;
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: none;
+  }
+`;
+
+const colorAnimation = keyframes`
+  0% {
+    color: #4568dc;
+  }
+  50% {
+    color: #b06ab3;
+  }
+  100% {
+    color: #4568dc;
+  }
+`;
+
+const PlanHeading = styled.h1`
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: ${fadeInAnimation} 1s ease-in-out, ${shadowAnimation} 3s ease-in-out infinite, ${colorAnimation} 5s ease-in-out infinite;
+`;
+
 export default function Plans() {
   const [plans, setPlans] = useState([]);
   let userEmail = localStorage.getItem("email");
@@ -104,7 +148,7 @@ export default function Plans() {
           backgroundPosition: "center",
         }}
       >
-        <h1>Our Plans</h1>
+        <PlanHeading>Our Plans</PlanHeading>
         <PlanCard plans={plans} toggleUpdate={toggleUpdate} />
         {userRole === "U" ? (
           <CurrentPlanCard
