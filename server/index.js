@@ -2980,15 +2980,15 @@ app.put("/deleteAnime", async (req, res) => { //--------------------------------
 
     const user_id = user_res.rows[0].id;
 
-    const response3 = await pool.query(
-      `
-     insert into log_table
-     (function_or_procedure_name, person_id, anime_id, track_date)
-     values
-     ('before_delete_anime_function()', $1, $2, current_date)
-      `,
-      [user_id, anime_id]
-    );
+    // const response3 = await pool.query(
+    //   `
+    //  insert into log_table
+    //  (function_or_procedure_name, person_id, anime_id, track_date)
+    //  values
+    //  ('before_delete_anime_function()', $1, $2, current_date)
+    //   `,
+    //   [user_id, anime_id]
+    // );
 
     const response = await pool.query(
       `
