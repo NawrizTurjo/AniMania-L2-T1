@@ -18,7 +18,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.post("/sign_up", async (req, res) => {
+app.post("/sign_up", async (req, res) => {  //
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
@@ -40,6 +40,7 @@ app.post("/sign_up", async (req, res) => {
       console.log(1);
       res.json("Successfully signed up");
     }
+    
     
 
     // if (userRole === "U") {
@@ -140,6 +141,16 @@ app.post("/addPlans", async (req, res) => {
 
     const userId = response.rows[0].id;
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [userId]
+    );
+
     const currentPlan = await pool.query(
       `
       INSERT INTO PLANS 
@@ -213,6 +224,16 @@ app.post("/getbalance", async (req, res) => {
 
     const userId = response.rows[0].id;
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [userId]
+    );
+
     const balance = await pool.query(
       `
       SELECT WALLET_BALANCE
@@ -242,13 +263,35 @@ app.post("/updatePlan", async (req, res) => {
       [userEmail]
     );
 
+    
+
     const userId = response.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [userId]
+    );
 
     const updatePlan = await pool.query(
       `
       CALL ADD_PLAN ($1,$2)
       `,
       [userId, planId]
+    );
+
+    const response4 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('ADD_PLAN()', $1, current_date)
+      `,
+      [userId]
     );
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
@@ -270,14 +313,35 @@ app.post("/addNewPlan", async (req, res) => {
       `,
       [userEmail]
     );
+    
 
     const userId = response.rows[0].id;
+
+    const response2 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [userId]
+    );
 
     const addNewPlan = await pool.query(
       `
       CALL ADD_NEW_PLAN ($1,$2,$3,$4);
       `,
       [userId, planName, planValue, planInterval]
+    );
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('ADD_NEW_PLAN()', $1, current_date)
+      `,
+      [userId]
     );
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
@@ -299,6 +363,7 @@ app.post("/addBalance", async (req, res) => {
       `,
       [email, value]
     );
+
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(addBalance.rows);
@@ -488,8 +553,19 @@ app.post("/approveCharacters", async (req, res) => {
       `,
       [email]
     );
+    
 
     const m_id = result.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [m_id]
+    );
     const response = await pool.query(
       `
       UPDATE USER_REQ_CHARACTER SET moderator_id = $1 WHERE "id" = $2;
@@ -569,6 +645,15 @@ app.post("/:id/addEpisode", async (req, res) => {
         streamingSites,
       ]
     );
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, anime_id, track_date)
+     values
+     ('after_inserting_episodes_function()', $1, current_date)
+      `,
+      [animeId]
+    );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
     console.log(response.rows);
@@ -597,6 +682,8 @@ app.post("/getContribution", async (req, res) => {
     const contribution = await pool.query(`SELECT GET_CONTRIBUTION($1)`, [
       email,
     ]);
+
+    
     console.log(contribution.rows[0].get_contribution);
     res.json(contribution.rows);
   } catch (error) {
@@ -926,6 +1013,15 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
     );
 
     console.log(userID.rows[0].id);
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [id]
+    );
 
     // console.log(userID.rows[0].id);
 
@@ -991,6 +1087,16 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
     );
 
     console.log(userID.rows[0].id);
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [id]
+    );
 
     // console.log(userID.rows[0].id);
 
@@ -1211,6 +1317,16 @@ app.put("/review/approve", async (req, res) => {
       [email]
     );
     const id = moderator_id.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [id]
+    );
 
     const response = await pool.query(
       `
@@ -2980,15 +3096,15 @@ app.put("/deleteAnime", async (req, res) => { //--------------------------------
 
     const user_id = user_res.rows[0].id;
 
-    // const response3 = await pool.query(
-    //   `
-    //  insert into log_table
-    //  (function_or_procedure_name, person_id, anime_id, track_date)
-    //  values
-    //  ('before_delete_anime_function()', $1, $2, current_date)
-    //   `,
-    //   [user_id, anime_id]
-    // );
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, track_date)
+     values
+     ('before_delete_anime_function()', $1, $2, current_date)
+      `,
+      [user_id, anime_id]
+    );
 
     const response = await pool.query(
       `
