@@ -265,42 +265,46 @@ VALUES (
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-/ CREATE TRIGGER before_update_review_status BEFORE
-UPDATE OF status ON review FOR EACH ROW EXECUTE FUNCTION update_review_notification();
-/ /
-CREATE OR REPLACE FUNCTION delete_review_notification() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION update_review_notification() RETURNS TRIGGER AS $$
 DECLARE A_NAME VARCHAR(100);
 BEGIN
-SELECT ANIME_NAME INTO A_NAME
-FROM ANIME
-WHERE ANIME_ID = OLD.ANIME_ID;
-INSERT INTO notifications (users_id, NOTIFICATIONS, TRACK_DATE)
-VALUES (
-		OLD.user_id,
-		'Your review on anime ' || A_NAME || ' has been deleted as it violates community guidelines!!',
-		CURRENT_TIMESTAMP
-	);
-RETURN OLD;
+IF NEW.STATUS = 'approved' THEN
+	SELECT ANIME_NAME INTO A_NAME
+	FROM ANIME
+	WHERE ANIME_ID = OLD.ANIME_ID;
+	INSERT INTO notifications (users_id, NOTIFICATIONS, TRACK_DATE)
+	VALUES (
+			OLD.user_id,
+			'Your review on anime ' || A_NAME || ' - ' || OLD.review_text || ' has been approved!!',
+			CURRENT_TIMESTAMP
+		);
+END IF;
+RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-/ CREATE TRIGGER before_delete_comment BEFORE DELETE ON review FOR EACH ROW EXECUTE FUNCTION delete_review_notification();
+/ 
+CREATE TRIGGER before_update_review_status BEFORE
+UPDATE OF status ON review FOR EACH ROW EXECUTE FUNCTION update_review_notification();
 / /
 CREATE OR REPLACE FUNCTION update_comment_notification() RETURNS TRIGGER AS $$
 DECLARE A_NAME VARCHAR(100);
 BEGIN
-SELECT ANIME_NAME INTO A_NAME
-FROM ANIME
-WHERE ANIME_ID = OLD.ANIME_ID;
-INSERT INTO notifications (users_id, NOTIFICATIONS, TRACK_DATE)
-VALUES (
-		OLD.user_id,
-		'Your comment on anime ' || A_NAME || ' Ep-' || OLD.episode_no || ' (' || OLD."text" || ') has been approved!!',
-		CURRENT_TIMESTAMP
-	);
+IF NEW.status = 'approved' THEN
+	SELECT ANIME_NAME INTO A_NAME
+	FROM ANIME
+	WHERE ANIME_ID = OLD.ANIME_ID;
+	INSERT INTO notifications (users_id, NOTIFICATIONS, TRACK_DATE)
+	VALUES (
+			OLD.user_id,
+			'Your comment on anime ' || A_NAME || ' Ep-' || OLD.episode_no || ' (' || OLD."text" || ') has been approved!!',
+			CURRENT_TIMESTAMP
+		);
+END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-/ CREATE TRIGGER before_update_comment_status BEFORE
+/ 
+CREATE TRIGGER before_update_comment_status BEFORE
 UPDATE OF status ON comments FOR EACH ROW EXECUTE FUNCTION update_comment_notification();
 / /
 CREATE OR REPLACE FUNCTION delete_comment_notification() RETURNS TRIGGER AS $$
