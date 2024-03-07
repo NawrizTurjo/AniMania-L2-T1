@@ -434,21 +434,44 @@ export default function Admin() {
       <Box sx={{ flex: "1 1 50%", borderRight: "1px solid #ccc", padding: "20px" }}>
   {/* Second area content here */}
   <div style={{ maxHeight: "calc(100vh - 40px)", overflowY: "auto" }}>
-    <h2>Total Counts</h2>
-    <div style={{ marginBottom: "10px" }}>
+  <h2>Total Counts</h2>
+  <ul style={{ listStyle: "none", padding: 0 }}>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Animes: {animeCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Episodes: {episodesCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Characters: {charactersCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Staffs: {staffCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Reviews: {reviewsCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Comments: {commentsCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Genres: {genresCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Tags: {tagsCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Studios: {studiosCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Soundtracks: {soundtracksCount}</h3>
+    </li>
+    <li style={{ marginBottom: "20px" }}>
       <h3>Users: {usersCount}</h3>
-    </div>
-  </div>
+    </li>
+  </ul>
+</div>
+
 </Box>
 
       
@@ -463,6 +486,9 @@ export default function Admin() {
             <div key={index} style={{ marginBottom: "20px" }}>
               <Typography variant="body1">
                 Log ID: {comment.log_id}
+              </Typography>
+              <Typography variant="body1">
+                Function/ Procedure Name: {comment.function_or_procedure_name}
               </Typography>
               <Typography variant="body1">
                 Person ID: {comment.person_id}

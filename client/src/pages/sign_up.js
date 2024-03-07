@@ -129,9 +129,10 @@ const SignUp = () => {
 
     try {
       // setPwd(hashedPwd);
+      const roleToSend = userRole === 'M' ? 'M_not' : userRole;
       const response = await axios.post(
         `http://localhost:3000/sign_up`,
-        JSON.stringify({ user, pwd: hashedPwd, email, userRole, img_url }),
+        JSON.stringify({ user, pwd: hashedPwd, email, userRole: roleToSend, img_url }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -153,7 +154,7 @@ const SignUp = () => {
       if (userRole === "M") {
         const karma = await getKarma(email);
         // localStorage.setItem("karma", karma);
-      } else {
+      } else if(userRole === "U") {
         await getContribution(email);
       }
       navigate("/Home");
@@ -417,7 +418,7 @@ const SignUp = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => handleRoleChange("M")}>
+                  <Dropdown.Item onClick={() => handleRoleChange("M_not")}>
                     Moderator
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => handleRoleChange("U")}>
