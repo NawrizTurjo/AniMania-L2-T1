@@ -208,8 +208,8 @@ const SignUp = () => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      animate={{ opacity: 1, transition: { duration: 0.5 } }}
+      exit={{ opacity: 0 }}
       className="sign-up-container"
     >
       <Toaster position="top-center" reverseOrder={false} />
@@ -442,11 +442,12 @@ const SignUp = () => {
                 Sign Up
               </button>
             </form>
-              <div className="login-link">
-              <p>Already have an account?
+            <div className="login-link">
+              <p>
+                Already have an account?
                 <Link to="/login">Login</Link>
               </p>
-              </div>
+            </div>
           </section>
         )}
       </div>

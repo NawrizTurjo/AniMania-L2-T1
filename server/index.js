@@ -288,6 +288,26 @@ app.post("/addNewPlan", async (req, res) => {
   }
 });
 
+app.post("/addBalance", async (req, res) => {
+  try {
+    const { email, value } = req.body;
+    console.log(email, value);
+
+    const addBalance = await pool.query(
+      `
+      CALL UPDATE_BALANCE ($1,$2);
+      `,
+      [email, value]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(addBalance.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/top100", async (req, res) => {
   try {
     const { userEmail } = req.body;
