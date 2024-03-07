@@ -22,12 +22,25 @@ app.post("/sign_up", async (req, res) => {
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
-    const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
-      [user, pwd, email, userRole, img_url]
-    );
-    console.log(1);
-    res.json("Successfully signed up");
+    if(userRole==='U')
+    {
+      const newModerator = await pool.query(
+        "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
+        [user, pwd, email, userRole, img_url]
+      );
+      console.log(1);
+      res.json("Successfully signed up");
+    }
+    else
+    {
+      const newModerator = await pool.query(
+        "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3,'M_not' ,$4) RETURNING id",
+        [user, pwd, email, img_url]
+      );
+      console.log(1);
+      res.json("Successfully signed up");
+    }
+    
 
     // if (userRole === "U") {
     //   const userId = newModerator.rows[0].id;
@@ -2559,6 +2572,17 @@ app.put("/review/decline", async (req, res) => {
       [email]
     );
     const id = moderator_id.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [id]
+    );
+
     const response = await pool.query(
       `
       DELETE FROM review
@@ -2566,6 +2590,15 @@ app.put("/review/decline", async (req, res) => {
         review_id = $1
       `,
       [updatedId]
+    );
+    const response5 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('FILTERED_COMMENTS_UPDATE()', $1, current_date)
+      `,
+      [id]
     );
     const updateModeratorQuery = await pool.query(
       `
@@ -2616,6 +2649,16 @@ app.put("/comment/approve", async (req, res) => {
     );
     const id = moderator_id.rows[0].id;
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [id]
+    );
+
     const response = await pool.query(
       `
       UPDATE comments
@@ -2641,7 +2684,7 @@ app.put("/comment/approve", async (req, res) => {
   }
 });
 
-app.put("/comment/decline", async (req, res) => {
+app.put("/comment/decline", async (req, res) => { //--------------------------------------------------------------delete comment
   try {
     const { updatedId, email } = req.body;
     //console.log(review_id);
@@ -2670,6 +2713,35 @@ app.put("/comment/decline", async (req, res) => {
     //   `,
     //   [updatedId]
     // );
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_date)
+      `,
+      [id]
+    );
+    const response4 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, comment_id, track_date)
+     values
+     ('before_delete_comment_function()', $1, $2,current_date)
+      `,
+      [id, updatedId]
+    );
+
+    const response5 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('FILTERED_COMMENTS_UPDATE()', $1, current_date)
+      `,
+      [id]
+    );
+
     const response = await pool.query(
       `
       DELETE FROM comments
@@ -2693,7 +2765,7 @@ app.put("/comment/decline", async (req, res) => {
   }
 });
 
-app.put("/deleteAccount", async (req, res) => {
+app.put("/deleteAccount", async (req, res) => { //----------------------------------------------------------delete account
   try {
     const { email } = req.body;
     //console.log(review_id);
@@ -2709,6 +2781,15 @@ app.put("/deleteAccount", async (req, res) => {
     );
     console.log(email);
     const id = user_id.rows[0].id;
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('before_delete_user_function()', $1, current_date)
+      `,
+      [id]
+    );
     console.log(id);
     const response = await pool.query(
       `
@@ -2748,7 +2829,7 @@ app.post("/getNotifications", async (req, res) => {
   }
 });
 
-app.post("/addAnime", async (req, res) => {
+app.post("/addAnime", async (req, res) => { //---------------------------------------------------------------------addanime
   const {
     anime_name,
     title_screen,
@@ -2810,6 +2891,7 @@ app.post("/addAnime", async (req, res) => {
       `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`,
       [ani_id, opening_soundtrack]
     );
+    
     const newsEound = await pool.query(
       `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`,
       [ani_id, ending_soundtrack]
@@ -2868,6 +2950,16 @@ app.post("/addAnime", async (req, res) => {
       [id]
     );
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, track_date)
+     values
+     ('after_inserting_anime_function()', $1, $2, current_date)
+      `,
+      [id, ani_id]
+    );
+
     res.json({ message: "Anime added successfully!" });
   } catch (error) {
     console.error(error.message);
@@ -2875,7 +2967,7 @@ app.post("/addAnime", async (req, res) => {
   }
 });
 
-app.put("/deleteAnime", async (req, res) => {
+app.put("/deleteAnime", async (req, res) => { //--------------------------------------------------------------------before delete anime
   try {
     const { email, anime_id } = req.body;
     console.log(email, anime_id);
@@ -2887,6 +2979,16 @@ app.put("/deleteAnime", async (req, res) => {
     );
 
     const user_id = user_res.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, track_date)
+     values
+     ('before_delete_anime_function()', $1, $2, current_date)
+      `,
+      [user_id, anime_id]
+    );
 
     const response = await pool.query(
       `
@@ -2914,12 +3016,14 @@ app.put("/deleteAnime", async (req, res) => {
   }
 });
 
-app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
+app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {  //--------------------------------------- episode delete
   try {
     const { email } = req.body;
     //console.log( email, anime_id);
     const anime_id = parseInt(req.params.id);
     const episode_no = parseInt(req.params.selectedEpisode);
+
+
 
     const user_res = await pool.query(
       `
@@ -2929,6 +3033,16 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
     );
 
     const user_id = user_res.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, episode_no, track_date)
+     values
+     ('before_delete_episode_function()', $1, $2, $3, current_date)
+      `,
+      [user_id, anime_id, episode_no]
+    );
 
     const response = await pool.query(
       `
@@ -2947,6 +3061,7 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
       `,
       [user_id]
     );
+
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
