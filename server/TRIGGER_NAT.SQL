@@ -250,7 +250,7 @@ CREATE OR REPLACE TRIGGER update_acc_date_trigger BEFORE
 UPDATE OF MODERATOR_ID ON USER_REQ_CHARACTER FOR EACH ROW EXECUTE FUNCTION update_acc_date(); ---------------------update on 2+ tables 1
 / ----------------------------------------------------------
 /
-CREATE OR REPLACE FUNCTION update_review_notification() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION delete_review_notification() RETURNS TRIGGER AS $$
 DECLARE A_NAME VARCHAR(100);
 BEGIN
 SELECT ANIME_NAME INTO A_NAME
@@ -259,12 +259,16 @@ WHERE ANIME_ID = OLD.ANIME_ID;
 INSERT INTO notifications (users_id, NOTIFICATIONS, TRACK_DATE)
 VALUES (
 		OLD.user_id,
-		'Your review on anime ' || A_NAME || ' - ' || OLD.review_text || ' has been approved!!',
+		'Your review on anime ' || A_NAME || ' has been deleted as it violates community guidelines!!',
 		CURRENT_TIMESTAMP
 	);
-RETURN NEW;
+RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
+/
+/ CREATE TRIGGER before_delete_review BEFORE DELETE ON review FOR EACH ROW EXECUTE FUNCTION delete_review_notification();
+
+/
 CREATE OR REPLACE FUNCTION update_review_notification() RETURNS TRIGGER AS $$
 DECLARE A_NAME VARCHAR(100);
 BEGIN

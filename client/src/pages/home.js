@@ -113,6 +113,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       } else {
         setIsNotification(false);
       }
+      return res.data[0].is_unseen;
     } catch (err) {
       console.error(err.message);
     }
@@ -122,7 +123,49 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
     getUnseenNotifications(email);
   }, []);
 
+  // useEffect(() => {
+  //   let isMounted = true; // Flag to prevent state updates after unmounting
 
+  //   const fetchNotifications = async () => {
+  //     let email = localStorage.getItem("email");
+
+  //     const newNotifications = getUnseenNotifications(email);
+
+  //     console.log(newNotifications);
+  //     if (isMounted) {
+  //       const oldTime = isNotification;
+  //       const newTime = newNotifications;
+
+  //       if (
+  //         JSON.stringify(isNotification) !== JSON.stringify(newNotifications)
+  //       ) {
+  //         setLoading(true);
+  //         setIsNotification(newNotifications);
+  //         // setTimeout(() => {
+  //         //   setProgress(100);
+  //         // }, 500);
+  //         // setNotifcationsSeen();
+  //         setLoading(false);
+  //       }
+  //     }
+  //     // else {
+  //     //   setReviewLoading(false);
+  //     //   setReviews([]);
+  //     //   setTimeout(() => {
+  //     //     setProgress(100);
+  //     //   }, 500);
+  //     // }
+  //   };
+
+  //   const interval = setInterval(fetchNotifications, 10000); // Fetch reviews every 60 seconds
+
+  //   fetchNotifications(); // Fetch reviews on component mount
+
+  //   return () => {
+  //     clearInterval(interval); // Cleanup function to clear the interval
+  //     isMounted = false; // Update the flag to prevent state updates after unmounting
+  //   };
+  // }, [isNotification]); // Fetch reviews when id changes
 
   const getCurrentPlan = async () => {
     try {
