@@ -146,7 +146,7 @@ app.post("/addPlans", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [userId]
     );
@@ -229,7 +229,7 @@ app.post("/getbalance", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [userId]
     );
@@ -272,7 +272,7 @@ app.post("/updatePlan", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [userId]
     );
@@ -289,7 +289,7 @@ app.post("/updatePlan", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('ADD_PLAN()', $1, current_date)
+     ('ADD_PLAN()', $1, current_timestamp)
       `,
       [userId]
     );
@@ -322,7 +322,7 @@ app.post("/addNewPlan", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [userId]
     );
@@ -339,7 +339,7 @@ app.post("/addNewPlan", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('ADD_NEW_PLAN()', $1, current_date)
+     ('ADD_NEW_PLAN()', $1, current_timestamp)
       `,
       [userId]
     );
@@ -562,7 +562,7 @@ app.post("/approveCharacters", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [m_id]
     );
@@ -650,7 +650,7 @@ app.post("/:id/addEpisode", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, anime_id, track_date)
      values
-     ('after_inserting_episodes_function()', $1, current_date)
+     ('after_inserting_episodes_function()', $1, current_timestamp)
       `,
       [animeId]
     );
@@ -1018,7 +1018,7 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [id]
     );
@@ -1093,7 +1093,7 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [id]
     );
@@ -1323,7 +1323,7 @@ app.put("/review/approve", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [id]
     );
@@ -2694,7 +2694,7 @@ app.put("/review/decline", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [id]
     );
@@ -2712,7 +2712,7 @@ app.put("/review/decline", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('FILTERED_COMMENTS_UPDATE()', $1, current_date)
+     ('FILTERED_COMMENTS_UPDATE()', $1, current_timestamp)
       `,
       [id]
     );
@@ -2770,7 +2770,7 @@ app.put("/comment/approve", async (req, res) => {
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [id]
     );
@@ -2834,7 +2834,7 @@ app.put("/comment/decline", async (req, res) => { //----------------------------
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('EMAIL_TO_ID()', $1, current_date)
+     ('EMAIL_TO_ID()', $1, current_timestamp)
       `,
       [id]
     );
@@ -2843,7 +2843,7 @@ app.put("/comment/decline", async (req, res) => { //----------------------------
      insert into log_table
      (function_or_procedure_name, person_id, comment_id, track_date)
      values
-     ('before_delete_comment_function()', $1, $2,current_date)
+     ('before_delete_comment_function()', $1, $2,current_timestamp)
       `,
       [id, updatedId]
     );
@@ -2853,7 +2853,7 @@ app.put("/comment/decline", async (req, res) => { //----------------------------
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('FILTERED_COMMENTS_UPDATE()', $1, current_date)
+     ('FILTERED_COMMENTS_UPDATE()', $1, current_timestamp)
       `,
       [id]
     );
@@ -2902,7 +2902,7 @@ app.put("/deleteAccount", async (req, res) => { //------------------------------
      insert into log_table
      (function_or_procedure_name, person_id, track_date)
      values
-     ('before_delete_user_function()', $1, current_date)
+     ('before_delete_user_function()', $1, current_timestamp)
       `,
       [id]
     );
@@ -3071,7 +3071,7 @@ app.post("/addAnime", async (req, res) => { //----------------------------------
      insert into log_table
      (function_or_procedure_name, person_id, anime_id, track_date)
      values
-     ('after_inserting_anime_function()', $1, $2, current_date)
+     ('after_inserting_anime_function()', $1, $2, current_timestamp)
       `,
       [id, ani_id]
     );
@@ -3103,7 +3103,7 @@ app.put("/deleteAnime", async (req, res) => { //--------------------------------
      insert into log_table
      (function_or_procedure_name, person_id, anime_id, track_date)
      values
-     ('before_delete_anime_function()', $1, $2, current_date)
+     ('before_delete_anime_function()', $1, $2, current_timestamp)
       `,
       [user_id, anime_id]
     );
@@ -3157,7 +3157,7 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {  //-
      insert into log_table
      (function_or_procedure_name, person_id, anime_id, episode_no, track_date)
      values
-     ('before_delete_episode_function()', $1, $2, $3, current_date)
+     ('before_delete_episode_function()', $1, $2, $3, current_timestamp)
       `,
       [user_id, anime_id, episode_no]
     );
