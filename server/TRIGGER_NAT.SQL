@@ -8,7 +8,7 @@ RETURN UID;
 END;
 $$ LANGUAGE plpgsql;
 -- DROP TRIGGER IF EXISTS trigger_delete_reactions ON comments;
-CREATE OR REPLACE FUNCTION update_filtered_comments() RETURNS TRIGGER AS $$ BEGIN IF TG_OP = 'UPDATE' THEN NEW.status := 'approved';
+CREATE OR REPLACE FUNCTION update_filtered_comments() RETURNS TRIGGER AS $$ BEGIN IF TG_OP = 'UPDATE' THEN NEW.status := 'approved'; -------update in 2+ tables 2
 NEW.moderator_id := NEW.moderator_id;
 RAISE NOTICE 'Trigger update_filtered_comments() called with moderator_id: %',
 NEW.moderator_id;
@@ -172,7 +172,10 @@ CREATE INDEX ON ANIME (mal_score);
 CREATE INDEX ON ANIME (YEAR);
 CREATE INDEX ON person(EMAIL);
 CREATE INDEX ON staffs (ANIME_ID);
-CREATE OR REPLACE PROCEDURE insert_character(
+
+
+
+CREATE OR REPLACE PROCEDURE insert_character(  -------------------------------------------------------------------------insert 3+ tables 1
 		p_name VARCHAR(250),
 		p_role VARCHAR(250),
 		p_gender VARCHAR(250),
@@ -244,7 +247,7 @@ END;
 $$ LANGUAGE plpgsql;
 / -- Create a trigger to call the function before update on REQ_STATUS
 CREATE OR REPLACE TRIGGER update_acc_date_trigger BEFORE
-UPDATE OF MODERATOR_ID ON USER_REQ_CHARACTER FOR EACH ROW EXECUTE FUNCTION update_acc_date();
+UPDATE OF MODERATOR_ID ON USER_REQ_CHARACTER FOR EACH ROW EXECUTE FUNCTION update_acc_date(); ---------------------update on 2+ tables 1
 / ----------------------------------------------------------
 /
 CREATE OR REPLACE FUNCTION update_review_notification() RETURNS TRIGGER AS $$
