@@ -91,21 +91,39 @@ export default function Episodes({ toggleRerender, setProgress }) {
         id: id,
       });
 
+      console.log(email, id);
+
       const res3 = await axios.post(`http://localhost:3000/getAnimeStatus`, {
+        email: email,
+        id: id,
+      });
+
+      const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
         email: email,
         id: id,
       });
       setStudio(res1.data[0].studio_name);
       setMusic(res2.data[0].title);
-      console.log(res1.data[0].studio_name);
-      console.log(res2.data[0].title);
-      if (res3.data[0].is_fav_anime !== 0) {
-        setIsFav(true);
-      }
-      if (res3.data[0].watch_status !== "No") {
+
+      console.log("res3", res3.data);
+      console.log("res4", res4.data);
+      console.log(res4.data[0].anime_id == id);
+      setIsFav(res4.data[0].anime_id == id);
+
+      if (res3.data[0]?.watch_status != "No") {
         setStatus(res3.data[0].watch_status);
         setIsList(true);
+      } else {
+        setStatus("");
+        setIsList(false);
       }
+      // if (res4.data[0].anime_id !== id) {
+      //   console.log("notfav");
+      //   setIsFav(false);
+      // } else {
+      //   setIsFav(true);
+      //   console.log("fav");
+      // }
       // console.log(res1.data[0].studio_name.join(", "));
       // console.log(res2.data[0].title.join(", "));
       setLoading(false);
@@ -324,30 +342,48 @@ export default function Episodes({ toggleRerender, setProgress }) {
                 </button>
               </Link>
             )}
-            <div className="mt-3">
-              <Link to={`http://localhost:3001/${id}/characters`}>
-                <button className="btn btn-info btn-lg btn-block">
-                  See Characters
-                </button>
-              </Link>
+            <div className="d-flex flex-column mt-3">
+              <div className="d-flex">
+                <Link
+                  to={`http://localhost:3001/${id}/characters`}
+                  className="flex-grow-1 me-3"
+                >
+                  <button className="btn btn-info btn-lg btn-block">
+                    See Characters
+                  </button>
+                </Link>
+                <Link
+                  to={`http://localhost:3001/${id}/staffs`}
+                  className="flex-grow-1"
+                >
+                  <button className="btn btn-info btn-lg btn-block">
+                    See Staffs
+                  </button>
+                </Link>
+              </div>
             </div>
-            <div className="mt-3">
-              <Link to={`http://localhost:3001/${id}/staffs`}>
-                <button className="btn btn-info btn-lg btn-block">
-                  See Staffs
-                </button>
-              </Link>
-            </div>
-            <div className="mt-3">
-              <FavoriteBorderIcon
-                color="error"
-                fontSize="large"
-                onClick={() => {}}
-              />
-              <FavoriteIcon color="error" fontSize="large" onClick={() => {}} />
-              <CheckCircleIcon color="success" fontSize="large" />
-              <AddBoxTwoToneIcon color="primary" fontSize="large" />
-            </div>
+            {userRole === "U" && (
+              <div className="mt-3">
+                {isFav === true ? (
+                  <FavoriteIcon
+                    color="error"
+                    fontSize="large"
+                    onClick={() => {}}
+                  />
+                ) : (
+                  <FavoriteBorderIcon
+                    color="error"
+                    fontSize="large"
+                    onClick={() => {}}
+                  />
+                )}
+                {isList === true ? (
+                  <CheckCircleIcon color="success" fontSize="large" />
+                ) : (
+                  <AddBoxTwoToneIcon color="primary" fontSize="large" />
+                )}
+              </div>
+            )}
           </div>
           <div className="col-lg-8">
             {/* Anime details */}

@@ -18,7 +18,8 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.post("/sign_up", async (req, res) => {  //------------------------------insert query 1
+app.post("/sign_up", async (req, res) => {
+  //------------------------------insert query 1
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
@@ -111,39 +112,58 @@ app.post("/unseenNotifications", async (req, res) => {
 
 app.post("/getAnimeStatus", async (req, res) => {
   try {
-    const { email,id } = req.body;
-    console.log(email,id);
+    const { email, id } = req.body;
+    console.log(email, id);
     const response = await pool.query(
       `
       SELECT 
-      (
-        CASE 
-        WHEN U.most_favourite_anime = UA.anime_id THEN
-          UA.ANIME_ID
-        ELSE
-          0
-      END
-      ) AS IS_FAV_ANIME,
       (
         CASE 
         WHEN UA.status is not null THEN
           UA.status
         ELSE
           'No'
-      END
+        END
       ) AS WATCH_STATUS
 
-      FROM "USER" U JOIN users_anime_list UA ON U.user_id = UA.user_id
-      WHERE UA.anime_id = $1 AND U.user_id = email_to_id($2)
-      ;
+      FROM "USER" U 
+      LEFT JOIN users_anime_list UA ON U.user_id = UA.user_id AND UA.anime_id = $1
+      WHERE U.user_id = email_to_id($2);
     `,
-      [id,email]
+      [id, email]
     );
     console.log(response.rows);
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
     // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getMostFav", async (req, res) => {
+  try {
+    const { email, id } = req.body;
+    console.log(email, id);
+    const response = await pool.query(
+      `
+      SELECT most_favourite_anime as anime_id
+      FROM "USER"
+      WHERE user_id = email_to_id($1);
+    `,
+      [email]
+    );
+
+    console.log(response.rows[0].anime_id);
+    // console.log(response.rows);
+    // if(response.rows[0].anime_id === null || response.rows[0].anime_id !== id){
+    //   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    //   res.json([]);
+    // }else{
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.json(response.rows);
+    // }
   } catch (error) {
     console.error(error.message);
   }
@@ -185,7 +205,8 @@ app.post("/getCurrentPlan", async (req, res) => {
 
     const userId = response.rows[0].id;
 
-    const currentPlan = await pool.query( //--------------------------------------advanced query (1)
+    const currentPlan = await pool.query(
+      //--------------------------------------advanced query (1)
       `
       SELECT 
         CASE 
@@ -239,7 +260,8 @@ app.post("/addPlans", async (req, res) => {
       [userId]
     );
 
-    const currentPlan = await pool.query( //-------------------------------------------insert query 2
+    const currentPlan = await pool.query(
+      //-------------------------------------------insert query 2
       `
       INSERT INTO PLANS 
         (PLAN_INTERVAL,PLAN_VALUE,PLAN_NAME) 
@@ -249,7 +271,8 @@ app.post("/addPlans", async (req, res) => {
       [interval, value, name]
     );
 
-    const modUpdate = await pool.query(  //--------------------------------------------------------update query 1
+    const modUpdate = await pool.query(
+      //--------------------------------------------------------update query 1
       `
       UPDATE moderator
       SET OTHERS = OTHERS + 1
@@ -462,7 +485,8 @@ app.post("/top100", async (req, res) => {
     const { userEmail } = req.body;
     console.log(userEmail);
 
-    const allAnimes = await pool.query( //-------------------------------------------------------advanced query joining  3+ tables 1
+    const allAnimes = await pool.query(
+      //-------------------------------------------------------advanced query joining  3+ tables 1
       `
       with T AS(
         SELECT DISTINCT (anime_id),user_id,status
@@ -627,7 +651,8 @@ app.post("/addCharacter", async (req, res) => {
   }
 });
 
-app.post("/approveCharacters", async (req, res) => {  //insert in 3+ tables (check triggers) 1
+app.post("/approveCharacters", async (req, res) => {
+  //insert in 3+ tables (check triggers) 1
   try {
     const { char_id, email } = req.body;
 
@@ -713,7 +738,8 @@ app.post("/:id/addEpisode", async (req, res) => {
       streamingSites
     );
     console.log(releaseDate);
-    const response = await pool.query( //insert query 4
+    const response = await pool.query(
+      //insert query 4
       `
       INSERT INTO episodes (anime_id,episode_no,episode_title,thumbnail,"LENGTH",release_date,availability,streaming_sites)
       values ($1,$2,$3,$4,$5,$6,'Y',$7)
@@ -774,7 +800,8 @@ app.post("/getContribution", async (req, res) => {
   }
 });
 
-app.post("/AdvancedSearch", async (req, res) => { //advanced query with params joining 3+ tables 2
+app.post("/AdvancedSearch", async (req, res) => {
+  //advanced query with params joining 3+ tables 2
   const {
     searchString,
     season,
@@ -1031,7 +1058,8 @@ app.post("/moderatorDash", async (req, res) => {
   }
 });
 
-app.post("/home", async (req, res) => {  //advanced query with 3+tables 3
+app.post("/home", async (req, res) => {
+  //advanced query with 3+tables 3
   try {
     const { userEmail } = req.body;
     console.log(userEmail);
@@ -1445,7 +1473,8 @@ app.put("/review/approve", async (req, res) => {
   }
 });
 
-app.get("/watch/anime/episodes/:id/reviews", async (req, res) => { //advanced query 5
+app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
+  //advanced query 5
   try {
     const id = parseInt(req.params.id);
 
@@ -2843,7 +2872,8 @@ app.get("/moderator/comments", async (req, res) => {
   }
 });
 
-app.put("/comment/approve", async (req, res) => {  //------------------------------update in 2+ tables 2 (check nat.sql line 11), update in 2+ tables 1 (check nat.sql line 250)
+app.put("/comment/approve", async (req, res) => {
+  //------------------------------update in 2+ tables 2 (check nat.sql line 11), update in 2+ tables 1 (check nat.sql line 250)
   try {
     const { updatedId, email } = req.body;
     //console.log(review_id);
@@ -3031,7 +3061,6 @@ app.post("/getNotifications", async (req, res) => {
     `,
       [email]
     );
-    
 
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
@@ -3041,7 +3070,8 @@ app.post("/getNotifications", async (req, res) => {
   }
 });
 
-app.post("/addAnime", async (req, res) => { //---------------------------------------------------------------------addanime------------insert in 3+table 2
+app.post("/addAnime", async (req, res) => {
+  //---------------------------------------------------------------------addanime------------insert in 3+table 2
   const {
     anime_name,
     title_screen,
