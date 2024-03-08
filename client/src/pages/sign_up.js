@@ -129,10 +129,16 @@ const SignUp = () => {
 
     try {
       // setPwd(hashedPwd);
-      const roleToSend = userRole === 'M' ? 'M_not' : userRole;
+      // const roleToSend = userRole === "M" ? "M_not" : "U";
       const response = await axios.post(
         `http://localhost:3000/sign_up`,
-        JSON.stringify({ user, pwd: hashedPwd, email, userRole: roleToSend, img_url }),
+        JSON.stringify({
+          user,
+          pwd: hashedPwd,
+          email,
+          userRole: userRole ,
+          img_url,
+        }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -154,7 +160,7 @@ const SignUp = () => {
       if (userRole === "M") {
         const karma = await getKarma(email);
         // localStorage.setItem("karma", karma);
-      } else if(userRole === "U") {
+      } else if (userRole === "U") {
         await getContribution(email);
       }
       navigate("/Home");

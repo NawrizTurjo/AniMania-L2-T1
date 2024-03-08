@@ -23,6 +23,8 @@ app.post("/sign_up", async (req, res) => {
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
+    console.log(user, pwd, email, userRole, img_url)
+
     if (userRole === "U") {
       const newModerator = await pool.query(
         "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
@@ -156,7 +158,7 @@ app.post("/getFavAnimeStatus", async (req, res) => {
       LEFT JOIN users_anime_list UA ON U.user_id = UA.user_id AND UA.anime_id = $2
       WHERE U.user_id = email_to_id($1);
     `,
-      [email,id]
+      [email, id]
     );
     console.log(response.rows);
 
@@ -187,8 +189,8 @@ app.post("/getMostFav", async (req, res) => {
     //   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     //   res.json([]);
     // }else{
-      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
-      res.json(response.rows);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
     // }
   } catch (error) {
     console.error(error.message);
@@ -198,33 +200,31 @@ app.post("/getMostFav", async (req, res) => {
 app.post("/updateIsFav", async (req, res) => {
   try {
     const { email, id, parameter } = req.body;
-    console.log(email, id,parameter);
-    console.log("parameter",parameter);
-    if(parameter == 'Update'){
-    const response = await pool.query(
-      `
+    console.log(email, id, parameter);
+    console.log("parameter", parameter);
+    if (parameter == "Update") {
+      const response = await pool.query(
+        `
       Update "USER"
       SET most_favourite_anime = $1
       WHERE user_id = email_to_id($2);
     `,
-      [id, email]
-    );
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+        [id, email]
+      );
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
       res.json(response.rows);
-  }
-  else
-  {
-    const response = await pool.query(
-      `
+    } else {
+      const response = await pool.query(
+        `
       Update "USER"
       SET most_favourite_anime = null
       WHERE user_id = email_to_id($1);
     `,
-      [email]
-    );
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+        [email]
+      );
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
       res.json(response.rows);
-  }
+    }
 
     // console.log(response.rows[0]);
     // console.log(response.rows);
@@ -232,7 +232,7 @@ app.post("/updateIsFav", async (req, res) => {
     //   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     //   res.json([]);
     // }else{
-      
+
     // }
   } catch (error) {
     console.error(error.message);
@@ -1768,8 +1768,8 @@ app.post("/getHistory", async (req, res) => {
       WHERE WH.user_id = (
         SELECT EMAIL_TO_ID($1) as "id"
       )
-      ORDER BY WH.anime_id, WH.episode_no
-      FETCH FIRST 15 ROWS ONLY
+      ORDER BY "time" DESC
+      FETCH FIRST 15 ROWS ONLY;
       `,
       [email]
     );

@@ -165,16 +165,18 @@ export default function Plans() {
       >
         <PlanHeading>Our Plans</PlanHeading>
         <PlanCard plans={plans} toggleUpdate={toggleUpdate} />
-        {userRole === "U" ? (
+        {userRole === "U" && (
           <CurrentPlanCard
             currentPlan={currentPlan}
             toggleUpdate={toggleUpdate}
           />
-        ) : (
+        )}
+        {userRole === "M" && (
           <Button variant="primary" onClick={handleShow}>
             Add Plan
           </Button>
         )}
+
         <Modal
           show={show}
           onHide={() => setShow(false)}
@@ -231,6 +233,7 @@ export default function Plans() {
             >
               Add Plan
             </Button>
+
             <Button onClick={handleClose}>Close</Button>
           </Modal.Footer>
         </Modal>

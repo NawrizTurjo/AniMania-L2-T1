@@ -147,8 +147,8 @@ CREATE OR REPLACE FUNCTION insert_person_function()
 RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.role = 'U' THEN
-        INSERT INTO "USER" (user_id, bio, most_favourite_anime, first_access, last_access, active_time)
-        VALUES (NEW.id, '', '', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP - CURRENT_TIMESTAMP);
+        INSERT INTO "USER" (user_id, bio, most_favourite_anime, first_access, last_access, active_time,wallet_balance,plan_end_date)
+        VALUES (NEW.id, '', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP - CURRENT_TIMESTAMP,30,CURRENT_TIMESTAMP + INTERVAL '7 days');
     ELSE
         INSERT INTO moderator (moderator_id, added_series, deleted_series, added_episodes, deleted_episodes, review_verifications, filtered_comments)
         VALUES (NEW.id, 0, 0, 0, 0, 0, 0);

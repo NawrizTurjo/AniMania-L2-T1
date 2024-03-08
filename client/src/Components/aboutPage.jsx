@@ -13,6 +13,12 @@ export default function AboutPage() {
       document.body.classList.remove("about-us-page");
     };
   }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Thank you for contacting us. We will get back to you soon.");
+  };
+
   return (
     <div className="about-page-container">
       {/* <nav className="header">
@@ -83,7 +89,9 @@ export default function AboutPage() {
           </div>
         </div>
         <div className="action-btn">
-          <button className="btn btn-submit">Submit</button>
+          <button className="btn btn-submit" onClick={handleSubmit}>
+            Submit
+          </button>
         </div>
         <div className="or-text">Or contact us on social media</div>
         <div className="social-contact">

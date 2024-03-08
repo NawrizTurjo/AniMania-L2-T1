@@ -136,6 +136,8 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
     getFavAnimeId(); // Call getFavAnimeId instead of getAnime
   }, []);
 
+  const [personLoading, setPersonLoading] = useState(true);
+
   let getPerson = async () => {
     // e.preventDefault();
     try {
@@ -181,13 +183,15 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
       setUrl(personData?.img_url || "");
       console.log(url);
       setStat((prev) => !prev);
+
+      setPersonLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
 
   const [animeLoading, setAnimeLoading] = useState(true);
-  
+
   const getAnimeList = async () => {
     try {
       console.log(email);
@@ -426,7 +430,7 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
   //         <Avatar src={person.img_url} sx={{ width: 150, height: 150 }} />
   //     </>)
   //   }
-  if (loading || animeLoading || infoLoading) {
+  if (loading || animeLoading || infoLoading || personLoading) {
     return <h2>Loading...</h2>;
   }
 
@@ -442,7 +446,7 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
       <Toaster position="top-left" reverseOrder={false} />
-      {loading ? (
+      {loading || animeLoading || infoLoading ? (
         <h2>Loading...</h2>
       ) : (
         <>
@@ -496,7 +500,7 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
               style={{
                 border: "0.5px solid #cccccc",
                 width: "500px",
-                height: "500px",
+                height: "100vh",
                 marginTop: "10px",
                 marginRight: "auto",
                 overflow: "auto",
@@ -574,30 +578,28 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
               </p>
               <p>
                 <strong>Most Favourite Anime:</strong>
-                {favAnime &&
-                  infoLoading !== true &&
-                  (
-                    <AnimeListItem
-                      anime_id={favAnime.anime_id}
-                      title={favAnime.anime_name}
-                      ep={favAnime.number_of_episodes}
-                      anime_type={favAnime.anime_type}
-                      age_rating={favAnime.age_rating}
-                      demo={favAnime.demographic}
-                      season={favAnime.season}
-                      yr={favAnime.year}
-                      thumbnail={favAnime.title_screen}
-                      id={favAnime.anime_id}
-                      rating={favAnime.mal_score}
-                      description={favAnime.description}
-                      genres={favAnime.genres}
-                      is_favorite={info.is_favourite}
-                      status={info.status}
-                      user_id={info.email_to_id}
-                      forceRerender={forceRerender}
-                      toggleRerender={toggleRerender}
-                    ></AnimeListItem>
-                  )}
+                {favAnime && infoLoading !== true && (
+                  <AnimeListItem
+                    anime_id={favAnime.anime_id}
+                    title={favAnime.anime_name}
+                    ep={favAnime.number_of_episodes}
+                    anime_type={favAnime.anime_type}
+                    age_rating={favAnime.age_rating}
+                    demo={favAnime.demographic}
+                    season={favAnime.season}
+                    yr={favAnime.year}
+                    thumbnail={favAnime.title_screen}
+                    id={favAnime.anime_id}
+                    rating={favAnime.mal_score}
+                    description={favAnime.description}
+                    genres={favAnime.genres}
+                    is_favorite={info.is_favourite}
+                    status={info.status}
+                    user_id={info.email_to_id}
+                    forceRerender={forceRerender}
+                    toggleRerender={toggleRerender}
+                  ></AnimeListItem>
+                )}
               </p>
               <p>
                 <strong>First Access:</strong> {first_access}
@@ -660,8 +662,8 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
             <div
               style={{
                 border: "0.5px solid #cccccc",
-                width: "450px",
-                height: "500px",
+                width: "auto",
+                height: "100vh",
                 marginTop: "330px",
                 marginLeft: "auto",
                 overflow: "auto",

@@ -10,7 +10,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router-dom";
-import { Toast, Toaster, toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -408,11 +408,11 @@ export default function ModeratorDash() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      <Toaster position="top-left" reverseOrder={false} />
       {loading ? (
         <h2>Loading...</h2>
       ) : (
         <>
+          <Toaster position="top-left" reverseOrder={false} />
           <div
             style={{
               display: "flex",
@@ -437,112 +437,113 @@ export default function ModeratorDash() {
               Update Image
             </Button>
             <div
-            style={{
-              border: "0.5px solid #cccccc",
-              width: "400px",
-              height: "500px",
-              marginTop: "10px",
-              marginRight: "auto",
-              overflow: "auto",
-            }}
-          >
-            {/* Content of the box */}
-            {pendingReviews.map((review, index) => (
-              <div key={index} style={{ marginBottom: "20px" }}>
-                <Typography variant="body1">
-                  User Name: {review.user_name}
-                </Typography>
-                <Typography variant="body1">
-                  Review Time: {review.review_time}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  style={{ wordWrap: "break-word", marginLeft: 0 }}
-                >
-                  Review Text: {review.review_text}
-                </Typography>
-                <Typography variant="body1">
-                  Review ID: {review.review_id}
-                </Typography>
-                <Typography variant="body1">
-                  Anime Name: {review.anime_name}
-                </Typography>
-                <Typography variant="body1">Rating: {review.rating}</Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{ marginRight: "10px" }}
-                  onClick={(e) => handleApproveReview(e, review.review_id)}
-                >
-                  Approve
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={(e) => handleDeclineReview(e, review.review_id)}
-                >
-                  Decline
-                </Button>
-              </div>
-            ))}
-          </div>
-           {/* Pending Characters Box */}
-<div
-  style={{
-    border: "0.5px solid #cccccc",
-    width: "400px",
-    height: "500px",
-    marginTop: "10px",
-    marginRight: "auto",
-    overflow: "auto",
-  }}
->
-  {/* Content of the box */}
-  {pendingChar.map((character, index) => (
-    <div key={index} style={{ marginBottom: "20px" }}>
-      <Typography variant="body1">
-        Character ID: {character.id}
-      </Typography>
-      <Typography variant="body1">
-        Anime ID: {character.anime_id}
-      </Typography>
-      <Typography variant="body1">
-        Character Name: {character.character_name}
-      </Typography>
-      <Typography variant="body1">
-        Role: {character.role}
-      </Typography>
-      <Typography variant="body1">
-        Gender: {character.gender}
-      </Typography>
-      <Typography variant="body1">
-        Profile Picture: {character.profile_picture}
-      </Typography>
-      <Typography variant="body1">
-        User Email: {character.user_email}
-      </Typography>
-      <Typography variant="body1">
-        Request Date: {character.req_date}
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={(e) => handleApproveCharacter(e, character.id)}
-        style={{ marginRight: "10px" }}
-      >
-        Approve
-      </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={(e) => handleDeclineCharacter(e, character.id)}
-      >
-        Decline
-      </Button>
-    </div>
-  ))}
-</div>
-
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "400px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+              {pendingReviews.map((review, index) => (
+                <div key={index} style={{ marginBottom: "20px" }}>
+                  <Typography variant="body1">
+                    User Name: {review.user_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Review Time: {review.review_time}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    style={{ wordWrap: "break-word", marginLeft: 0 }}
+                  >
+                    Review Text: {review.review_text}
+                  </Typography>
+                  <Typography variant="body1">
+                    Review ID: {review.review_id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Anime Name: {review.anime_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Rating: {review.rating}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginRight: "10px" }}
+                    onClick={(e) => handleApproveReview(e, review.review_id)}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={(e) => handleDeclineReview(e, review.review_id)}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {/* Pending Characters Box */}
+            <div
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "400px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+              {pendingChar.map((character, index) => (
+                <div key={index} style={{ marginBottom: "20px" }}>
+                  <Typography variant="body1">
+                    Character ID: {character.id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Anime ID: {character.anime_id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Character Name: {character.character_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Role: {character.role}
+                  </Typography>
+                  <Typography variant="body1">
+                    Gender: {character.gender}
+                  </Typography>
+                  <Typography variant="body1">
+                    Profile Picture: {character.profile_picture}
+                  </Typography>
+                  <Typography variant="body1">
+                    User Email: {character.user_email}
+                  </Typography>
+                  <Typography variant="body1">
+                    Request Date: {character.req_date}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={(e) => handleApproveCharacter(e, character.id)}
+                    style={{ marginRight: "10px" }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={(e) => handleDeclineCharacter(e, character.id)}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              ))}
+            </div>
 
             {/* <div
               style={{
@@ -703,59 +704,57 @@ export default function ModeratorDash() {
 
           {/* Box below the Update Profile button */}
           <div
-              style={{
-                
-                border: "0.5px solid #cccccc",
+            style={{
+              border: "0.5px solid #cccccc",
               width: "600px",
               height: "1000px",
               marginTop: "225px",
               marginLeft: "auto",
               overflow: "auto",
-              }}
-            >
-              {/* Content of the box */}
-              {pendingComments.map((comment, index) => (
-                <div key={index} style={{ marginBottom: "20px" }}>
-                  <Typography variant="body1">
-                    Comment ID: {comment.comment_id}
-                  </Typography>
-                  <Typography variant="body1">
-                    Anime Name: {comment.anime_name}
-                  </Typography>
-                  <Typography variant="body1">
-                    Episode Title: {comment.episode_title}
-                  </Typography>
-                  <Typography variant="body1">
-                    User Name: {comment.user_name}
-                  </Typography>
-                  <Typography variant="body1">
-                    Comment Time: {comment.comment_time}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    style={{ wordWrap: "break-word", marginLeft: 0 }}
-                  >
-                    Comment Text: {comment.text}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={(e) => handleApproveComment(e, comment.comment_id)}
-                    style={{ marginRight: "10px" }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={(e) => handleDeclineComment(e, comment.comment_id)}
-                  >
-                    Decline
-                  </Button>
-                </div>
-              ))}
-            </div>
-         
+            }}
+          >
+            {/* Content of the box */}
+            {pendingComments.map((comment, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <Typography variant="body1">
+                  Comment ID: {comment.comment_id}
+                </Typography>
+                <Typography variant="body1">
+                  Anime Name: {comment.anime_name}
+                </Typography>
+                <Typography variant="body1">
+                  Episode Title: {comment.episode_title}
+                </Typography>
+                <Typography variant="body1">
+                  User Name: {comment.user_name}
+                </Typography>
+                <Typography variant="body1">
+                  Comment Time: {comment.comment_time}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  style={{ wordWrap: "break-word", marginLeft: 0 }}
+                >
+                  Comment Text: {comment.text}
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={(e) => handleApproveComment(e, comment.comment_id)}
+                  style={{ marginRight: "10px" }}
+                >
+                  Approve
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={(e) => handleDeclineComment(e, comment.comment_id)}
+                >
+                  Decline
+                </Button>
+              </div>
+            ))}
+          </div>
 
           {/* Button in the bottom right corner */}
           {/* <div
