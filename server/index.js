@@ -1743,6 +1743,7 @@ app.post("/getHistory", async (req, res) => {
         SELECT EMAIL_TO_ID($1) as "id"
       )
       ORDER BY WH.anime_id, WH.episode_no
+      FETCH FIRST 15 ROWS ONLY
       `,
       [email]
     );

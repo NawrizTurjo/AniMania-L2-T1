@@ -569,11 +569,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         />
       </div>
       <div className="d-inline w-1280 m-0">
-        {userRole === "U" && (
-          <div>
-            <History />
-          </div>
-        )}
+        
         <div className="row">
           <section>
             <div className="anime-list-container">
@@ -594,6 +590,11 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
             />
           </section>
         </div>
+        {userRole === "U" && (
+          <div>
+            <History />
+          </div>
+        )}
         {userRole === "U" && (
           <div>
             <AnimeList toggleRerender={toggleRerender} />
