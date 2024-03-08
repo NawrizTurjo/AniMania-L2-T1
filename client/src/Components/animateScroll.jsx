@@ -5,6 +5,11 @@ import { motion, useAnimation } from "framer-motion";
 // import { useInView } from "framer-motion/dist/esm/use-in-view";
 import { useInView } from "react-intersection-observer";
 import styled, { keyframes } from "styled-components";
+import image1 from "./image1.jpg";
+import image2 from "./image2.jpg";
+import image3 from "./image3.jpg";
+import image4 from "./image4.jpg";
+import image5 from "./image5.jpg";
 
 const fadeInAnimation = keyframes`
   0% {
@@ -22,7 +27,7 @@ const shadowAnimation = keyframes`
     text-shadow: none;
   }
   50% {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
   }
   100% {
     text-shadow: none;
@@ -31,13 +36,13 @@ const shadowAnimation = keyframes`
 
 const colorAnimation = keyframes`
   0% {
-    color: #fff3d1;
+    color: #f5f5f5; /* Light gray */
   }
   50% {
-    color: #9bfc62;
+    color: #d3d3d3; /* Gray */
   }
   100% {
-    color: #fae9b9;
+    color: #ffffff; /* White */
   }
 `;
 
@@ -223,22 +228,20 @@ const AnimatedElement = () => {
               }}
             >
               <CardTitle>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-                necessitatibus a nemo numquam eaque, aut corporis aliquid, culpa
-                minima iure neque iusto accusantium sequi delectus cum nihil
-                assumenda obcaecati! Harum.
+              Discover a realm where imagination intertwines with artistry, as 
+              our anime page unveils a tapestry of captivating narratives and visually 
+              stunning worlds, inviting you to embark on an odyssey of boundless creativity.
               </CardTitle>
               <CardText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem
-                incidunt neque distinctio ad vel dignissimos provident eaque
-                repudiandae reprehenderit hic sed excepturi et, impedit expedita
-                quis mollitia vitae cum dolor.{" "}
+              Prepare to be captivated by the symphony of emotions that unfolds on our anime page. 
+              From heart-wrenching dramas to adrenaline-fueled adventures, each series paints a vivid 
+              portrait of human experience. Let yourself be swept away by the beauty of animation as it brings characters 
+              to life and emotions to the forefront.{" "}
               </CardText>
               <CardFooter>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem
-                incidunt neque distinctio ad vel dignissimos provident eaque
-                repudiandae reprehenderit hic sed excepturi et, impedit expedita
-                quis mollitia vitae cum dolor.
+              Enter a realm where dreams and reality intertwine, where every frame tells a story waiting to be unraveled. 
+              Our anime page invites you to embark on a journey of discovery, where the unexpected awaits at every turn. 
+              Lose yourself in a world where imagination knows no bounds, and each series is a doorway to infinite possibilities.
               </CardFooter>
             </Card>
           </CardContainer>
@@ -269,83 +272,75 @@ const AnimatedElement = () => {
               }}
             >
               <CardTitle>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-                necessitatibus a nemo numquam eaque, aut corporis aliquid, culpa
-                minima iure neque iusto accusantium sequi delectus cum nihil
-                assumenda obcaecati! Harum.
+              Step into a sanctuary of storytelling where every frame is a masterpiece, 
+              and every character a symphony of emotion. Our anime page beckons with tales
+               that resonate with the heart, crafted with finesse and presented with elegance.
               </CardTitle>
               <CardText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem
-                incidunt neque distinctio ad vel dignissimos provident eaque
-                repudiandae reprehenderit hic sed excepturi et, impedit expedita
-                quis mollitia vitae cum dolor.{" "}
+                
+              Step into a world where visuals dance and words sing, where every scene is a work of art in motion. 
+              Our curated anime page offers a sanctuary for those who seek beauty in storytelling and elegance in animation.
+               Lose yourself in the poetry of motion as you explore a tapestry of emotions woven with precision and grace.{" "}
               </CardText>
               <CardText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem
-                incidunt neque distinctio ad vel dignissimos provident eaque
-                repudiandae reprehenderit hic sed excepturi et, impedit expedita
-                quis mollitia vitae cum dolor.
+                
+              Join us on a voyage through the enchanting world of anime, where imagination knows no limits. 
+              Delve into intricately woven tales that blend intricate plots with breathtaking visuals. Our curated 
+              selection promises to ignite your imagination and awaken your sense of wonder, inviting you to explore 
+              the boundless possibilities of storytelling through animation.
               </CardText>
             </Card>
           </CardContainer>
         </motion.div>
-        <div className="logos" style={{ height: "50vh" }}>
-          <motion.div
-            ref={logo1Ref}
-            className="logo"
-            initial={{ opacity: 0, x: -50 }}
-            animate={
-              logo1InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }
-            }
-            transition={{ duration: 1 }}
-          >
-            Logo 1
-          </motion.div>
-          <motion.div
-            ref={logo2Ref}
-            className="logo"
-            initial={{ opacity: 0, x: -50 }}
-            animate={
-              logo2InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }
-            }
-            transition={{ duration: 1, delay: 0.2 }}
-          >
-            Logo 2
-          </motion.div>
-          <motion.div
-            ref={logo3Ref}
-            className="logo"
-            initial={{ opacity: 0, x: -50 }}
-            animate={
-              logo3InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }
-            }
-            transition={{ duration: 1, delay: 0.4 }}
-          >
-            Logo 3
-          </motion.div>
-          <motion.div
-            ref={logo4Ref}
-            className="logo"
-            initial={{ opacity: 0, x: -50 }}
-            animate={
-              logo4InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }
-            }
-            transition={{ duration: 1, delay: 0.6 }}
-          >
-            Logo 4
-          </motion.div>
-          <motion.div
-            ref={logo5Ref}
-            className="logo"
-            initial={{ opacity: 0, x: -50 }}
-            animate={
-              logo5InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }
-            }
-            transition={{ duration: 1, delay: 0.8 }}
-          >
-            Logo 5
-          </motion.div>
-        </div>
+        <div className="logos" style={{ height: "90vh", display: "flex", justifyContent: "space-between" }}>
+  <motion.div
+    ref={logo1Ref}
+    className="logo"
+    initial={{ opacity: 0, x: -50 }}
+    animate={logo1InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+    transition={{ duration: 1 }}
+  >
+    <img src={image1} alt="Logo 1" style={{ width: "180%", height: "350%", objectFit: "cover" }} />
+  </motion.div>
+  <motion.div
+    ref={logo2Ref}
+    className="logo"
+    initial={{ opacity: 0, x: -50 }}
+    animate={logo2InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+    transition={{ duration: 1, delay: 0.2 }}
+  >
+    <img src={image2} alt="Logo 2" style={{ width: "180%", height: "350%", objectFit: "cover" }} />
+  </motion.div>
+  <motion.div
+    ref={logo3Ref}
+    className="logo"
+    initial={{ opacity: 0, x: -50 }}
+    animate={logo3InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+    transition={{ duration: 1, delay: 0.4 }}
+  >
+    <img src={image3} alt="Logo 3" style={{ width: "180%", height: "350%", objectFit: "cover" }} />
+  </motion.div>
+  <motion.div
+    ref={logo4Ref}
+    className="logo"
+    initial={{ opacity: 0, x: -50 }}
+    animate={logo4InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+    transition={{ duration: 1, delay: 0.6 }}
+  >
+    <img src={image4} alt="Logo 4" style={{ width: "180%", height: "350%", objectFit: "cover" }} />
+  </motion.div>
+  <motion.div
+    ref={logo5Ref}
+    className="logo"
+    initial={{ opacity: 0, x: -50 }}
+    animate={logo5InView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+    transition={{ duration: 1, delay: 0.8 }}
+  >
+    <img src={image5} alt="Logo 5" style={{ width: "180%", height: "350%", objectFit: "cover" }} />
+  </motion.div>
+</div>
+
+
         <motion.div
           ref={ref3}
           className="animate-section"
@@ -367,22 +362,19 @@ const AnimatedElement = () => {
               }}
             >
               <CardTitle>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas
-                necessitatibus a nemo numquam eaque, aut corporis aliquid, culpa
-                minima iure neque iusto accusantium sequi delectus cum nihil
-                assumenda obcaecati! Harum.
+              Experience the allure of anime as it unfolds on our meticulously curated page, 
+              where each series is a testament to the art of storytelling. Delve into realms where 
+              fantasy meets reality, and emotion takes flight amidst a canvas of exquisite animation.
               </CardTitle>
               <CardText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem
-                incidunt neque distinctio ad vel dignissimos provident eaque
-                repudiandae reprehenderit hic sed excepturi et, impedit expedita
-                quis mollitia vitae cum dolor.{" "}
+              Immerse yourself in the captivating world of anime on our carefully crafted page. Each series 
+              unfolds a unique narrative, blending fantasy and reality into a mesmerizing tapestry of storytelling. 
+              Explore diverse realms where emotions run deep and creativity knows no bounds.{" "}
               </CardText>
               <CardText>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Rem
-                incidunt neque distinctio ad vel dignissimos provident eaque
-                repudiandae reprehenderit hic sed excepturi et, impedit expedita
-                quis mollitia vitae cum dolor.
+              Step into a realm where animation transcends boundaries and storytelling reaches new heights. Our curated 
+              anime page offers a sanctuary for enthusiasts, where every series is a masterpiece waiting to be discovered. 
+              Dive into a kaleidoscope of emotions and witness the magic of animation unfold before your eyes.
               </CardText>
             </Card>
           </CardContainer>
