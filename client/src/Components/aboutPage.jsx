@@ -131,7 +131,7 @@ export default function AboutPage() {
                 <FaReddit size="2em" />
               </a>
               <a
-                href="https://www.instagram.com/yourusername"
+                href="https://www.instagram.com/shimanto__hossain"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "none", color: "inherit" }}

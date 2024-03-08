@@ -114,7 +114,8 @@ function App() {
             <Route path="/genre/:id" element={<GenreAnimes />} />
             <Route
               path="/searchAnime"
-              element={<SearchAnime forceRerender={forceRerender} />}
+              element={<SearchAnime forceRerender={forceRerender}
+              toggleRerender={toggleRerender}/>}
             />
             <Route
               path="/searchAnime/:searchTerm"
@@ -122,6 +123,7 @@ function App() {
                 <SearchAnime
                   forceRerender={forceRerender}
                   toggleRerender={toggleRerender}
+                  //setProgress={setProgress}
                 />
               }
             />
