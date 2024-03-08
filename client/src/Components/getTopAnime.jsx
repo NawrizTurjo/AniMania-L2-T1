@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Pagination from "../pages/pagination3";
 import AnimeItem from "../pages/animeItem";
+import { useLocation } from "react-router-dom";
 
 export default function GetTopAnime({
   forceRerender,
@@ -10,8 +11,24 @@ export default function GetTopAnime({
 }) {
   const [animes, setAnimes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
-  let userEmail = localStorage.getItem("email");
+  const {
+    user: routeUser,
+    email: routeEmail,
+    userRole: routeUserRole,
+    img_url: routeImgUrl,
+  } = location.state || {};
+
+  const [userEmail, setEmail] = useState(
+    routeEmail || localStorage.getItem("email") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    routeUserRole || localStorage.getItem("userRole") || ""
+  );
+
+  //let userEmail = localStorage.getItem("email");
   //   let forceRerender = localStorage.getItem("forceRerender");
   //   let toggleRerender = localStorage.getItem("toggleRerender");
 
@@ -26,6 +43,7 @@ export default function GetTopAnime({
   const getTopAnime = async () => {
     try {
       setLoading(true);
+      //const userEmail = userEmail;
       const res = await axios.post(`http://localhost:3000/top100`, {
         userEmail,
       });
@@ -39,7 +57,56 @@ export default function GetTopAnime({
 
   useEffect(() => {
     getTopAnime();
-  }, []);
+  }, [forceRerender]);
+
+  const [currentPlan, setCurrentPlan] = useState({});
+
+  let update = localStorage.getItem("update");
+
+  let balance = localStorage.getItem("balance");
+  let planName = localStorage.getItem("currentPlanName");
+  let planEnd = localStorage.getItem("currentPlanEnd");
+
+  const getCurrentPlan = async () => {
+    try {
+      setLoading(true);
+      const getCurrentPlans = await axios.post(
+        `http://localhost:3000/getCurrentPlan`,
+        { userEmail: userEmail }
+      );
+      setCurrentPlan(getCurrentPlans.data[0]);
+      console.log(getCurrentPlans.data);
+      console.log(getCurrentPlans.data[0]);
+      localStorage.setItem(
+        "currentPlanName",
+        getCurrentPlans.data[0].plan_name
+      );
+      localStorage.setItem(
+        "currentPlanEnd",
+        getCurrentPlans.data[0].plan_end_date
+      );
+      localStorage.setItem("balance", getCurrentPlans.data[0].wallet_balance);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getCurrentPlan();
+  }, [update]);
+
+  useEffect(() => {
+    // Update local state and local storage when user and email change
+
+    //localStorage.setItem("user", user);
+    localStorage.setItem("email", userEmail);
+    localStorage.setItem("userRole", userRole);
+    //localStorage.setItem("img_url", img_url);
+  }, [ userEmail, userRole]);
+
+
+
   if (loading) return <div>Loading...</div>;
   return (
     <div className="row">
