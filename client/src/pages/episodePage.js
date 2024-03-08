@@ -79,6 +79,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
 
   const [isList, setIsList] = useState(false);
   const [isFav, setIsFav] = useState(false);
+  const [newStatus, setNewStatus] = useState("Watching");
   const [status, setStatus] = useState("");
 
   const getAssets = async () => {
@@ -117,12 +118,14 @@ export default function Episodes({ toggleRerender, setProgress }) {
         setStatus("");
         setIsList(false);
       }
+
+      setNewStatus(res3.data[0]?.watch_status || "Watching");
       // if (res4.data[0].anime_id !== id) {
       //   console.log("notfav");
       //   setIsFav(false);
       // } else {
       //   setIsFav(true);
-      //   console.log("fav");
+      //   console.log("isList");
       // }
       // console.log(res1.data[0].studio_name.join(", "));
       // console.log(res2.data[0].title.join(", "));
@@ -226,6 +229,106 @@ export default function Episodes({ toggleRerender, setProgress }) {
   //   // Cleanup function to clear the interval
   //   return () => clearInterval(interval);
   // }, []);
+
+  const handleFavorite = async () => {
+    try {
+      const response = await axios.put("http://localhost:3000/home", {
+        email: email,
+        favString: JSON.stringify(!isList),
+        anime_id: id,
+      });
+      // await getContribution(email);
+      // await getAnimeList();
+      // toggleRerender();
+
+      console.log("This is isList state: ", isList);
+      if (response.status === 200) {
+        setIsList((prev) => !prev);
+        // is_favorite = isList;
+        // console.log("This is is_fav state: ", is_favorite);
+        // toast.success(`Anime ${title} ${!isList ? "added to" : "removed from"} favorites`);
+        if (!isList) {
+          // toast.success(``);
+          // toast.success(`${title} anime is added to your list`, {
+          //   position: "top-left",
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "colored",
+          //   transition: Zoom,
+          // });
+        } else {
+          // toast.error(``);
+          // toast.error(`${title} anime is removed from your list`, {
+          //   position: "top-left",
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "colored",
+          //   transition: Zoom,
+          // });
+          setNewStatus("Watching");
+          // setIsList(true);
+          // setTimeout(() => {
+
+          //   setNewStatus("Watching");
+          // }
+          //   , 1000);
+        }
+      } else {
+        toast.error("Failed to update favorite status");
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
+    }
+  };
+
+  const handleUpdatefavAnime = async (stringParam) => {
+    console.log(stringParam);
+    try {
+      const response = await axios.post("http://localhost:3000/updateIsFav", {
+        email: email,
+        id: id,
+        parameter: stringParam,
+      });
+      if (stringParam === "Update") {
+        setIsFav(true);
+      } else {
+        setIsFav(false);
+      }
+      console.log(isFav);
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAssets();
+  }, [isList, isFav]);
+
+  const handleSelect = async (newStat) => {
+    console.log(newStat);
+    try {
+      const response = await axios.put("http://localhost:3000/updateStatus", {
+        status: newStat,
+        email: email,
+        anime_id: id,
+      });
+      // toast.success(`Anime ${title} status updated to ${newStat}`);
+      // toggleRerender();
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
+    }
+  };
+
   useEffect(() => {
     let isMounted = true; // Flag to prevent state updates after unmounting
 
@@ -368,19 +471,99 @@ export default function Episodes({ toggleRerender, setProgress }) {
                   <FavoriteIcon
                     color="error"
                     fontSize="large"
-                    onClick={() => {}}
+                    onClick={() => handleUpdatefavAnime("Delete")}
                   />
                 ) : (
                   <FavoriteBorderIcon
                     color="error"
                     fontSize="large"
-                    onClick={() => {}}
+                    onClick={() => handleUpdatefavAnime("Update")}
                   />
                 )}
-                {isList === true ? (
-                  <CheckCircleIcon color="success" fontSize="large" />
+                {userRole === "U" && isList === true ? (
+                  <CheckCircleIcon
+                    color="success"
+                    fontSize="large"
+                    onClick={handleFavorite}
+                  />
                 ) : (
-                  <AddBoxTwoToneIcon color="primary" fontSize="large" />
+                  <AddBoxTwoToneIcon
+                    color="primary"
+                    fontSize="large"
+                    onClick={handleFavorite}
+                  />
+                )}
+                {userRole === "U" && isList === true && (
+                  <Dropdown>
+                    {newStatus === "Planned" && (
+                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "Watching" && (
+                      <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "Dropped" && (
+                      <Dropdown.Toggle variant="danger" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "Watched" && (
+                      <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "On hold" && (
+                      <Dropdown.Toggle variant="warning" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Planned");
+                          handleSelect("Planned");
+                        }}
+                      >
+                        Planned
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Watching");
+                          handleSelect("Watching");
+                        }}
+                      >
+                        Watching
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Dropped");
+                          handleSelect("Dropped");
+                        }}
+                      >
+                        Dropped
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Watched");
+                          handleSelect("Watched");
+                        }}
+                      >
+                        Watched
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("On hold");
+                          handleSelect("On hold");
+                        }}
+                      >
+                        On hold
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 )}
               </div>
             )}

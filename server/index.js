@@ -169,6 +169,50 @@ app.post("/getMostFav", async (req, res) => {
   }
 });
 
+app.post("/updateIsFav", async (req, res) => {
+  try {
+    const { email, id, parameter } = req.body;
+    console.log(email, id,parameter);
+    console.log("parameter",parameter);
+    if(parameter == 'Update'){
+    const response = await pool.query(
+      `
+      Update "USER"
+      SET most_favourite_anime = $1
+      WHERE user_id = email_to_id($2);
+    `,
+      [id, email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.json(response.rows);
+  }
+  else
+  {
+    const response = await pool.query(
+      `
+      Update "USER"
+      SET most_favourite_anime = null
+      WHERE user_id = email_to_id($1);
+    `,
+      [email]
+    );
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.json(response.rows);
+  }
+
+    // console.log(response.rows[0]);
+    // console.log(response.rows);
+    // if(response.rows[0].anime_id === null || response.rows[0].anime_id !== id){
+    //   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    //   res.json([]);
+    // }else{
+      
+    // }
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.post("/setNotificationsSeen", async (req, res) => {
   try {
     const { email } = req.body;
