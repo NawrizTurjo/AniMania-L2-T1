@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import "./aboutPage.css";
 
 import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
-import { FaInstagram } from "react-icons/fa";
+import { FaInstagram, FaReddit } from "react-icons/fa";
 
 export default function AboutPage() {
   useEffect(() => {
@@ -92,6 +92,14 @@ export default function AboutPage() {
             <div className="social-action">
               {/* <span>Instagram</span> */}
               <a
+                href="https://www.reddit.com/user/Turjo_Nawriz03/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <FaReddit size="2em" />
+              </a>
+              <a
                 href="https://www.instagram.com/turjo_nawriz/"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -114,6 +122,14 @@ export default function AboutPage() {
             <div className="handle">Shams Hossain Simanto</div>
             <div className="social-action">
               {/* <span>Twitter</span> */}
+              <a
+                href="https://www.reddit.com/your_username/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <FaReddit size="2em" />
+              </a>
               <a
                 href="https://www.instagram.com/yourusername"
                 target="_blank"
