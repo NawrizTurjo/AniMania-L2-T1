@@ -142,10 +142,36 @@ app.post("/getAnimeStatus", async (req, res) => {
   }
 });
 
-app.post("/getMostFav", async (req, res) => {
+app.post("/getFavAnimeStatus", async (req, res) => {
   try {
     const { email, id } = req.body;
     console.log(email, id);
+    const response = await pool.query(
+      `
+      SELECT
+      email_to_id($1) AS user_id,
+      COALESCE(UA.anime_id IS NOT NULL, false) AS is_favourite,
+          UA.status
+      FROM "USER" U 
+      LEFT JOIN users_anime_list UA ON U.user_id = UA.user_id AND UA.anime_id = $2
+      WHERE U.user_id = email_to_id($1);
+    `,
+      [email,id]
+    );
+    console.log(response.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getMostFav", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
     const response = await pool.query(
       `
       SELECT most_favourite_anime as anime_id

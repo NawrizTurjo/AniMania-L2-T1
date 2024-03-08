@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -7,6 +7,28 @@
 body {
   margin: 0;
   background-color: #57f1f9;
+}
+
+.custom-typewriter {
+  font-family: "Pacifico", sans-serif; /* Apply the Google Font */
+  font-size: larger;
+  color: #007bff; /* Initial color */
+  animation: alternate-colors 6s infinite; /* Apply animation */
+}
+
+@keyframes alternate-colors {
+  0% {
+    color: #007bff; /* Start with blue */
+  }
+  33% {
+    color: #ff0000; /* Transition to red */
+  }
+  66% {
+    color: #00b300; /* Transition to green */
+  }
+  100% {
+    color: #007bff; /* Back to blue */
+  }
 }
 
 .container {

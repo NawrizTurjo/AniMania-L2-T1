@@ -94,6 +94,53 @@ export default function Episodes({ toggleRerender, setProgress }) {
 
       console.log(email, id);
 
+      // const res3 = await axios.post(`http://localhost:3000/getAnimeStatus`, {
+      //   email: email,
+      //   id: id,
+      // });
+
+      // const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
+      //   email: email,
+      //   id: id,
+      // });
+      // setStudio(res1.data[0].studio_name);
+      // setMusic(res2.data[0].title);
+
+      // console.log("res3", res3.data);
+      // console.log("res4", res4.data);
+      // console.log(res4.data[0].anime_id == id);
+      // setIsFav(res4.data[0].anime_id == id);
+
+      // if (res3.data[0]?.watch_status != "No") {
+      //   setStatus(res3.data[0].watch_status);
+      //   setIsList(true);
+      // } else {
+      //   setStatus("");
+      //   setIsList(false);
+      // }
+
+      // setNewStatus(res3.data[0]?.watch_status || "Watching");
+      // // if (res4.data[0].anime_id !== id) {
+      // //   console.log("notfav");
+      // //   setIsFav(false);
+      // // } else {
+      // //   setIsFav(true);
+      // //   console.log("isList");
+      // // }
+      // // console.log(res1.data[0].studio_name.join(", "));
+      // // console.log(res2.data[0].title.join(", "));
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getAssets2 = async () => {
+    try {
+      setLoading(true);
+
+      console.log(email, id);
+
       const res3 = await axios.post(`http://localhost:3000/getAnimeStatus`, {
         email: email,
         id: id,
@@ -101,10 +148,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
 
       const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
         email: email,
-        id: id,
       });
-      setStudio(res1.data[0].studio_name);
-      setMusic(res2.data[0].title);
 
       console.log("res3", res3.data);
       console.log("res4", res4.data);
@@ -260,6 +304,17 @@ export default function Episodes({ toggleRerender, setProgress }) {
           //   theme: "colored",
           //   transition: Zoom,
           // });
+          toast.success(`${anime.anime_name}  is added to your List`, {
+            style: {
+              border: "1px solid #1ae84d",
+              padding: "16px",
+              color: "#284ffc",
+            },
+            iconTheme: {
+              primary: "#1ae84d",
+              secondary: "#FFFAEE",
+            },
+          });
         } else {
           // toast.error(``);
           // toast.error(`${title} anime is removed from your list`, {
@@ -280,6 +335,17 @@ export default function Episodes({ toggleRerender, setProgress }) {
           //   setNewStatus("Watching");
           // }
           //   , 1000);
+          toast.error(`${anime.anime_name} is removed from your List`, {
+            style: {
+              border: "1px solid #fc2864",
+              padding: "16px",
+              color: "#fa2c02",
+            },
+            iconTheme: {
+              primary: "#fc2864",
+              secondary: "#FFFAEE",
+            },
+          });
         }
       } else {
         toast.error("Failed to update favorite status");
@@ -300,8 +366,30 @@ export default function Episodes({ toggleRerender, setProgress }) {
       });
       if (stringParam === "Update") {
         setIsFav(true);
+        toast.success(`${anime.anime_name} is now your favourite anime`, {
+          style: {
+            border: "1px solid #1ae84d",
+            padding: "16px",
+            color: "#284ffc",
+          },
+          iconTheme: {
+            primary: "#1ae84d",
+            secondary: "#FFFAEE",
+          },
+        });
       } else {
         setIsFav(false);
+        toast.error(`${anime.anime_name} anime is removed from your profile`, {
+          style: {
+            border: "1px solid #fc2864",
+            padding: "16px",
+            color: "#fa2c02",
+          },
+          iconTheme: {
+            primary: "#fc2864",
+            secondary: "#FFFAEE",
+          },
+        });
       }
       console.log(isFav);
     } catch (error) {
@@ -310,7 +398,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
   };
 
   useEffect(() => {
-    getAssets();
+    getAssets2();
   }, [isList, isFav]);
 
   const handleSelect = async (newStat) => {
@@ -323,6 +411,20 @@ export default function Episodes({ toggleRerender, setProgress }) {
       });
       // toast.success(`Anime ${title} status updated to ${newStat}`);
       // toggleRerender();
+      toast.success(
+        `${anime.anime_name} status has been updated to ${newStat}`,
+        {
+          style: {
+            border: "1px solid #1ae84d",
+            padding: "16px",
+            color: "#284ffc",
+          },
+          iconTheme: {
+            primary: "#1ae84d",
+            secondary: "#FFFAEE",
+          },
+        }
+      );
     } catch (error) {
       console.error("Error updating favorite status:", error);
       toast.error("Failed to update favorite status");
@@ -413,6 +515,10 @@ export default function Episodes({ toggleRerender, setProgress }) {
     // toggleRerender();
   };
 
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -420,7 +526,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
       <Toaster position="top-center" reverseOrder={false} />
-      {!loading ? (
+      {loading !== true ? (
         <div className="row justify-content-center">
           <div className="col-lg-4">
             {/* Larger title screen */}
@@ -746,7 +852,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
                       className="form-control"
                       id={`review-${index}`}
                       rows={Math.min(
-                        Math.ceil(review.review_text.length / 200) + 2,
+                        Math.ceil((review.review_text ?? "").length / 200) + 2,
                         25 // Maximum of 20 rows
                       )}
                       value={review.review_text}

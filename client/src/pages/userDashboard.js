@@ -16,8 +16,9 @@ import { motion } from "framer-motion/dist/framer-motion";
 import AnimeList from "../Components/getAnimeList";
 import History from "../Components/getHistory";
 import { Toaster, toast } from "react-hot-toast";
+import AnimeItem, { AnimeListItem } from "./animeItem";
 
-function UserDashboard() {
+function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
   const [image, setImage] = useState(null);
   const [url, setUrl] = useState("");
   let location = useLocation();
@@ -32,6 +33,10 @@ function UserDashboard() {
   let [first_access, setFirstAccess] = useState("");
   let [last_access, setLastAccess] = useState("");
   let [active_time, setActiveTime] = useState([]);
+
+  const [favAnimeId, setFavAnimeId] = useState(0);
+  const [favAnime, setFavAnime] = useState("");
+  const [info, setInfo] = useState({});
 
   user = state && state.user;
   let email = localStorage.getItem("email");
@@ -58,6 +63,78 @@ function UserDashboard() {
 
     return `${months} month(s) ${days} day(s) ${hours} hour(s) ${minutes} minute(s) ${seconds} second(s)`;
   };
+
+  const [infoLoading, setInfoLoading] = useState(true);
+
+  const getFavAnimeId = async () => {
+    try {
+      setLoading(true);
+      const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
+        email: email,
+      });
+      // console.log(res4.data[0].anime_id);
+      setFavAnimeId(res4.data ? res4.data[0].anime_id : 0);
+
+      // console.log(res4);
+
+      console.log("Getting id-->", res4.data[0].anime_id);
+
+      // Call getAnime after setting favAnimeId
+      if (res4.data[0].anime_id !== null) {
+        await getAnime(res4.data[0].anime_id);
+        await getInfo(res4.data[0].anime_id);
+      } else {
+        setFavAnime(null);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getAnime = async (id) => {
+    try {
+      // setProgress(10);
+      setLoading(true);
+
+      // await getFavAnimeId(); // Remove this line
+
+      const res = await axios.get(
+        `http://localhost:3000/watch/anime/episodes/${id}`
+      );
+      console.log("favAnime getting", res.data[0]);
+      setFavAnime(res.data[0]);
+
+      setInfoLoading(true);
+
+      const res1 = await axios.post(`http://localhost:3000/getFavAnimeStatus`, {
+        email: email,
+        id: id,
+      });
+      console.log(res1.data[0]);
+      setInfo(res1.data[0]);
+
+      setInfoLoading(false);
+
+      //console.log(res.data.age_rating);
+      // setLoading(false);
+      // setCleanedText(
+      //   res.data[0].description.replace("[Written by MAL Rewrite]", "")
+      // );
+      // setAnimeStat((prev) => !prev);
+      //   console.log(res.data);
+      // toggleRerender();
+      // setTimeout(() => {
+      // setProgress(100);
+      // }, 1000);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getFavAnimeId(); // Call getFavAnimeId instead of getAnime
+  }, []);
 
   let getPerson = async () => {
     // e.preventDefault();
@@ -109,6 +186,8 @@ function UserDashboard() {
     }
   };
 
+  const [animeLoading, setAnimeLoading] = useState(true);
+  
   const getAnimeList = async () => {
     try {
       console.log(email);
@@ -122,7 +201,23 @@ function UserDashboard() {
       }, 10000);
       console.log(animeList);
       // setLoading(false);
-      setLoading(false);
+      setAnimeLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getInfo = async (id) => {
+    // e.preventDefault();
+    try {
+      // setLoading(true);
+      const res = await axios.post(`http://localhost:3000/getFavAnimeStatus`, {
+        email: email,
+        id: id,
+      });
+      console.log(res.data[0]);
+      setInfo(res.data[0]);
+      // setLoading(false);
     } catch (err) {
       console.error(err.message);
     }
@@ -154,7 +249,7 @@ function UserDashboard() {
 
   useEffect(() => {
     getAnimeList();
-  }, [animeList]);
+  }, []);
 
   const handleImageChange = async (e) => {
     if (e.target.files[0]) {
@@ -331,7 +426,7 @@ function UserDashboard() {
   //         <Avatar src={person.img_url} sx={{ width: 150, height: 150 }} />
   //     </>)
   //   }
-  if (loading) {
+  if (loading || animeLoading || infoLoading) {
     return <h2>Loading...</h2>;
   }
 
@@ -478,7 +573,31 @@ function UserDashboard() {
                 <strong>Contributions: </strong> {contribution}
               </p>
               <p>
-                <strong>Most Favourite Anime:</strong> {most_favourite_anime}
+                <strong>Most Favourite Anime:</strong>
+                {favAnime &&
+                  infoLoading !== true &&
+                  (
+                    <AnimeListItem
+                      anime_id={favAnime.anime_id}
+                      title={favAnime.anime_name}
+                      ep={favAnime.number_of_episodes}
+                      anime_type={favAnime.anime_type}
+                      age_rating={favAnime.age_rating}
+                      demo={favAnime.demographic}
+                      season={favAnime.season}
+                      yr={favAnime.year}
+                      thumbnail={favAnime.title_screen}
+                      id={favAnime.anime_id}
+                      rating={favAnime.mal_score}
+                      description={favAnime.description}
+                      genres={favAnime.genres}
+                      is_favorite={info.is_favourite}
+                      status={info.status}
+                      user_id={info.email_to_id}
+                      forceRerender={forceRerender}
+                      toggleRerender={toggleRerender}
+                    ></AnimeListItem>
+                  )}
               </p>
               <p>
                 <strong>First Access:</strong> {first_access}

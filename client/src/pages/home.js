@@ -141,7 +141,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       console.log(newNotifications);
       if (isMounted) {
         const oldTime = prevIsNotificationRef.current; // Use the ref to get the previous value
-        const newTime = newNotifications==="TRUE";
+        const newTime = newNotifications === "TRUE";
 
         console.log("oldTime", oldTime);
         console.log("newTime", newTime);
@@ -394,6 +394,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
               pauseFor: 2000,
               skipAddStyles: true,
               // cursor: "_",
+              wrapperClassName: "custom-typewriter",
             }}
           />
         </h4>

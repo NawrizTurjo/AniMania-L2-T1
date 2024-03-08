@@ -101,6 +101,27 @@ const AnimeListItem = ({
     setFav(is_favorite);
   }, [id]);
 
+  useEffect(() => {
+    console.log(
+      anime_id,
+      title,
+      ep,
+      anime_type,
+      age_rating,
+      demo,
+      season,
+      yr,
+      thumbnail,
+      id,
+      rating,
+      description,
+      genres,
+      is_favorite,
+      status,
+      user_id
+    );
+  }, []);
+
   // console.log(user);
   // console.log(email);
   // console.log(userRole);
@@ -599,3 +620,4 @@ const AnimeItem = ({
 };
 
 export default AnimeItem;
+export { AnimeListItem };

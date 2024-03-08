@@ -114,8 +114,12 @@ function App() {
             <Route path="/genre/:id" element={<GenreAnimes />} />
             <Route
               path="/searchAnime"
-              element={<SearchAnime forceRerender={forceRerender}
-              toggleRerender={toggleRerender}/>}
+              element={
+                <SearchAnime
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                />
+              }
             />
             <Route
               path="/searchAnime/:searchTerm"
@@ -137,7 +141,16 @@ function App() {
               element={<SearchAnime forceRerender={forceRerender} />}
             /> */}
             <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
-            <Route path="/userDash" element={<UserDash />}></Route>
+            <Route
+              path="/userDash"
+              element={
+                <UserDash
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            ></Route>
             <Route path="/notifications" element={<Notifications />}></Route>
             <Route
               path="/watch/anime/episodes/:id"
