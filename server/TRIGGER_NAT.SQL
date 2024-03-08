@@ -374,3 +374,23 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER notifications_before_insert BEFORE
 INSERT ON notifications FOR EACH ROW EXECUTE FUNCTION notifications_trigger_function();
 /
+
+-- For adding all episodes
+DO $$
+DECLARE
+    u_id INT;
+    n VARCHAR;
+    R RECORD;
+		AE RECORD;
+		I INT;
+BEGIN
+    -- Loop through each user in the user table
+    FOR R IN SELECT * FROM anime where anime_id is not NULL and number_of_episodes is not NULL and anime_id <> 1 and anime_id <> 1176 LOOP
+        -- Insert notification for each user
+				FOR I IN 1..R.number_of_episodes LOOP
+
+					INSERT INTO episodes VALUES (R.anime_id,I,R.anime_name || '_episode_' || I,R.title_screen,24,CURRENT_DATE,'Y','N/A','N/A');
+						
+				END LOOP;
+    END LOOP;
+END $$;
