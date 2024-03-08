@@ -303,16 +303,17 @@ export default function Episodes({ toggleRerender, setProgress }) {
                 </button>
               </Link>
             )}
-            <div className="mt-3">
-      <Link to={`http://localhost:3001/${id}/characters`}>
-        <button className="btn btn-info btn-lg btn-block">See Characters</button>
-      </Link>
-    </div>
-    <div className="mt-3">
-      <Link to={`http://localhost:3001/${id}/staffs`}>
-        <button className="btn btn-info btn-lg btn-block">See Staffs</button>
-      </Link>
-    </div>
+            <div className="d-flex flex-column mt-3">
+  <div className="d-flex">
+    <Link to={`http://localhost:3001/${id}/characters`} className="flex-grow-1 me-3">
+      <button className="btn btn-info btn-lg btn-block">See Characters</button>
+    </Link>
+    <Link to={`http://localhost:3001/${id}/staffs`} className="flex-grow-1">
+      <button className="btn btn-info btn-lg btn-block">See Staffs</button>
+    </Link>
+  </div>
+</div>
+
           </div>
           <div className="col-lg-8">
             {/* Anime details */}

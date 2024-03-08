@@ -115,7 +115,7 @@ export default function AboutPage() {
             <div className="social-action">
               {/* <span>Twitter</span> */}
               <a
-                href="https://www.instagram.com/yourusername"
+                href="https://www.instagram.com/shimanto__hossain"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "none", color: "inherit" }}
