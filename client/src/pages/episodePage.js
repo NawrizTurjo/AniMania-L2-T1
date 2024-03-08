@@ -20,7 +20,12 @@ import Alert from "@mui/material/Alert";
 import { toast, Toaster } from "react-hot-toast";
 import VerifiedIcon from "@mui/icons-material/Verified";
 // import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import Modal from "react-bootstrap/Modal";
+import Dropdown from "react-bootstrap/Dropdown";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AddBoxTwoToneIcon from "@mui/icons-material/AddBoxTwoTone";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 export default function Episodes({ toggleRerender, setProgress }) {
   const { id } = useParams();
@@ -72,6 +77,10 @@ export default function Episodes({ toggleRerender, setProgress }) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const [isList, setIsList] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+  const [status, setStatus] = useState("");
+
   const getAssets = async () => {
     try {
       setLoading(true);
@@ -81,10 +90,22 @@ export default function Episodes({ toggleRerender, setProgress }) {
       const res2 = await axios.post(`http://localhost:3000/getSoundtracks`, {
         id: id,
       });
+
+      const res3 = await axios.post(`http://localhost:3000/getAnimeStatus`, {
+        email: email,
+        id: id,
+      });
       setStudio(res1.data[0].studio_name);
       setMusic(res2.data[0].title);
       console.log(res1.data[0].studio_name);
       console.log(res2.data[0].title);
+      if (res3.data[0].is_fav_anime !== 0) {
+        setIsFav(true);
+      }
+      if (res3.data[0].watch_status !== "No") {
+        setStatus(res3.data[0].watch_status);
+        setIsList(true);
+      }
       // console.log(res1.data[0].studio_name.join(", "));
       // console.log(res2.data[0].title.join(", "));
       setLoading(false);
@@ -304,15 +325,29 @@ export default function Episodes({ toggleRerender, setProgress }) {
               </Link>
             )}
             <div className="mt-3">
-      <Link to={`http://localhost:3001/${id}/characters`}>
-        <button className="btn btn-info btn-lg btn-block">See Characters</button>
-      </Link>
-    </div>
-    <div className="mt-3">
-      <Link to={`http://localhost:3001/${id}/staffs`}>
-        <button className="btn btn-info btn-lg btn-block">See Staffs</button>
-      </Link>
-    </div>
+              <Link to={`http://localhost:3001/${id}/characters`}>
+                <button className="btn btn-info btn-lg btn-block">
+                  See Characters
+                </button>
+              </Link>
+            </div>
+            <div className="mt-3">
+              <Link to={`http://localhost:3001/${id}/staffs`}>
+                <button className="btn btn-info btn-lg btn-block">
+                  See Staffs
+                </button>
+              </Link>
+            </div>
+            <div className="mt-3">
+              <FavoriteBorderIcon
+                color="error"
+                fontSize="large"
+                onClick={() => {}}
+              />
+              <FavoriteIcon color="error" fontSize="large" onClick={() => {}} />
+              <CheckCircleIcon color="success" fontSize="large" />
+              <AddBoxTwoToneIcon color="primary" fontSize="large" />
+            </div>
           </div>
           <div className="col-lg-8">
             {/* Anime details */}
@@ -461,9 +496,11 @@ export default function Episodes({ toggleRerender, setProgress }) {
                     justifyContent: "center",
                   }}
                 >
-                  <Stack direction="row" spacing={2} alignItems="center" >
-                    <Avatar alt={review.reviewer} src={review.img_src}/>
-                    <Typography variant="body1"  style={{marginRight:"10px"}}>{review.reviewer}</Typography>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar alt={review.reviewer} src={review.img_src} />
+                    <Typography variant="body1" style={{ marginRight: "10px" }}>
+                      {review.reviewer}
+                    </Typography>
                     {DateFormatter({ date: review.review_time })}
                     {email === review.email ? (
                       <Rating

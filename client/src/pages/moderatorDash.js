@@ -10,6 +10,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router-dom";
+import { Toast, Toaster, toast } from "react-hot-toast";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -48,7 +49,6 @@ export default function ModeratorDash() {
     others: 0,
     role: "",
   });
-  
 
   let getPerson = async () => {
     try {
@@ -96,10 +96,43 @@ export default function ModeratorDash() {
     getPerson();
   }, [user]);
 
+  // let handleUpdate = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     let response = await axios.put(
+  //       `http://localhost:3000/moderatorDash`,
+  //       JSON.stringify({ newUsername, img_url, email }),
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     let name = response.data[0].user_name;
+  //     setUser(name);
+  //     localStorage.setItem("user", name);
+  //     localStorage.setItem("img_url", img_url);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
   let handleUpdate = async (e) => {
     e.preventDefault();
+    const loadingToastId = toast.loading("Saving Bio..", {
+      duration: 1000, // 4 seconds
+      style: {
+        border: "1px solid #06bf34",
+        padding: "16px",
+        color: "#06bf34",
+      },
+      iconTheme: {
+        primary: "#06bf34",
+        secondary: "#FFFAEE",
+      },
+    });
     try {
-      let response = await axios.put(
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const updatePromise = axios.put(
         `http://localhost:3000/moderatorDash`,
         JSON.stringify({ newUsername, img_url, email }),
         {
@@ -107,13 +140,43 @@ export default function ModeratorDash() {
           withCredentials: true,
         }
       );
-      let name = response.data[0].user_name;
-      setUser(name);
-      localStorage.setItem("user", name);
-      localStorage.setItem("img_url", img_url);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast
+      toast.success("Bio has been successfully saved.", {
+        style: {
+          border: "1px solid #06bf34",
+          padding: "16px",
+          color: "#06bf34",
+        },
+        iconTheme: {
+          primary: "#06bf34",
+          secondary: "#FFFAEE",
+        },
+      });
+      setTimeout(() => {
+        toast.dismiss();
+      }, 5000);
     } catch (err) {
       console.error(err.message);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast on error
     }
+
+    // toast.promise(updatePromise, {
+    //   loading: "Updating...",
+    //   success: (res) => {
+    //     let name = res.data[0].user_name;
+    //     setUser(name);
+    //     localStorage.setItem("user", name);
+    //     localStorage.setItem("img_url", img_url);
+    //     return "Username successfully updated!";
+    //   },
+    //   error: "Update failed",
+    // });
+
+    // try {
+    //   let response = await updatePromise;
+    // } catch (err) {
+    //   console.error(err.message);
+    // }
   };
 
   const handleImageChange = async (event) => {
@@ -300,9 +363,7 @@ export default function ModeratorDash() {
   const getChars = async (event) => {
     try {
       // event.preventDefault();
-      let response = await axios.post(
-        `http://localhost:3000/getReqCharacters`
-      );
+      let response = await axios.post(`http://localhost:3000/getReqCharacters`);
       // console.log(response.data);
       // setTimeout(()=>{
 
@@ -347,6 +408,7 @@ export default function ModeratorDash() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Toaster position="top-left" reverseOrder={false} />
       {loading ? (
         <h2>Loading...</h2>
       ) : (
@@ -426,63 +488,62 @@ export default function ModeratorDash() {
                 </div>
               ))}
             </div>
-           {/* Pending Characters Box */}
-<div
-  style={{
-    border: "0.5px solid #cccccc",
-    width: "400px",
-    height: "500px",
-    marginTop: "10px",
-    marginRight: "auto",
-    overflow: "auto",
-  }}
->
-  {/* Content of the box */}
-  {pendingChar.map((character, index) => (
-    <div key={index} style={{ marginBottom: "20px" }}>
-      <Typography variant="body1">
-        Character ID: {character.id}
-      </Typography>
-      <Typography variant="body1">
-        Anime ID: {character.anime_id}
-      </Typography>
-      <Typography variant="body1">
-        Character Name: {character.character_name}
-      </Typography>
-      <Typography variant="body1">
-        Role: {character.role}
-      </Typography>
-      <Typography variant="body1">
-        Gender: {character.gender}
-      </Typography>
-      <Typography variant="body1">
-        Profile Picture: {character.profile_picture}
-      </Typography>
-      <Typography variant="body1">
-        User Email: {character.user_email}
-      </Typography>
-      <Typography variant="body1">
-        Request Date: {character.req_date}
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={(e) => handleApproveCharacter(e, character.id)}
-        style={{ marginRight: "10px" }}
-      >
-        Approve
-      </Button>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={(e) => handleDeclineCharacter(e, character.id)}
-      >
-        Decline
-      </Button>
-    </div>
-  ))}
-</div>
-
+            {/* Pending Characters Box */}
+            <div
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "400px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+              {pendingChar.map((character, index) => (
+                <div key={index} style={{ marginBottom: "20px" }}>
+                  <Typography variant="body1">
+                    Character ID: {character.id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Anime ID: {character.anime_id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Character Name: {character.character_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Role: {character.role}
+                  </Typography>
+                  <Typography variant="body1">
+                    Gender: {character.gender}
+                  </Typography>
+                  <Typography variant="body1">
+                    Profile Picture: {character.profile_picture}
+                  </Typography>
+                  <Typography variant="body1">
+                    User Email: {character.user_email}
+                  </Typography>
+                  <Typography variant="body1">
+                    Request Date: {character.req_date}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={(e) => handleApproveCharacter(e, character.id)}
+                    style={{ marginRight: "10px" }}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={(e) => handleDeclineCharacter(e, character.id)}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              ))}
+            </div>
 
             {/* <div
               style={{
@@ -627,7 +688,7 @@ export default function ModeratorDash() {
                   <Button variant="contained" color="primary" href="/addAnime">
                     Add Anime
                   </Button>
-              </div>
+                </div>
               </div>
             </form>
           </div>

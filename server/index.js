@@ -109,6 +109,46 @@ app.post("/unseenNotifications", async (req, res) => {
   }
 });
 
+app.post("/getAnimeStatus", async (req, res) => {
+  try {
+    const { email,id } = req.body;
+    console.log(email,id);
+    const response = await pool.query(
+      `
+      SELECT 
+      (
+        CASE 
+        WHEN U.most_favourite_anime = UA.anime_id THEN
+          UA.ANIME_ID
+        ELSE
+          0
+      END
+      ) AS IS_FAV_ANIME,
+      (
+        CASE 
+        WHEN UA.status is not null THEN
+          UA.status
+        ELSE
+          'No'
+      END
+      ) AS WATCH_STATUS
+
+      FROM "USER" U JOIN users_anime_list UA ON U.user_id = UA.user_id
+      WHERE UA.anime_id = $1 AND U.user_id = email_to_id($2)
+      ;
+    `,
+      [id,email]
+    );
+    console.log(response.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
 app.post("/setNotificationsSeen", async (req, res) => {
   try {
     const { email } = req.body;

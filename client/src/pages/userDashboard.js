@@ -15,6 +15,7 @@ import Typography from "@mui/material/Typography";
 import { motion } from "framer-motion/dist/framer-motion";
 import AnimeList from "../Components/getAnimeList";
 import History from "../Components/getHistory";
+import { Toaster, toast } from "react-hot-toast";
 
 function UserDashboard() {
   const [image, setImage] = useState(null);
@@ -206,10 +207,60 @@ function UserDashboard() {
     }
   };
 
+  // const saveBio = async (e) => {
+  //   e.preventDefault();
+  //   console.log(bio);
+  //   const loadingToastId = toast.loading("Checking Credentials..", {
+  //     duration: 4000, // 4 seconds
+  //     style: {
+  //       border: "1px solid #282cfc",
+  //       padding: "16px",
+  //       color: "#282cfc",
+  //     },
+  //     iconTheme: {
+  //       primary: "#282cfc",
+  //       secondary: "#FFFAEE",
+  //     },
+  //   });
+  //   try {
+  //     let response = await axios.put(
+  //       `http://localhost:3000/userDash/updateBio`,
+  //       JSON.stringify({ bio, email }),
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     // let updatedBio = response.data[0].bio;
+  //     // setBio(updatedBio); // Update img_url in state
+  //     // console.log(updatedBio);
+  //     localStorage.setItem("bio", bio);
+  //     // console.log(animeList)
+  //     //   setUser(name);
+  //     //   localStorage.setItem("user", name);
+  //     //   console.log(name);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
   const saveBio = async (e) => {
     e.preventDefault();
     console.log(bio);
+    const loadingToastId = toast.loading("Saving Bio..", {
+      duration: 1000, // 4 seconds
+      style: {
+        border: "1px solid #282cfc",
+        padding: "16px",
+        color: "#282cfc",
+      },
+      iconTheme: {
+        primary: "#282cfc",
+        secondary: "#FFFAEE",
+      },
+    });
     try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       let response = await axios.put(
         `http://localhost:3000/userDash/updateBio`,
         JSON.stringify({ bio, email }),
@@ -218,18 +269,28 @@ function UserDashboard() {
           withCredentials: true,
         }
       );
-      // let updatedBio = response.data[0].bio;
-      // setBio(updatedBio); // Update img_url in state
-      // console.log(updatedBio);
       localStorage.setItem("bio", bio);
-      // console.log(animeList)
-      //   setUser(name);
-      //   localStorage.setItem("user", name);
-      //   console.log(name);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast
+      toast.success("Bio has been successfully saved.", {
+        style: {
+          border: "1px solid #282cfc",
+          padding: "16px",
+          color: "#282cfc",
+        },
+        iconTheme: {
+          primary: "#282cfc",
+          secondary: "#FFFAEE",
+        },
+      });
+      setTimeout(() => {
+        toast.dismiss();
+      }, 5000);
     } catch (err) {
       console.error(err.message);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast on error
     }
   };
+
   const goToHome = () => {
     window.location.href = "/home";
   };
@@ -285,6 +346,7 @@ function UserDashboard() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Toaster position="top-left" reverseOrder={false} />
       {loading ? (
         <h2>Loading...</h2>
       ) : (

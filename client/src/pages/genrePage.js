@@ -85,7 +85,6 @@ export default function GenrePage({ id, name }) {
   const [loading, setLoading] = useState(true);
   const [animeList, setAnimeList] = useState([]);
 
-  
   const [filteredAnimeList, setFilteredAnimeList] = useState([]);
 
   useEffect(() => {
@@ -114,9 +113,11 @@ export default function GenrePage({ id, name }) {
   };
 
   const [searchTerm, setSearchTerm] = useState("");
-  
 
   const handleSearchChange = (event) => {
+    setSearchTermType("");
+    setSearchTermScore("");
+    setSearchTermYear("");
     setSearchTerm(event.target.value);
     filterAnimeList(event.target.value);
 
@@ -129,11 +130,29 @@ export default function GenrePage({ id, name }) {
       anime.anime_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredAnimeList(filteredData);
+
+    // const maxEditDistance = 2; // Maximum edit distance allowed
+
+    // const filteredData = animeList.filter((anime) => {
+    //   const target = anime.anime_name.toLowerCase();
+    //   const pattern = searchQuery.toLowerCase();
+
+    //   // Calculate Levenshtein distance
+    //   const distance = levenshteinDistance(target, pattern);
+
+    //   // Return true if the distance is less than or equal to maxEditDistance
+    //   return distance <= maxEditDistance;
+    // });
+
+    // setFilteredAnimeList(filteredData);
   };
-  
+
   const [searchTermType, setSearchTermType] = useState("");
-  
+
   const handleSearchTypeChange = (event) => {
+    setSearchTerm("");
+    setSearchTermScore("");
+    setSearchTermYear("");
     setSearchTermType(event.target.value);
     filterAnimeListByType(event.target.value);
 
@@ -142,9 +161,81 @@ export default function GenrePage({ id, name }) {
   };
 
   const filterAnimeListByType = (searchQuery) => {
-    const filteredData = animeList.filter((anime) =>
-      anime.anime_type.toLowerCase().includes(searchQuery.toLowerCase())
+    const maxEditDistance = 2; // Maximum edit distance allowed
+
+    const filteredData = animeList.filter((anime) => {
+      const target = anime.anime_type.toLowerCase();
+      const pattern = searchQuery.toLowerCase();
+
+      // Calculate Levenshtein distance
+      const distance = levenshteinDistance(target, pattern);
+
+      // Return true if the distance is less than or equal to maxEditDistance
+      return distance <= maxEditDistance;
+    });
+
+    setFilteredAnimeList(filteredData);
+  };
+
+  // Function to calculate Levenshtein distance
+  function levenshteinDistance(str1, str2) {
+    const dp = Array.from(Array(str1.length + 1), () =>
+      Array(str2.length + 1).fill(0)
     );
+
+    for (let i = 0; i <= str1.length; i++) {
+      for (let j = 0; j <= str2.length; j++) {
+        if (i === 0) {
+          dp[i][j] = j;
+        } else if (j === 0) {
+          dp[i][j] = i;
+        } else {
+          dp[i][j] =
+            str1[i - 1] === str2[j - 1]
+              ? dp[i - 1][j - 1]
+              : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        }
+      }
+    }
+
+    return dp[str1.length][str2.length];
+  }
+
+  const [searchTermScore, setSearchTermScore] = useState("");
+
+  const handleSearchScoreChange = (event) => {
+    setSearchTerm("");
+    setSearchTermType("");
+    setSearchTermYear("");
+    setSearchTermScore(event.target.value);
+    filterAnimeListByScore(event.target.value);
+
+    console.log("Search Term:", searchTermScore);
+    console.log(filteredAnimeList);
+  };
+
+  const filterAnimeListByScore = (searchQuery) => {
+    const filteredData = animeList.filter(
+      (anime) => anime.mal_score >= searchQuery
+    );
+    setFilteredAnimeList(filteredData);
+  };
+
+  const [searchTermYear, setSearchTermYear] = useState("");
+
+  const handleSearchYearChange = (event) => {
+    setSearchTerm("");
+    setSearchTermType("");
+    setSearchTermScore("");
+    setSearchTermYear(event.target.value);
+    filterAnimeListByYear(event.target.value);
+
+    console.log("Search Term:", searchTermYear);
+    console.log(filteredAnimeList);
+  };
+
+  const filterAnimeListByYear = (searchQuery) => {
+    const filteredData = animeList.filter((anime) => anime.year >= searchQuery);
     setFilteredAnimeList(filteredData);
   };
 
@@ -153,16 +244,28 @@ export default function GenrePage({ id, name }) {
       <div className="search-container">
         <input
           type="text"
-          placeholder="Search by title..."
+          placeholder="Filter by title..."
           value={searchTerm}
           onChange={handleSearchChange}
         />
 
         <input
           type="text"
-          placeholder="Search by type..."
+          placeholder="Filter by type..."
           value={searchTermType}
           onChange={handleSearchTypeChange}
+        />
+        <input
+          type="number"
+          placeholder="Filter by score..."
+          value={searchTermScore}
+          onChange={handleSearchScoreChange}
+        />
+        <input
+          type="number"
+          placeholder="Filter by year..."
+          value={searchTermYear}
+          onChange={handleSearchYearChange}
         />
         {/* <button type="submit" onClick={handleSearchChange}>
           aa
