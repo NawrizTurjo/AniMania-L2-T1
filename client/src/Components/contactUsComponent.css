@@ -1,4 +1,4 @@
-/* * {
+ * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -92,9 +92,8 @@
   .wrapper {
     flex-grow: 3; 
     
-  } */
-
-/* body {
+  } 
+ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -174,4 +173,4 @@ textarea {
   .contact-form {
     flex-basis: 100%;
   }
-} */
+} 

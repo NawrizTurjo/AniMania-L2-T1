@@ -37,6 +37,7 @@ import ContactUsComponent from "./Components/contactUsComponent";
 import Plans from "./pages/plans";
 import AdminLogin from "./pages/adminLogin";
 import Test from "./Components/test";
+import AboutPage from "./Components/aboutPage";
 
 function App() {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ function App() {
                 />
               }
             />
-            <Route path="/about" element={<About />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route
               path="/top100"
               element={
@@ -165,7 +166,7 @@ function App() {
                 />
               }
             />
-            {/* <Route path="/contact" element={<ContactUsComponent />} /> */}
+            <Route path="/contact" element={<ContactUsComponent />} />
             <Route path="/VideoPlayer" element={<VideoPlayer />} />
             <Route path="/addAnime" element={<AddAnime />} />
             <Route path="/admin" element={<Admin />} />
@@ -175,6 +176,7 @@ function App() {
             <Route path="/:id/staffs" element={<Staffs />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/test" element={<Test />} />
+            {/* <Route path="/aboutPage" element={<AboutPage />} /> */}
           </Routes>
         </AnimatePresence>
       </div>

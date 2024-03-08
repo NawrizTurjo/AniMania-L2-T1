@@ -268,8 +268,7 @@ const AnimeListItem = ({
       });
       await getContribution(email);
       // await getAnimeList();
-      toggleRerender();
-      
+      // toggleRerender();
 
       console.log("This is fav state: ", fav);
       if (response.status === 200) {
