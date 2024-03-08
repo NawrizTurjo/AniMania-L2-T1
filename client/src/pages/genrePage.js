@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./GenreAnimes.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const columns = [
   {
@@ -21,7 +21,12 @@ const columns = [
     minWidth: 170,
     format: (value) => value.toLocaleString("en-US"),
   },
-  { id: "anime_id", label: "Id", minWidth: 100,format: (value) => value.toLocaleString("en-US"), },
+  {
+    id: "anime_id",
+    label: "Id",
+    minWidth: 100,
+    format: (value) => value.toLocaleString("en-US"),
+  },
   {
     id: "number_of_episodes",
     label: "Total episodes",
@@ -80,15 +85,19 @@ export default function GenrePage({ id, name }) {
   const [loading, setLoading] = useState(true);
   const [animeList, setAnimeList] = useState([]);
 
+  
+  const [filteredAnimeList, setFilteredAnimeList] = useState([]);
+
   useEffect(() => {
-    console.log("Genre ID:", id);
+    // console.log("Genre ID:", id);
     axios
       .get(`http://localhost:3000/genre/${id}`)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setAnimeList(res.data);
+        setFilteredAnimeList(res.data);
         setLoading(false);
-        console.log(animeList);
+        // console.log(animeList);
       })
       .catch((err) => {
         console.log(err);
@@ -104,14 +113,70 @@ export default function GenrePage({ id, name }) {
     setPage(0);
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+  
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    filterAnimeList(event.target.value);
+
+    console.log("Search Term:", searchTerm);
+    console.log(filteredAnimeList);
+  };
+
+  const filterAnimeList = (searchQuery) => {
+    const filteredData = animeList.filter((anime) =>
+      anime.anime_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredAnimeList(filteredData);
+  };
+  
+  const [searchTermType, setSearchTermType] = useState("");
+  
+  const handleSearchTypeChange = (event) => {
+    setSearchTermType(event.target.value);
+    filterAnimeListByType(event.target.value);
+
+    console.log("Search Term:", searchTermType);
+    console.log(filteredAnimeList);
+  };
+
+  const filterAnimeListByType = (searchQuery) => {
+    const filteredData = animeList.filter((anime) =>
+      anime.anime_type.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredAnimeList(filteredData);
+  };
+
   return (
     <Paper sx={{ width: "100%" }}>
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search by title..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+
+        <input
+          type="text"
+          placeholder="Search by type..."
+          value={searchTermType}
+          onChange={handleSearchTypeChange}
+        />
+        {/* <button type="submit" onClick={handleSearchChange}>
+          aa
+        </button> */}
+      </div>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
               <TableCell align="center" colSpan={9}>
-                <Link to={`http://localhost:3001/genre/${id}`}>
+                <Link
+                  // to={`http://localhost:3001/genre/${id}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
                   <h1>{name}</h1>
                 </Link>
               </TableCell>
@@ -132,38 +197,48 @@ export default function GenrePage({ id, name }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {animeList
+            {filteredAnimeList
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((anime) => {
                 return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={anime.id}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={anime.id}>
                     {columns.map((column) => {
-                        const value = anime[column.id];
-                        console.log(`${column.id}:`, value);
+                      const value = anime[column.id];
+                      // console.log(`${column.id}:`, value);
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.id === 'title_screen' ? (<Link
-                            
-                            to={`http://localhost:3001/anime/${anime.anime_id}`}
-                            className="list-group-item d-flex align-items-center">
-                            <img src={value} alt="Title Screen" style={{ maxWidth: '50px', maxHeight: '75px' }} />
-                            </Link>) : (
-                            column.format && typeof value === 'number' ? column.format(value) : value
+                          {column.id === "title_screen" ? (
+                            <Link
+                              to={`http://localhost:3001/watch/anime/episodes/${anime.anime_id}`}
+                              className="list-group-item d-flex align-items-center"
+                              // onClick={() => {
+                              //   console.log("Anime ID:", anime.anime_id);
+                              // }}
+                            >
+                              <img
+                                src={value}
+                                alt="Title Screen"
+                                style={{ maxWidth: "50px", maxHeight: "75px" }}
+                              />
+                            </Link>
+                          ) : column.format && typeof value === "number" ? (
+                            column.format(value)
+                          ) : (
+                            value
                           )}
                         </TableCell>
                       );
                     })}
                   </TableRow>
-                  
                 );
               })}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 100,500]}
+        rowsPerPageOptions={[5, 10, 25, 100, 500]}
         component="div"
-        count={animeList.length}
+        count={filteredAnimeList.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

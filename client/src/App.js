@@ -38,6 +38,7 @@ import Plans from "./pages/plans";
 import AdminLogin from "./pages/adminLogin";
 import Test from "./Components/test";
 import AboutPage from "./Components/aboutPage";
+import AnimatedElement from "./Components/animateScroll";
 
 function App() {
   const navigate = useNavigate();
@@ -70,7 +71,7 @@ function App() {
         <AnimatePresence>
           <Routes location={location} key={location.pathname}>
             <Route
-              path="/"
+              path="/landing"
               element={
                 <Landing
                   toggleRerender={toggleRerender}
@@ -178,6 +179,7 @@ function App() {
             <Route path="/:id/staffs" element={<Staffs />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/test" element={<Test />} />
+            <Route path="/" element={<AnimatedElement />} />
             {/* <Route path="/aboutPage" element={<AboutPage />} /> */}
           </Routes>
         </AnimatePresence>

@@ -10,7 +10,7 @@
 
   --color-background-input-hover: #2d113a;
   --color-background-input-active: #3f3146;
-  
+
   --color-border-hover: #4d4d4d;
   --color-border-active: #454541;
 }
@@ -131,7 +131,7 @@
 
 .input-name {
   display: flex;
-  gap: 24px;
+  gap: 50px;
 }
 
 .input-name input {
