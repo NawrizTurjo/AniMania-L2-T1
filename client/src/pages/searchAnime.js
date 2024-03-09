@@ -11,6 +11,13 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
   const location = useLocation();
   const { searchTerm } = location.state || {};
 
+  const {
+    user: routeUser,
+    email: routeEmail,
+    userRole: routeUserRole,
+    img_url: routeImgUrl,
+  } = location.state || {};
+
   //const { user: routeUser, email: routeEmail } = location.state || {};
 
   // Use local state to store user information
@@ -22,7 +29,50 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [animePerPage] = useState(10);
 
-  const email = localStorage.getItem("email");
+  const [email, setEmail] = useState(
+    routeEmail || localStorage.getItem("email") || ""
+  );
+
+  const [userRole, setUserRole] = useState(
+    routeUserRole || localStorage.getItem("userRole") || ""
+  );
+
+  const [currentPlan, setCurrentPlan] = useState({});
+
+  let update = localStorage.getItem("update");
+
+  let balance = localStorage.getItem("balance");
+  let planName = localStorage.getItem("currentPlanName");
+  let planEnd = localStorage.getItem("currentPlanEnd");
+
+  const getCurrentPlan = async () => {
+    try {
+      setLoading(true);
+      const getCurrentPlans = await axios.post(
+        `http://localhost:3000/getCurrentPlan`,
+        { userEmail: email }
+      );
+      setCurrentPlan(getCurrentPlans.data[0]);
+      console.log(getCurrentPlans.data);
+      console.log(getCurrentPlans.data[0]);
+      localStorage.setItem(
+        "currentPlanName",
+        getCurrentPlans.data[0].plan_name
+      );
+      localStorage.setItem(
+        "currentPlanEnd",
+        getCurrentPlans.data[0].plan_end_date
+      );
+      localStorage.setItem("balance", getCurrentPlans.data[0].wallet_balance);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getCurrentPlan();
+  }, [update]);
 
   const getAnime = async () => {
     try {
@@ -45,8 +95,24 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
     }
   };
   useEffect(() => {
+    //setProgress(10);
     getAnime();
+    // setTimeout(() => {
+    //   setProgress(100);
+    // }, 500);
+    //getKarma(email);
+    //getContribution(email);
+    //getUnseenNotifications(email);
   }, [forceRerender]);
+
+  useEffect(() => {
+    // Update local state and local storage when user and email change
+
+    //localStorage.setItem("user", user);
+    localStorage.setItem("email", email);
+    localStorage.setItem("userRole", userRole);
+    //localStorage.setItem("img_url", img_url);
+  }, [ email, userRole]);
 
   // useEffect(() => {
   //   const fetchPosts = async () => {

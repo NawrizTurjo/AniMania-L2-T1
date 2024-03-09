@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-// import "./navbar.css";
+import "./navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -74,6 +74,9 @@ export default function Navbar() {
           </CustomLink>
           <CustomLink to="/AdvancedSearch" onClick={toggleMenu}>
             Advanced Search
+          </CustomLink>
+          <CustomLink to="/Plans" onClick={toggleMenu}>
+            Plans
           </CustomLink>
         </ul>
       )}

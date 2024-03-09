@@ -18,6 +18,14 @@ import { Link } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import Alert from "@mui/material/Alert";
 import { toast, Toaster } from "react-hot-toast";
+import VerifiedIcon from "@mui/icons-material/Verified";
+// import Button from 'react-bootstrap/Button';
+import Modal from "react-bootstrap/Modal";
+import Dropdown from "react-bootstrap/Dropdown";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AddBoxTwoToneIcon from "@mui/icons-material/AddBoxTwoTone";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 export default function Episodes({ toggleRerender, setProgress }) {
   const { id } = useParams();
@@ -64,6 +72,16 @@ export default function Episodes({ toggleRerender, setProgress }) {
   //   console.log(user, email, img_url, userRole);
   let [cleanedText, setCleanedText] = useState("");
 
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const [isList, setIsList] = useState(false);
+  const [isFav, setIsFav] = useState(false);
+  const [newStatus, setNewStatus] = useState("Watching");
+  const [status, setStatus] = useState("");
+
   const getAssets = async () => {
     try {
       setLoading(true);
@@ -73,10 +91,86 @@ export default function Episodes({ toggleRerender, setProgress }) {
       const res2 = await axios.post(`http://localhost:3000/getSoundtracks`, {
         id: id,
       });
-      setStudio(res1.data[0].studio_name);
-      setMusic(res2.data[0].title);
-      console.log(res1.data[0].studio_name);
-      console.log(res2.data[0].title);
+
+      console.log(email, id);
+
+      // const res3 = await axios.post(`http://localhost:3000/getAnimeStatus`, {
+      //   email: email,
+      //   id: id,
+      // });
+
+      // const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
+      //   email: email,
+      //   id: id,
+      // });
+      // setStudio(res1.data[0].studio_name);
+      // setMusic(res2.data[0].title);
+
+      // console.log("res3", res3.data);
+      // console.log("res4", res4.data);
+      // console.log(res4.data[0].anime_id == id);
+      // setIsFav(res4.data[0].anime_id == id);
+
+      // if (res3.data[0]?.watch_status != "No") {
+      //   setStatus(res3.data[0].watch_status);
+      //   setIsList(true);
+      // } else {
+      //   setStatus("");
+      //   setIsList(false);
+      // }
+
+      // setNewStatus(res3.data[0]?.watch_status || "Watching");
+      // // if (res4.data[0].anime_id !== id) {
+      // //   console.log("notfav");
+      // //   setIsFav(false);
+      // // } else {
+      // //   setIsFav(true);
+      // //   console.log("isList");
+      // // }
+      // // console.log(res1.data[0].studio_name.join(", "));
+      // // console.log(res2.data[0].title.join(", "));
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getAssets2 = async () => {
+    try {
+      setLoading(true);
+
+      console.log(email, id);
+
+      const res3 = await axios.post(`http://localhost:3000/getAnimeStatus`, {
+        email: email,
+        id: id,
+      });
+
+      const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
+        email: email,
+      });
+
+      console.log("res3", res3.data);
+      console.log("res4", res4.data);
+      console.log(res4.data[0].anime_id == id);
+      setIsFav(res4.data[0].anime_id == id);
+
+      if (res3.data[0]?.watch_status != "No") {
+        setStatus(res3.data[0].watch_status);
+        setIsList(true);
+      } else {
+        setStatus("");
+        setIsList(false);
+      }
+
+      setNewStatus(res3.data[0]?.watch_status || "Watching");
+      // if (res4.data[0].anime_id !== id) {
+      //   console.log("notfav");
+      //   setIsFav(false);
+      // } else {
+      //   setIsFav(true);
+      //   console.log("isList");
+      // }
       // console.log(res1.data[0].studio_name.join(", "));
       // console.log(res2.data[0].title.join(", "));
       setLoading(false);
@@ -135,6 +229,11 @@ export default function Episodes({ toggleRerender, setProgress }) {
       console.log(err.message);
       if (err.message === "Request failed with status code 500") {
         alert("You cannot post multiple reviews for the same anime.");
+        // setTimeout(() => {
+        //   toast.error("This didn't work.");
+        //   // setProgress(100);
+        // }, 1000);
+        handleShow();
         setReview("");
         // setReviews(oldReviews);
         // getReview();
@@ -142,6 +241,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
         // return(
         //   <Alert severity="error">"You cannot post multiple reviews for the same anime."</Alert>
         //   )
+        window.location.reload();
       }
     }
     // toggleRerender();
@@ -173,6 +273,164 @@ export default function Episodes({ toggleRerender, setProgress }) {
   //   // Cleanup function to clear the interval
   //   return () => clearInterval(interval);
   // }, []);
+
+  const handleFavorite = async () => {
+    try {
+      const response = await axios.put("http://localhost:3000/home", {
+        email: email,
+        favString: JSON.stringify(!isList),
+        anime_id: id,
+      });
+      // await getContribution(email);
+      // await getAnimeList();
+      // toggleRerender();
+
+      console.log("This is isList state: ", isList);
+      if (response.status === 200) {
+        setIsList((prev) => !prev);
+        // is_favorite = isList;
+        // console.log("This is is_fav state: ", is_favorite);
+        // toast.success(`Anime ${title} ${!isList ? "added to" : "removed from"} favorites`);
+        if (!isList) {
+          // toast.success(``);
+          // toast.success(`${title} anime is added to your list`, {
+          //   position: "top-left",
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "colored",
+          //   transition: Zoom,
+          // });
+          toast.success(`${anime.anime_name}  is added to your List`, {
+            style: {
+              border: "1px solid #1ae84d",
+              padding: "16px",
+              color: "#284ffc",
+            },
+            iconTheme: {
+              primary: "#1ae84d",
+              secondary: "#FFFAEE",
+            },
+          });
+        } else {
+          // toast.error(``);
+          // toast.error(`${title} anime is removed from your list`, {
+          //   position: "top-left",
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: "colored",
+          //   transition: Zoom,
+          // });
+          setNewStatus("Watching");
+          // setIsList(true);
+          // setTimeout(() => {
+
+          //   setNewStatus("Watching");
+          // }
+          //   , 1000);
+          toast.error(`${anime.anime_name} is removed from your List`, {
+            style: {
+              border: "1px solid #fc2864",
+              padding: "16px",
+              color: "#fa2c02",
+            },
+            iconTheme: {
+              primary: "#fc2864",
+              secondary: "#FFFAEE",
+            },
+          });
+        }
+      } else {
+        toast.error("Failed to update favorite status");
+      }
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
+    }
+  };
+
+  const handleUpdatefavAnime = async (stringParam) => {
+    console.log(stringParam);
+    try {
+      const response = await axios.post("http://localhost:3000/updateIsFav", {
+        email: email,
+        id: id,
+        parameter: stringParam,
+      });
+      if (stringParam === "Update") {
+        setIsFav(true);
+        toast.success(`${anime.anime_name} is now your favourite anime`, {
+          style: {
+            border: "1px solid #1ae84d",
+            padding: "16px",
+            color: "#284ffc",
+          },
+          iconTheme: {
+            primary: "#1ae84d",
+            secondary: "#FFFAEE",
+          },
+        });
+      } else {
+        setIsFav(false);
+        toast.error(`${anime.anime_name} anime is removed from your profile`, {
+          style: {
+            border: "1px solid #fc2864",
+            padding: "16px",
+            color: "#fa2c02",
+          },
+          iconTheme: {
+            primary: "#fc2864",
+            secondary: "#FFFAEE",
+          },
+        });
+      }
+      console.log(isFav);
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+    }
+  };
+
+  useEffect(() => {
+    getAssets2();
+  }, [isList, isFav]);
+
+  const handleSelect = async (newStat) => {
+    console.log(newStat);
+    try {
+      const response = await axios.put("http://localhost:3000/updateStatus", {
+        status: newStat,
+        email: email,
+        anime_id: id,
+      });
+      // toast.success(`Anime ${title} status updated to ${newStat}`);
+      // toggleRerender();
+      toast.success(
+        `${anime.anime_name} status has been updated to ${newStat}`,
+        {
+          style: {
+            border: "1px solid #1ae84d",
+            padding: "16px",
+            color: "#284ffc",
+          },
+          iconTheme: {
+            primary: "#1ae84d",
+            secondary: "#FFFAEE",
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error updating favorite status:", error);
+      toast.error("Failed to update favorite status");
+    }
+  };
+
   useEffect(() => {
     let isMounted = true; // Flag to prevent state updates after unmounting
 
@@ -237,7 +495,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
           rating: newRating,
         }),
         {
-          loading: 'Updating review...',
+          loading: "Updating review...",
           success: <b>Review updated!</b>,
           error: <b>Could not update review.</b>,
         }
@@ -257,14 +515,18 @@ export default function Episodes({ toggleRerender, setProgress }) {
     // toggleRerender();
   };
 
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      <Toaster position="bottom-right" reverseOrder={true} />
-      {!loading ? (
+      <Toaster position="top-center" reverseOrder={false} />
+      {loading !== true ? (
         <div className="row justify-content-center">
           <div className="col-lg-4">
             {/* Larger title screen */}
@@ -288,6 +550,128 @@ export default function Episodes({ toggleRerender, setProgress }) {
                   Login to Watch
                 </button>
               </Link>
+            )}
+            <div className="d-flex flex-column mt-3">
+              <div className="d-flex">
+                <Link
+                  to={`http://localhost:3001/${id}/characters`}
+                  className="flex-grow-1 me-3"
+                >
+                  <button className="btn btn-info btn-lg btn-block">
+                    See Characters
+                  </button>
+                </Link>
+                <Link
+                  to={`http://localhost:3001/${id}/staffs`}
+                  className="flex-grow-1"
+                >
+                  <button className="btn btn-info btn-lg btn-block">
+                    See Staffs
+                  </button>
+                </Link>
+              </div>
+            </div>
+            {userRole === "U" && (
+              <div className="mt-3">
+                {isFav === true ? (
+                  <FavoriteIcon
+                    color="error"
+                    fontSize="large"
+                    onClick={() => handleUpdatefavAnime("Delete")}
+                  />
+                ) : (
+                  <FavoriteBorderIcon
+                    color="error"
+                    fontSize="large"
+                    onClick={() => handleUpdatefavAnime("Update")}
+                  />
+                )}
+                {userRole === "U" && isList === true ? (
+                  <CheckCircleIcon
+                    color="success"
+                    fontSize="large"
+                    onClick={handleFavorite}
+                  />
+                ) : (
+                  <AddBoxTwoToneIcon
+                    color="primary"
+                    fontSize="large"
+                    onClick={handleFavorite}
+                  />
+                )}
+                {userRole === "U" && isList === true && (
+                  <Dropdown>
+                    {newStatus === "Planned" && (
+                      <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "Watching" && (
+                      <Dropdown.Toggle variant="success" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "Dropped" && (
+                      <Dropdown.Toggle variant="danger" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "Watched" && (
+                      <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+                    {newStatus === "On hold" && (
+                      <Dropdown.Toggle variant="warning" id="dropdown-basic">
+                        {newStatus}
+                      </Dropdown.Toggle>
+                    )}
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Planned");
+                          handleSelect("Planned");
+                        }}
+                      >
+                        Planned
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Watching");
+                          handleSelect("Watching");
+                        }}
+                      >
+                        Watching
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Dropped");
+                          handleSelect("Dropped");
+                        }}
+                      >
+                        Dropped
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("Watched");
+                          handleSelect("Watched");
+                        }}
+                      >
+                        Watched
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setNewStatus("On hold");
+                          handleSelect("On hold");
+                        }}
+                      >
+                        On hold
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
+              </div>
             )}
           </div>
           <div className="col-lg-8">
@@ -439,7 +823,9 @@ export default function Episodes({ toggleRerender, setProgress }) {
                 >
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Avatar alt={review.reviewer} src={review.img_src} />
-                    <Typography variant="body1">{review.reviewer}</Typography>
+                    <Typography variant="body1" style={{ marginRight: "10px" }}>
+                      {review.reviewer}
+                    </Typography>
                     {DateFormatter({ date: review.review_time })}
                     {email === review.email ? (
                       <Rating
@@ -454,6 +840,9 @@ export default function Episodes({ toggleRerender, setProgress }) {
                     ) : (
                       <Rating name="read-only" value={review.rating} readOnly />
                     )}
+                    {review.status === "approved" && (
+                      <VerifiedIcon color="success" />
+                    )}
                   </Stack>
                 </Box>
                 {/* Render editable textarea if user's email matches review email */}
@@ -463,7 +852,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
                       className="form-control"
                       id={`review-${index}`}
                       rows={Math.min(
-                        Math.ceil(review.review_text.length / 200) + 2,
+                        Math.ceil((review.review_text ?? "").length / 200) + 2,
                         25 // Maximum of 20 rows
                       )}
                       value={review.review_text}
@@ -512,6 +901,20 @@ export default function Episodes({ toggleRerender, setProgress }) {
           <h3>No reviews yet...</h3>
         )}
       </div>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </motion.div>
   );
 }

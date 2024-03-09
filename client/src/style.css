@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -9,9 +9,34 @@ body {
   background-color: #57f1f9;
 }
 
+.custom-typewriter {
+  font-family: "Pacifico", sans-serif; /* Apply the Google Font */
+  font-size: larger;
+  color: #007bff; /* Initial color */
+  animation: alternate-colors 6s infinite; /* Apply animation */
+}
+
+@keyframes alternate-colors {
+  0% {
+    color: #007bff; /* Start with blue */
+  }
+  33% {
+    color: #ff0000; /* Transition to red */
+  }
+  66% {
+    color: #00b300; /* Transition to green */
+  }
+  100% {
+    color: #007bff; /* Back to blue */
+  }
+}
+
 .container {
   margin: 0;
   text-align: center;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
 }
 
 .typewriter {
@@ -21,6 +46,34 @@ body {
 .typewriter:hover {
   font-weight: bolder;
   font-family: "Times New Roman", Times, serif;
+}
+
+.gray-background {
+  background-color: rgba(128, 128, 128, 0.5); /* 50% transparent gray */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.gray-background:hover {
+  background-color: rgba(
+    128,
+    128,
+    128,
+    0.8
+  ); /* Less transparent gray on hover */
+}
+
+.notification-bg {
+  background-color: rgba(217, 217, 217, 0.5); /* 50% transparent gray */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.notification-bg:hover {
+  background-color: rgba(
+    215,
+    213,
+    213,
+    0.8
+  ); /* Less transparent gray on hover */
 }
 
 .nav {
@@ -60,19 +113,24 @@ body {
   background-color: #555;
 }
 
-/* .nav li:hover{
-    font-family: 'Nunito';
-    background-color: #777;
-    font-display: swap;
-    transition: background-color 0.5s ease;
-    font-weight: bold;
-  } */
+.nav li:hover {
+  font-family: "Nunito";
+  background-color: #777;
+  font-display: swap;
+  transition: background-color 0.5s ease;
+  font-weight: bold;
+}
 
 .nav li {
   transition: background-color 0.5s ease; /* Apply transition to all list items */
 }
 
 .nav li:hover {
+  background-color: #777;
+  font-weight: bold;
+}
+
+.nav li:active {
   background-color: #777;
   font-weight: bold;
 }
@@ -161,6 +219,16 @@ img:hover {
   height: 50px;
   display: block;
   clear: both;
+  background: linear-gradient(to left, #190f04, #494547);
+  /* border-bottom: 1px solid #ccc; */
+  animation: gradientAnimation 5s linear infinite;
+  /* transition: background 2s ease-out; */
+  animation-duration: 2.2s;
+  animation-name: paragato;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  -webkit-animation-timing-function: ease-in-out;
 }
 
 .anime-list {

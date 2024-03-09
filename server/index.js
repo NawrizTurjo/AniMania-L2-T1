@@ -19,15 +19,27 @@ app.listen(PORT, () => {
 });
 
 app.post("/sign_up", async (req, res) => {
+  //------------------------------insert query 1
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
-    const newModerator = await pool.query(
-      "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
-      [user, pwd, email, userRole, img_url]
-    );
-    console.log(1);
-    res.json("Successfully signed up");
+    console.log(user, pwd, email, userRole, img_url)
+
+    if (userRole === "U") {
+      const newModerator = await pool.query(
+        "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3, $4,$5) RETURNING id",
+        [user, pwd, email, userRole, img_url]
+      );
+      console.log(1);
+      res.json("Successfully signed up");
+    } else {
+      const newModerator = await pool.query(
+        "INSERT INTO person (user_name, password,email,role,img_url) VALUES ($1, $2, $3,'M_not' ,$4) RETURNING id",
+        [user, pwd, email, img_url]
+      );
+      console.log(1);
+      res.json("Successfully signed up");
+    }
 
     // if (userRole === "U") {
     //   const userId = newModerator.rows[0].id;
@@ -69,12 +81,482 @@ app.post("/sign_up", async (req, res) => {
   }
 });
 
+app.post("/unseenNotifications", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("unseenNotifications", email);
+    const response = await pool.query(
+      `
+        SELECT 
+        CASE WHEN COUNT(*) > 0 
+          THEN 'TRUE'
+          ELSE
+            'FALSE'
+        END
+        AS IS_UNSEEN
+      
+        FROM notifications
+        WHERE USERS_ID = email_to_id($1) and is_seen = 'f'
+        GROUP BY is_seen
+      
+    `,
+      [email]
+    );
+    console.log(response.rows[0].is_unseen);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getAnimeStatus", async (req, res) => {
+  try {
+    const { email, id } = req.body;
+    console.log(email, id);
+    const response = await pool.query(
+      `
+      SELECT 
+      (
+        CASE 
+        WHEN UA.status is not null THEN
+          UA.status
+        ELSE
+          'No'
+        END
+      ) AS WATCH_STATUS
+
+      FROM "USER" U 
+      LEFT JOIN users_anime_list UA ON U.user_id = UA.user_id AND UA.anime_id = $1
+      WHERE U.user_id = email_to_id($2);
+    `,
+      [id, email]
+    );
+    console.log(response.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getFavAnimeStatus", async (req, res) => {
+  try {
+    const { email, id } = req.body;
+    console.log(email, id);
+    const response = await pool.query(
+      `
+      SELECT
+      email_to_id($1) AS user_id,
+      COALESCE(UA.anime_id IS NOT NULL, false) AS is_favourite,
+          UA.status
+      FROM "USER" U 
+      LEFT JOIN users_anime_list UA ON U.user_id = UA.user_id AND UA.anime_id = $2
+      WHERE U.user_id = email_to_id($1);
+    `,
+      [email, id]
+    );
+    console.log(response.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getMostFav", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const response = await pool.query(
+      `
+      SELECT most_favourite_anime as anime_id
+      FROM "USER"
+      WHERE user_id = email_to_id($1);
+    `,
+      [email]
+    );
+
+    console.log(response.rows[0].anime_id);
+    // console.log(response.rows);
+    // if(response.rows[0].anime_id === null || response.rows[0].anime_id !== id){
+    //   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    //   res.json([]);
+    // }else{
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // }
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/updateIsFav", async (req, res) => {
+  try {
+    const { email, id, parameter } = req.body;
+    console.log(email, id, parameter);
+    console.log("parameter", parameter);
+    if (parameter == "Update") {
+      const response = await pool.query(
+        `
+      Update "USER"
+      SET most_favourite_anime = $1
+      WHERE user_id = email_to_id($2);
+    `,
+        [id, email]
+      );
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.json(response.rows);
+    } else {
+      const response = await pool.query(
+        `
+      Update "USER"
+      SET most_favourite_anime = null
+      WHERE user_id = email_to_id($1);
+    `,
+        [email]
+      );
+      res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+      res.json(response.rows);
+    }
+
+    // console.log(response.rows[0]);
+    // console.log(response.rows);
+    // if(response.rows[0].anime_id === null || response.rows[0].anime_id !== id){
+    //   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    //   res.json([]);
+    // }else{
+
+    // }
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/setNotificationsSeen", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const response = await pool.query(
+      `
+      UPDATE notifications set is_seen = 't' 
+        where users_id = email_to_id($1) 
+              and is_seen = 'f';
+    `,
+      [email]
+    );
+    console.log(response.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.rows);
+    // console.log(response.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getCurrentPlan", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const currentPlan = await pool.query(
+      //--------------------------------------advanced query (1)
+      `
+      SELECT 
+        CASE 
+          WHEN current_plan IS NULL THEN 'Trial'
+          ELSE (
+            SELECT PLAN_NAME
+            FROM PLANS
+            WHERE PLAN_ID = current_plan
+          )
+        END as PLAN_NAME,
+        TO_CHAR(plan_end_date, 'YYYY-MM-DD HH24:MI:SS') AS plan_end_date,
+        WALLET_BALANCE
+      FROM "USER"
+      WHERE user_id = $1;
+
+      `,
+      [userId]
+    );
+
+    console.log(currentPlan.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(currentPlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/addPlans", async (req, res) => {
+  try {
+    const { userEmail, interval, value, name } = req.body;
+    console.log(userEmail, interval, value, name);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [userId]
+    );
+
+    const currentPlan = await pool.query(
+      //-------------------------------------------insert query 2
+      `
+      INSERT INTO PLANS 
+        (PLAN_INTERVAL,PLAN_VALUE,PLAN_NAME) 
+          VALUES  
+          ($1,$2,$3);
+      `,
+      [interval, value, name]
+    );
+
+    const modUpdate = await pool.query(
+      //--------------------------------------------------------update query 1
+      `
+      UPDATE moderator
+      SET OTHERS = OTHERS + 1
+      WHERE moderator_id = $1;
+      `,
+      [userId]
+    );
+
+    console.log(currentPlan.rows);
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(currentPlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/getAllPlans", async (req, res) => {
+  try {
+    // const { userEmail } = req.body;
+    // console.log(userEmail);
+
+    // const response = await pool.query(
+    //   `
+    //   SELECT EMAIL_TO_ID($1) as "id"
+    //   `,
+    //   [userEmail]
+    // );
+
+    // const userId = response.rows[0].id;
+
+    const allPlans = await pool.query(
+      `
+      SELECT *
+      FROM PLANS;
+
+      `
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(allPlans.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getbalance", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [userId]
+    );
+
+    const balance = await pool.query(
+      `
+      SELECT WALLET_BALANCE
+        FROM "USER"
+        WHERE USER_ID = $1;
+      `,
+      [userId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(balance.rows[0].wallet_balance);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/updatePlan", async (req, res) => {
+  try {
+    const { userEmail, planId } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [userId]
+    );
+
+    const updatePlan = await pool.query(
+      `
+      CALL ADD_PLAN ($1,$2)
+      `,
+      [userId, planId]
+    );
+
+    const response4 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('ADD_PLAN()', $1, current_timestamp)
+      `,
+      [userId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(updatePlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/addNewPlan", async (req, res) => {
+  try {
+    const { userEmail, planName, planInterval, planValue } = req.body;
+    console.log(userEmail);
+
+    const response = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [userEmail]
+    );
+
+    const userId = response.rows[0].id;
+
+    const response2 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [userId]
+    );
+
+    const addNewPlan = await pool.query(
+      `
+      CALL ADD_NEW_PLAN ($1,$2,$3,$4);
+      `,
+      [userId, planName, planValue, planInterval]
+    );
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('ADD_NEW_PLAN()', $1, current_timestamp)
+      `,
+      [userId]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(addNewPlan.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/addBalance", async (req, res) => {
+  try {
+    const { email, value } = req.body;
+    console.log(email, value);
+
+    const addBalance = await pool.query(
+      `
+      CALL UPDATE_BALANCE ($1,$2);
+      `,
+      [email, value]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(addBalance.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/top100", async (req, res) => {
   try {
     const { userEmail } = req.body;
     console.log(userEmail);
 
     const allAnimes = await pool.query(
+      //-------------------------------------------------------advanced query joining  3+ tables 1
       `
       with T AS(
         SELECT DISTINCT (anime_id),user_id,status
@@ -240,24 +722,37 @@ app.post("/addCharacter", async (req, res) => {
 });
 
 app.post("/approveCharacters", async (req, res) => {
+  //insert in 3+ tables (check triggers) 1
   try {
     const { char_id, email } = req.body;
 
-    const res = await pool.query(
+    const result = await pool.query(
       `
-        SELECT email_to_id( $1 ) as "id"
+        SELECT email_to_id($1) as "id"
       `,
       [email]
     );
 
-    const m_id = res.rows[0].id;
+    const m_id = result.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [m_id]
+    );
     const response = await pool.query(
       `
-      update USER_REQ_CHARACTER set moderator_id = $1 where "id" = $2;
-      `[m_id,char_id]
+      UPDATE USER_REQ_CHARACTER SET moderator_id = $1 WHERE "id" = $2;
+      `,
+      [m_id, char_id]
     );
 
-    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    // Set response headers using set method
+    res.set("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
   } catch (error) {
     console.error(error.message);
@@ -314,6 +809,7 @@ app.post("/:id/addEpisode", async (req, res) => {
     );
     console.log(releaseDate);
     const response = await pool.query(
+      //insert query 4
       `
       INSERT INTO episodes (anime_id,episode_no,episode_title,thumbnail,"LENGTH",release_date,availability,streaming_sites)
       values ($1,$2,$3,$4,$5,$6,'Y',$7)
@@ -327,6 +823,15 @@ app.post("/:id/addEpisode", async (req, res) => {
         releaseDate,
         streamingSites,
       ]
+    );
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, anime_id, track_date)
+     values
+     ('after_inserting_episodes_function()', $1, current_timestamp)
+      `,
+      [animeId]
     );
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
@@ -356,6 +861,7 @@ app.post("/getContribution", async (req, res) => {
     const contribution = await pool.query(`SELECT GET_CONTRIBUTION($1)`, [
       email,
     ]);
+
     console.log(contribution.rows[0].get_contribution);
     res.json(contribution.rows);
   } catch (error) {
@@ -365,6 +871,7 @@ app.post("/getContribution", async (req, res) => {
 });
 
 app.post("/AdvancedSearch", async (req, res) => {
+  //advanced query with params joining 3+ tables 2
   const {
     searchString,
     season,
@@ -381,7 +888,7 @@ app.post("/AdvancedSearch", async (req, res) => {
     userEmail,
   } = req.body;
   console.log(userEmail);
-  console.log(req.body);
+  // console.log(req.body);
   try {
     let query = `
     with T AS(
@@ -622,6 +1129,7 @@ app.post("/moderatorDash", async (req, res) => {
 });
 
 app.post("/home", async (req, res) => {
+  //advanced query with 3+tables 3
   try {
     const { userEmail } = req.body;
     console.log(userEmail);
@@ -685,6 +1193,15 @@ app.post("/watch/anime/episodes/:id", async (req, res) => {
     );
 
     console.log(userID.rows[0].id);
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [id]
+    );
 
     // console.log(userID.rows[0].id);
 
@@ -750,6 +1267,16 @@ app.post("/watch/anime/episodes/:id/episode/:id2", async (req, res) => {
     );
 
     console.log(userID.rows[0].id);
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [id]
+    );
 
     // console.log(userID.rows[0].id);
 
@@ -867,6 +1394,16 @@ app.put("/updateStatus", async (req, res) => {
       [status, anime_id, user_id]
     );
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id ,track_date)
+     values
+     ('update_users_anime_list_status()', $1, $2 ,current_timestamp)
+      `,
+      [user_id, anime_id]
+    );
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json();
     // console.log(person.rows);
@@ -971,6 +1508,16 @@ app.put("/review/approve", async (req, res) => {
     );
     const id = moderator_id.rows[0].id;
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [id]
+    );
+
     const response = await pool.query(
       `
       UPDATE review
@@ -997,6 +1544,7 @@ app.put("/review/approve", async (req, res) => {
 });
 
 app.get("/watch/anime/episodes/:id/reviews", async (req, res) => {
+  //advanced query 5
   try {
     const id = parseInt(req.params.id);
 
@@ -1220,7 +1768,8 @@ app.post("/getHistory", async (req, res) => {
       WHERE WH.user_id = (
         SELECT EMAIL_TO_ID($1) as "id"
       )
-      ORDER BY WH.anime_id, WH.episode_no
+      ORDER BY "time" DESC
+      FETCH FIRST 15 ROWS ONLY;
       `,
       [email]
     );
@@ -1508,8 +2057,8 @@ app.put("/home", async (req, res) => {
     const userId = await pool.query(`SELECT id FROM person WHERE email = $1`, [
       email,
     ]);
-    console.log(favString);
-    console.log(userId.rows[0].id);
+    // console.log(favString);
+    // console.log(userId.rows[0].id);
     if (favString === "true") {
       await pool.query(
         `INSERT INTO users_anime_list (user_id, anime_id,status,start_date) VALUES ($1, $2,'Watching',CURRENT_TIMESTAMP)`,
@@ -2331,6 +2880,17 @@ app.put("/review/decline", async (req, res) => {
       [email]
     );
     const id = moderator_id.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [id]
+    );
+
     const response = await pool.query(
       `
       DELETE FROM review
@@ -2338,6 +2898,15 @@ app.put("/review/decline", async (req, res) => {
         review_id = $1
       `,
       [updatedId]
+    );
+    const response5 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('FILTERED_COMMENTS_UPDATE()', $1, current_timestamp)
+      `,
+      [id]
     );
     const updateModeratorQuery = await pool.query(
       `
@@ -2375,6 +2944,7 @@ app.get("/moderator/comments", async (req, res) => {
 });
 
 app.put("/comment/approve", async (req, res) => {
+  //------------------------------update in 2+ tables 2 (check nat.sql line 11), update in 2+ tables 1 (check nat.sql line 250)
   try {
     const { updatedId, email } = req.body;
     //console.log(review_id);
@@ -2387,6 +2957,16 @@ app.put("/comment/approve", async (req, res) => {
       [email]
     );
     const id = moderator_id.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [id]
+    );
 
     const response = await pool.query(
       `
@@ -2414,6 +2994,7 @@ app.put("/comment/approve", async (req, res) => {
 });
 
 app.put("/comment/decline", async (req, res) => {
+  //--------------------------------------------------------------delete comment
   try {
     const { updatedId, email } = req.body;
     //console.log(review_id);
@@ -2442,6 +3023,35 @@ app.put("/comment/decline", async (req, res) => {
     //   `,
     //   [updatedId]
     // );
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('EMAIL_TO_ID()', $1, current_timestamp)
+      `,
+      [id]
+    );
+    const response4 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, comment_id, track_date)
+     values
+     ('before_delete_comment_function()', $1, $2,current_timestamp)
+      `,
+      [id, updatedId]
+    );
+
+    const response5 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('FILTERED_COMMENTS_UPDATE()', $1, current_timestamp)
+      `,
+      [id]
+    );
+
     const response = await pool.query(
       `
       DELETE FROM comments
@@ -2466,6 +3076,7 @@ app.put("/comment/decline", async (req, res) => {
 });
 
 app.put("/deleteAccount", async (req, res) => {
+  //----------------------------------------------------------delete account
   try {
     const { email } = req.body;
     //console.log(review_id);
@@ -2481,10 +3092,19 @@ app.put("/deleteAccount", async (req, res) => {
     );
     console.log(email);
     const id = user_id.rows[0].id;
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, track_date)
+     values
+     ('before_delete_user_function()', $1, current_timestamp)
+      `,
+      [id]
+    );
     console.log(id);
     const response = await pool.query(
       `
-      DELETE FROM person
+      DELETE FROM person              
       WHERE
         "id" = $1
       `,
@@ -2504,14 +3124,15 @@ app.post("/getNotifications", async (req, res) => {
     console.log(email);
     const response = await pool.query(
       `
-    SELECT * FROM
-    PERSON P JOIN NOTIFICATIONS N ON N.users_id= P."id"
-    where P.email=$1
-    ORDER BY N.track_date DESC
-    FETCH first 10 rows only;
+        SELECT * FROM
+        PERSON P JOIN NOTIFICATIONS N ON N.users_id= P."id"
+        where P.email=$1
+        ORDER BY N.is_seen ,N.track_date DESC
+        FETCH first 20 rows only;
     `,
       [email]
     );
+
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(response.rows);
     console.log(response.rows);
@@ -2521,6 +3142,7 @@ app.post("/getNotifications", async (req, res) => {
 });
 
 app.post("/addAnime", async (req, res) => {
+  //---------------------------------------------------------------------addanime------------insert in 3+table 2
   const {
     anime_name,
     title_screen,
@@ -2582,6 +3204,7 @@ app.post("/addAnime", async (req, res) => {
       `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`,
       [ani_id, opening_soundtrack]
     );
+
     const newsEound = await pool.query(
       `INSERT INTO sound_tracks (anime_id, title) VALUES($1, $2)`,
       [ani_id, ending_soundtrack]
@@ -2640,6 +3263,16 @@ app.post("/addAnime", async (req, res) => {
       [id]
     );
 
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, track_date)
+     values
+     ('after_inserting_anime_function()', $1, $2, current_timestamp)
+      `,
+      [id, ani_id]
+    );
+
     res.json({ message: "Anime added successfully!" });
   } catch (error) {
     console.error(error.message);
@@ -2648,9 +3281,11 @@ app.post("/addAnime", async (req, res) => {
 });
 
 app.put("/deleteAnime", async (req, res) => {
+  //--------------------------------------------------------------------before delete anime
   try {
     const { email, anime_id } = req.body;
     console.log(email, anime_id);
+
     const user_res = await pool.query(
       `
       SELECT EMAIL_TO_ID($1) as "id"
@@ -2659,6 +3294,17 @@ app.put("/deleteAnime", async (req, res) => {
     );
 
     const user_id = user_res.rows[0].id;
+    console.log(user_id);
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, track_date)
+     values
+     ('before_delete_anime_function()', $1, $2, current_timestamp)
+      `,
+      [user_id, anime_id]
+    );
 
     const response = await pool.query(
       `
@@ -2687,6 +3333,7 @@ app.put("/deleteAnime", async (req, res) => {
 });
 
 app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
+  //--------------------------------------- episode delete
   try {
     const { email } = req.body;
     //console.log( email, anime_id);
@@ -2701,6 +3348,16 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
     );
 
     const user_id = user_res.rows[0].id;
+
+    const response3 = await pool.query(
+      `
+     insert into log_table
+     (function_or_procedure_name, person_id, anime_id, episode_no, track_date)
+     values
+     ('before_delete_episode_function()', $1, $2, $3, current_timestamp)
+      `,
+      [user_id, anime_id, episode_no]
+    );
 
     const response = await pool.query(
       `
@@ -2727,14 +3384,556 @@ app.put("/anime/:id/episode_delete/:selectedEpisode", async (req, res) => {
     console.error(error.message);
   }
 });
-
-app.post("/admin/getAnimeSize", async (req, res) => {
+//to get total anime
+app.post("/admin/getAnimesCount", async (req, res) => {
   try {
     // const { id } = req.body;
     const episodes = await pool.query(`SELECT count(*) FROM anime`);
     res.header("Access-Control-Allow-Origin", "http://localhost:3001");
     res.json(episodes.rows[0].count);
     console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total epsisode
+app.post("/admin/getEpisodesCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM episodes`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total character
+app.post("/admin/getCharactersCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM characters`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total staff
+app.post("/admin/getStaffsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM staffs`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total review
+app.post("/admin/getReviewsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM review`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total comment
+app.post("/admin/getCommentsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM comments`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total genre
+app.post("/admin/getGenresCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM genres`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total tag
+app.post("/admin/getTagsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM tags`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total studio
+app.post("/admin/getStudiosCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM studio`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total sound_track
+app.post("/admin/getSoundTracksCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM sound_tracks`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total user
+app.post("/admin/getUsersCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM "USER"`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get total moderator
+app.post("/admin/getmoderatorsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT count(*) FROM moderator`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0].count);
+    console.log(episodes.rows[0].count);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get moderator who filetered highest comments
+app.post("/admin/getmoderatorsfilteredCommentsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.filtered_comments=(SELECT max(filtered_comments)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+//to get mod who filetered highest reviews
+app.post("/admin/getmoderatorsfilteredreviewsCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.review_verifications=(SELECT max(review_verifications)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who added highest series
+app.post("/admin/getmoderatorsaddingseriesCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.added_series=(SELECT max(added_series)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who deleted highest series
+app.post("/admin/getmoderatorsdeletingseriesCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.deleted_series=(SELECT max(deleted_series)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who added highest ep
+app.post("/admin/getmoderatorsaddingepCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`   
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.added_episodes=(SELECT max(added_episodes)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who deleted highest ep
+app.post("/admin/getmoderatorsdeletingepCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from moderator m join person p on m.moderator_id=p. id
+    WHERE m.deleted_episodes=(SELECT max(deleted_episodes)
+    from moderator)`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get mod who has highest karma
+app.post("/admin/getmoderatorkarmaCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`SELECT *,
+    (m.review_verifications * 2) +
+    (m.filtered_comments * 1) +
+    (m.deleted_series * 4) +
+    (m.added_series * 5) +
+    (m.deleted_episodes * 2) +
+    (m.added_episodes * 3) +
+    (COALESCE(m.others, 0) * 3) +
+    (COALESCE(acc_req_count, 0) * 1.5) AS karma
+FROM moderator m
+JOIN person p ON m.moderator_id = p.id
+LEFT JOIN (
+ SELECT moderator_id, COUNT(*) AS acc_req_count
+ FROM user_req_character
+ WHERE req_status = 'ACCEPTED'
+ GROUP BY moderator_id
+) urc ON m.moderator_id = urc.moderator_id
+WHERE (m.review_verifications * 2) +
+   (m.filtered_comments * 1) +
+   (m.deleted_series * 4) +
+   (m.added_series * 5) +
+   (m.deleted_episodes * 2) +
+   (m.added_episodes * 3) +
+   (COALESCE(m.others, 0) * 3) +
+   (COALESCE(urc.acc_req_count, 0) * 1.5) = (
+       SELECT MAX((review_verifications * 2) +
+                  (filtered_comments * 1) +
+                  (deleted_series * 4) +
+                  (added_series * 5) +
+                  (deleted_episodes * 2) +
+                  (added_episodes * 3) +
+                  (COALESCE(others, 0) * 3) +
+                  (COALESCE(acc_req_count, 0) * 1.5))
+       FROM moderator
+       LEFT JOIN (
+           SELECT moderator_id, COUNT(*) AS acc_req_count
+           FROM user_req_character
+           WHERE req_status = 'ACCEPTED'
+           GROUP BY moderator_id
+       ) urc ON moderator.moderator_id = urc.moderator_id
+   );
+`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+// to get anime having highest reviews
+app.post("/admin/getanimehighestreviewCount", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT
+    a.anime_id,
+    a.anime_name,
+    COUNT(r.review_id) AS review_count
+    FROM
+    anime a
+    JOIN
+    review r ON a.anime_id = r.anime_id
+    GROUP BY
+    a.anime_id
+    ORDER BY
+    review_count DESC`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows[0]);
+    console.log(episodes.rows[0]);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/chardecline", async (req, res) => {
+  try {
+    const { updatedId, email } = req.body;
+    //console.log(review_id);
+    console.log(email);
+
+    const moderator_id = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+    const id = moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      DELETE FROM user_req_character
+      WHERE
+        "id" = $1
+      `,
+      [updatedId]
+    );
+    const updateModeratorQuery = await pool.query(
+      `
+      update moderator
+      set
+      others = others + 1
+      where moderator_id = $1
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/getStaffs", async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log(id);
+
+    const characters = await pool.query(
+      `
+      SELECT *
+      FROM staffs
+      WHERE anime_id = $1;
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/getInterMod", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    // console.log(id);
+
+    const characters = await pool.query(
+      `
+      SELECT *
+      FROM person
+      WHERE "role"='M_not';
+      `
+    );
+    console.log(characters.rows);
+    console.log(1);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/addStaff", async (req, res) => {
+  try {
+    const { name, role, gender, profile_picture, userRole, email, anime_id } =
+      req.body;
+    console.log(name, role, gender, profile_picture);
+
+    const moderator_id = await pool.query(
+      `
+      SELECT EMAIL_TO_ID($1) as "id"
+      `,
+      [email]
+    );
+    const id = moderator_id.rows[0].id;
+
+    const max_s_id = await pool.query(
+      `
+      select max(staff_id+1)
+      from staffs
+      `
+    );
+
+    const staff_id = max_s_id.rows[0].max;
+
+    console.log(staff_id);
+
+    const characters = await pool.query(
+      `
+      insert into staffs
+        (name, role, gender, profile_picture, anime_id)
+        values
+        ($1, $2, $3, $4, $5)
+      `,
+      [name, role, gender, profile_picture, anime_id]
+    );
+
+    const updateModeratorQuery = await pool.query(
+      `
+      update moderator
+      set
+      others = others + 1
+      where moderator_id = $1
+      `,
+      [id]
+    );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(characters.rows);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.put("/declinemod", async (req, res) => {
+  try {
+    const { updatedId } = req.body;
+    //console.log(review_id);
+    //console.log(email);
+
+    // const moderator_id = await pool.query(
+    //   `
+    //   SELECT EMAIL_TO_ID($1) as "id"
+    //   `,
+    //   [email]
+    // );
+    //const id = moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      DELETE FROM moderator
+      WHERE
+        moderator_id = $1
+      `,
+      [updatedId]
+    );
+    const response2 = await pool.query(
+      `
+      DELETE FROM person
+      WHERE
+        "id" = $1
+      `,
+      [updatedId]
+    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   update moderator
+    //   set
+    //   others = others + 1
+    //   where moderator_id = $1
+    //   `,
+    //   [id]
+    // );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.put("/approvemod", async (req, res) => {
+  try {
+    const { updatedId } = req.body;
+    //console.log(review_id);
+    //console.log(email);
+
+    // const moderator_id = await pool.query(
+    //   `
+    //   SELECT EMAIL_TO_ID($1) as "id"
+    //   `,
+    //   [email]
+    // );
+    //const id = moderator_id.rows[0].id;
+    const response = await pool.query(
+      `
+      update person
+       set role= 'M'
+      WHERE
+        "id" = $1
+      `,
+      [updatedId]
+    );
+    // const updateModeratorQuery = await pool.query(
+    //   `
+    //   update moderator
+    //   set
+    //   others = others + 1
+    //   where moderator_id = $1
+    //   `,
+    //   [id]
+    // );
+
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(response.body);
+    // console.log(person.rows);
+  } catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.post("/admin/getLog", async (req, res) => {
+  try {
+    // const { id } = req.body;
+    const episodes = await pool.query(`
+    SELECT *
+    from log_table`);
+    res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+    res.json(episodes.rows);
+    console.log(episodes.rows[0]);
   } catch (error) {
     console.error(error.message);
   }

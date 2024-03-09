@@ -101,6 +101,27 @@ const AnimeListItem = ({
     setFav(is_favorite);
   }, [id]);
 
+  useEffect(() => {
+    console.log(
+      anime_id,
+      title,
+      ep,
+      anime_type,
+      age_rating,
+      demo,
+      season,
+      yr,
+      thumbnail,
+      id,
+      rating,
+      description,
+      genres,
+      is_favorite,
+      status,
+      user_id
+    );
+  }, []);
+
   // console.log(user);
   // console.log(email);
   // console.log(userRole);
@@ -268,8 +289,7 @@ const AnimeListItem = ({
       });
       await getContribution(email);
       // await getAnimeList();
-      toggleRerender();
-      
+      // toggleRerender();
 
       console.log("This is fav state: ", fav);
       if (response.status === 200) {
@@ -460,7 +480,7 @@ const AnimeListItem = ({
               {fav ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </IconButton>
           )}
-          {userRole === "U" && fav == true && (
+          {userRole === "U" && fav === true && (
             <Dropdown>
               {newStatus === "Planned" && (
                 <Dropdown.Toggle variant="primary" id="dropdown-basic">
@@ -600,3 +620,4 @@ const AnimeItem = ({
 };
 
 export default AnimeItem;
+export { AnimeListItem };

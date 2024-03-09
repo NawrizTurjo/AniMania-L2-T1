@@ -70,7 +70,8 @@ export default function Characters() {
   };
 
   const string =
-    userRole === "M" ? "Add Character" : "Request Character Addition";
+  userRole === "M" ? "Add Character" : userRole === "U" ? "Request Character Addition" : "";
+
 
   const getCharacters = async () => {
     try {
@@ -117,9 +118,12 @@ export default function Characters() {
         ))}
       </ul>
 
-      <Button variant="primary" onClick={handleShow}>
-        {string}
-      </Button>
+      {userRole === "M" || userRole === "U" ? (
+  <Button variant="primary" onClick={handleShow}>
+    {string}
+  </Button>
+) : null}
+
 
       <Modal
         size="lg"

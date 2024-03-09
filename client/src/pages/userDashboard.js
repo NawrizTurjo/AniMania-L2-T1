@@ -15,8 +15,10 @@ import Typography from "@mui/material/Typography";
 import { motion } from "framer-motion/dist/framer-motion";
 import AnimeList from "../Components/getAnimeList";
 import History from "../Components/getHistory";
+import { Toaster, toast } from "react-hot-toast";
+import AnimeItem, { AnimeListItem } from "./animeItem";
 
-function UserDashboard() {
+function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
   const [image, setImage] = useState(null);
   const [url, setUrl] = useState("");
   let location = useLocation();
@@ -31,6 +33,10 @@ function UserDashboard() {
   let [first_access, setFirstAccess] = useState("");
   let [last_access, setLastAccess] = useState("");
   let [active_time, setActiveTime] = useState([]);
+
+  const [favAnimeId, setFavAnimeId] = useState(0);
+  const [favAnime, setFavAnime] = useState("");
+  const [info, setInfo] = useState({});
 
   user = state && state.user;
   let email = localStorage.getItem("email");
@@ -58,6 +64,80 @@ function UserDashboard() {
     return `${months} month(s) ${days} day(s) ${hours} hour(s) ${minutes} minute(s) ${seconds} second(s)`;
   };
 
+  const [infoLoading, setInfoLoading] = useState(true);
+
+  const getFavAnimeId = async () => {
+    try {
+      setLoading(true);
+      const res4 = await axios.post(`http://localhost:3000/getMostFav`, {
+        email: email,
+      });
+      // console.log(res4.data[0].anime_id);
+      setFavAnimeId(res4.data ? res4.data[0].anime_id : 0);
+
+      // console.log(res4);
+
+      console.log("Getting id-->", res4.data[0].anime_id);
+
+      // Call getAnime after setting favAnimeId
+      if (res4.data[0].anime_id !== null) {
+        await getAnime(res4.data[0].anime_id);
+        await getInfo(res4.data[0].anime_id);
+      } else {
+        setFavAnime(null);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getAnime = async (id) => {
+    try {
+      // setProgress(10);
+      setLoading(true);
+
+      // await getFavAnimeId(); // Remove this line
+
+      const res = await axios.get(
+        `http://localhost:3000/watch/anime/episodes/${id}`
+      );
+      console.log("favAnime getting", res.data[0]);
+      setFavAnime(res.data[0]);
+
+      setInfoLoading(true);
+
+      const res1 = await axios.post(`http://localhost:3000/getFavAnimeStatus`, {
+        email: email,
+        id: id,
+      });
+      console.log(res1.data[0]);
+      setInfo(res1.data[0]);
+
+      setInfoLoading(false);
+
+      //console.log(res.data.age_rating);
+      // setLoading(false);
+      // setCleanedText(
+      //   res.data[0].description.replace("[Written by MAL Rewrite]", "")
+      // );
+      // setAnimeStat((prev) => !prev);
+      //   console.log(res.data);
+      // toggleRerender();
+      // setTimeout(() => {
+      // setProgress(100);
+      // }, 1000);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getFavAnimeId(); // Call getFavAnimeId instead of getAnime
+  }, []);
+
+  const [personLoading, setPersonLoading] = useState(true);
+
   let getPerson = async () => {
     // e.preventDefault();
     try {
@@ -72,8 +152,13 @@ function UserDashboard() {
       let personData = response.data[0];
       const activeTime = personData?.active_time || {}; // Initialize activeTime as an object
       console.log(activeTime);
+      const days = activeTime.days || 0;
+      const hours = activeTime.hours || 0;
+      const minutes = activeTime.minutes || 0;
+      const seconds = activeTime.seconds || 0;
+      const milliseconds = activeTime.milliseconds || 0;
       // const formattedInterval = formatActiveTime(activeTime); // Format the active time
-      const formattedActiveTime = `${activeTime.days} day(s) ${activeTime.hours}h ${activeTime.minutes}m ${activeTime.seconds}s ${activeTime.milliseconds}ms`;
+      const formattedActiveTime = `${days} day(s) ${hours}h ${minutes}m ${seconds}s ${milliseconds}ms`;
       console.log(formattedActiveTime);
 
       person = {
@@ -98,10 +183,14 @@ function UserDashboard() {
       setUrl(personData?.img_url || "");
       console.log(url);
       setStat((prev) => !prev);
+
+      setPersonLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
+
+  const [animeLoading, setAnimeLoading] = useState(true);
 
   const getAnimeList = async () => {
     try {
@@ -116,7 +205,23 @@ function UserDashboard() {
       }, 10000);
       console.log(animeList);
       // setLoading(false);
-      setLoading(false);
+      setAnimeLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const getInfo = async (id) => {
+    // e.preventDefault();
+    try {
+      // setLoading(true);
+      const res = await axios.post(`http://localhost:3000/getFavAnimeStatus`, {
+        email: email,
+        id: id,
+      });
+      console.log(res.data[0]);
+      setInfo(res.data[0]);
+      // setLoading(false);
     } catch (err) {
       console.error(err.message);
     }
@@ -148,7 +253,7 @@ function UserDashboard() {
 
   useEffect(() => {
     getAnimeList();
-  }, [animeList]);
+  }, []);
 
   const handleImageChange = async (e) => {
     if (e.target.files[0]) {
@@ -201,10 +306,60 @@ function UserDashboard() {
     }
   };
 
+  // const saveBio = async (e) => {
+  //   e.preventDefault();
+  //   console.log(bio);
+  //   const loadingToastId = toast.loading("Checking Credentials..", {
+  //     duration: 4000, // 4 seconds
+  //     style: {
+  //       border: "1px solid #282cfc",
+  //       padding: "16px",
+  //       color: "#282cfc",
+  //     },
+  //     iconTheme: {
+  //       primary: "#282cfc",
+  //       secondary: "#FFFAEE",
+  //     },
+  //   });
+  //   try {
+  //     let response = await axios.put(
+  //       `http://localhost:3000/userDash/updateBio`,
+  //       JSON.stringify({ bio, email }),
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     // let updatedBio = response.data[0].bio;
+  //     // setBio(updatedBio); // Update img_url in state
+  //     // console.log(updatedBio);
+  //     localStorage.setItem("bio", bio);
+  //     // console.log(animeList)
+  //     //   setUser(name);
+  //     //   localStorage.setItem("user", name);
+  //     //   console.log(name);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
   const saveBio = async (e) => {
     e.preventDefault();
     console.log(bio);
+    const loadingToastId = toast.loading("Saving Bio..", {
+      duration: 1000, // 4 seconds
+      style: {
+        border: "1px solid #282cfc",
+        padding: "16px",
+        color: "#282cfc",
+      },
+      iconTheme: {
+        primary: "#282cfc",
+        secondary: "#FFFAEE",
+      },
+    });
     try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       let response = await axios.put(
         `http://localhost:3000/userDash/updateBio`,
         JSON.stringify({ bio, email }),
@@ -213,22 +368,31 @@ function UserDashboard() {
           withCredentials: true,
         }
       );
-      // let updatedBio = response.data[0].bio;
-      // setBio(updatedBio); // Update img_url in state
-      // console.log(updatedBio);
       localStorage.setItem("bio", bio);
-      // console.log(animeList)
-      //   setUser(name);
-      //   localStorage.setItem("user", name);
-      //   console.log(name);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast
+      toast.success("Bio has been successfully saved.", {
+        style: {
+          border: "1px solid #282cfc",
+          padding: "16px",
+          color: "#282cfc",
+        },
+        iconTheme: {
+          primary: "#282cfc",
+          secondary: "#FFFAEE",
+        },
+      });
+      setTimeout(() => {
+        toast.dismiss();
+      }, 5000);
     } catch (err) {
       console.error(err.message);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast on error
     }
   };
+
   const goToHome = () => {
     window.location.href = "/home";
   };
-
 
   const handleDeleteAccount = async (e) => {
     e.preventDefault();
@@ -238,23 +402,23 @@ function UserDashboard() {
         `http://localhost:3000/deleteAccount`,
         JSON.stringify({ email }),
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
-    localStorage.removeItem("user");
-    localStorage.removeItem("email");
-    console.log(email);
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("img_url");
-    goToHome();
-    // setUser("");
-    // setEmail("");
-    // setUserRole("");
-    // setImgUrl("");
-    // toggleRerender();
+      localStorage.removeItem("user");
+      localStorage.removeItem("email");
+      console.log(email);
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("img_url");
+      goToHome();
+      // setUser("");
+      // setEmail("");
+      // setUserRole("");
+      // setImgUrl("");
+      // toggleRerender();
 
-    // navigate("/login");
+      // navigate("/login");
     } catch (err) {
       console.error(err.message);
     }
@@ -266,18 +430,23 @@ function UserDashboard() {
   //         <Avatar src={person.img_url} sx={{ width: 150, height: 150 }} />
   //     </>)
   //   }
-  if (loading) {
+  if (loading || animeLoading || infoLoading || personLoading) {
     return <h2>Loading...</h2>;
   }
 
   return (
     <motion.div
-      style={{ display: "flex", justifyContent: "flex-start" }}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      {loading ? (
+      <Toaster position="top-left" reverseOrder={false} />
+      {loading || animeLoading || infoLoading ? (
         <h2>Loading...</h2>
       ) : (
         <>
@@ -331,7 +500,7 @@ function UserDashboard() {
               style={{
                 border: "0.5px solid #cccccc",
                 width: "500px",
-                height: "500px",
+                height: "100vh",
                 marginTop: "10px",
                 marginRight: "auto",
                 overflow: "auto",
@@ -408,7 +577,29 @@ function UserDashboard() {
                 <strong>Contributions: </strong> {contribution}
               </p>
               <p>
-                <strong>Most Favourite Anime:</strong> {most_favourite_anime}
+                <strong>Most Favourite Anime:</strong>
+                {favAnime && infoLoading !== true && (
+                  <AnimeListItem
+                    anime_id={favAnime.anime_id}
+                    title={favAnime.anime_name}
+                    ep={favAnime.number_of_episodes}
+                    anime_type={favAnime.anime_type}
+                    age_rating={favAnime.age_rating}
+                    demo={favAnime.demographic}
+                    season={favAnime.season}
+                    yr={favAnime.year}
+                    thumbnail={favAnime.title_screen}
+                    id={favAnime.anime_id}
+                    rating={favAnime.mal_score}
+                    description={favAnime.description}
+                    genres={favAnime.genres}
+                    is_favorite={info.is_favourite}
+                    status={info.status}
+                    user_id={info.email_to_id}
+                    forceRerender={forceRerender}
+                    toggleRerender={toggleRerender}
+                  ></AnimeListItem>
+                )}
               </p>
               <p>
                 <strong>First Access:</strong> {first_access}
@@ -419,7 +610,13 @@ function UserDashboard() {
               <p>
                 <strong>Active Time:</strong> {active_time}
               </p>
-              <Button variant="contained" color="error" onClick={(e) => handleDeleteAccount(e)}>Remove Account</Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={(e) => handleDeleteAccount(e)}
+              >
+                Remove Account
+              </Button>
             </Paper>
           </div>
 
@@ -465,8 +662,8 @@ function UserDashboard() {
             <div
               style={{
                 border: "0.5px solid #cccccc",
-                width: "450px",
-                height: "500px",
+                width: "auto",
+                height: "100vh",
                 marginTop: "330px",
                 marginLeft: "auto",
                 overflow: "auto",

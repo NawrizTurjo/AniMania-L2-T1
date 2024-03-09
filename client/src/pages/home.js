@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Pagination from "./pagination2";
 import AnimeItem from "./animeItem";
@@ -25,6 +25,7 @@ import AnimeList from "../Components/getAnimeList";
 import History from "../Components/getHistory";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const [isNotification, setIsNotification] = useState(false);
@@ -82,6 +83,121 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+
+  const [currentPlan, setCurrentPlan] = useState({});
+
+  let update = localStorage.getItem("update");
+
+  let balance = localStorage.getItem("balance");
+  let planName = localStorage.getItem("currentPlanName");
+  let planEnd = localStorage.getItem("currentPlanEnd");
+
+  const getUnseenNotifications = async (email) => {
+    try {
+      console.log("Getting unseen notifications");
+      console.log(email);
+      const res = await axios.post(
+        `http://localhost:3000/unseenNotifications`,
+        JSON.stringify({ email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      console.log(2);
+      console.log(res.data);
+      console.log(res.data[0].is_unseen);
+      if (res.data[0].is_unseen === "TRUE") {
+        setIsNotification(true);
+        console.log("a");
+        console.log(userRole);
+      } else {
+        setIsNotification(false);
+      }
+      return res.data[0].is_unseen;
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+  // useEffect(() => {
+  //   let email = localStorage.getItem("email");
+  //   getUnseenNotifications(email);
+  // }, []);
+
+  const prevIsNotificationRef = useRef(); // Ref to store the previous value
+
+  useEffect(() => {
+    prevIsNotificationRef.current = isNotification; // Update the ref with the current value
+  }, [isNotification]); // Run whenever isNotification changes
+
+  useEffect(() => {
+    let isMounted = true; // Flag to prevent state updates after unmounting
+
+    const fetchNotifications = async () => {
+      let email = localStorage.getItem("email");
+
+      const newNotifications = await getUnseenNotifications(email);
+
+      console.log(newNotifications);
+      if (isMounted) {
+        const oldTime = prevIsNotificationRef.current; // Use the ref to get the previous value
+        const newTime = newNotifications === "TRUE";
+
+        console.log("oldTime", oldTime);
+        console.log("newTime", newTime);
+
+        if (JSON.stringify(oldTime) !== JSON.stringify(newTime)) {
+          setLoading(true);
+          setIsNotification(newTime);
+          console.log(newNotifications);
+          if (newNotifications === "TRUE" && oldTime === false) {
+            toast("You Have new Notification", {
+              icon: "🔔",
+            });
+          }
+          setLoading(false);
+        }
+      }
+    };
+
+    const interval = setInterval(fetchNotifications, 5000); // Fetch notifications every 5 seconds
+
+    fetchNotifications(); // Fetch notifications on component mount
+
+    return () => {
+      clearInterval(interval); // Cleanup function to clear the interval
+      isMounted = false; // Update the flag to prevent state updates after unmounting
+    };
+  }, []); // Run only once when the component mounts
+
+  const getCurrentPlan = async () => {
+    try {
+      setLoading(true);
+      const getCurrentPlans = await axios.post(
+        `http://localhost:3000/getCurrentPlan`,
+        { userEmail: email }
+      );
+      setCurrentPlan(getCurrentPlans.data[0]);
+      console.log(getCurrentPlans.data);
+      console.log(getCurrentPlans.data[0]);
+      localStorage.setItem(
+        "currentPlanName",
+        getCurrentPlans.data[0].plan_name
+      );
+      localStorage.setItem(
+        "currentPlanEnd",
+        getCurrentPlans.data[0].plan_end_date
+      );
+      localStorage.setItem("balance", getCurrentPlans.data[0].wallet_balance);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  useEffect(() => {
+    getCurrentPlan();
+  }, [update]);
 
   const getKarma = async (email) => {
     // e.preventDefault();
@@ -169,6 +285,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
     }, 500);
     getKarma(email);
     getContribution(email);
+    getUnseenNotifications(email);
   }, [forceRerender]);
 
   // useEffect(() => {
@@ -261,6 +378,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="typewriter">
         <h4>
           {" "}
@@ -276,6 +394,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
               pauseFor: 2000,
               skipAddStyles: true,
               // cursor: "_",
+              wrapperClassName: "custom-typewriter",
             }}
           />
         </h4>
@@ -358,6 +477,18 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
                   <b>Contributions: </b>
                   {contribution}
                 </h3>
+                <h3>
+                  <b>Balance: </b>
+                  {balance}
+                </h3>
+                <h3>
+                  <b>Plan: </b>
+                  {planName}
+                </h3>
+                <h3>
+                  <b>Expiring on: </b>
+                  {new Date(planEnd) > new Date() ? planEnd : "expired"}
+                </h3>
               </div>
             )}
 
@@ -439,11 +570,7 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
         />
       </div>
       <div className="d-inline w-1280 m-0">
-        {userRole === "U" && (
-          <div>
-            <History />
-          </div>
-        )}
+        
         <div className="row">
           <section>
             <div className="anime-list-container">
@@ -464,6 +591,11 @@ export default function Home({ forceRerender, toggleRerender, setProgress }) {
             />
           </section>
         </div>
+        {userRole === "U" && (
+          <div>
+            <History />
+          </div>
+        )}
         {userRole === "U" && (
           <div>
             <AnimeList toggleRerender={toggleRerender} />

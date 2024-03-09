@@ -173,6 +173,44 @@ function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
     getSources();
   }, []);
 
+  const getAnime = async ({
+    searchSeasons,
+    searchGenres,
+    searchTypes,
+    searchDemographic,
+    searchSource,
+    searchTags,
+  }) => {
+    try {
+      const res = await axios.post(`http://localhost:3000/AdvancedSearch`, {
+        searchString: searchString,
+        season: searchSeasons,
+        genre: searchGenres,
+        tag: searchTags,
+        year: year,
+        ageRating: selectedAgeRating,
+        rating: rating,
+        type: searchTypes,
+        demographic: searchDemographic,
+        source: searchSource,
+        episodeCount: episodes,
+        characters: characters,
+        userEmail: userEmail,
+      });
+      setAnimeList(res.data);
+      setIsAnime(true);
+      console.log(res.data);
+      setLoading(false);
+    } catch (err) {}
+  };
+
+  const [seasonComma, setSeasonComma] = useState("");
+  const [genreComma, setGenreComma] = useState("");
+  const [typeComma, setTypeComma] = useState("");
+  const [demographicComma, setDemographicComma] = useState("");
+  const [sourceComma, setSourceComma] = useState("");
+  const [tagComma, setTagComma] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -192,18 +230,23 @@ function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
     console.log("Characters: ", characters);
 
     const searchSeasons = selectedSeasons.map((item) => item.name).join(", ");
+    setSeasonComma(searchSeasons);
     const searchGenres = selectedGenres
       .map((item) => item.genre_name)
       .join(", ");
+    setGenreComma(searchGenres);
     const searchTypes = selectedType.map((item) => item.name).join(", ");
+    setTypeComma(searchTypes);
     const searchDemographic = selectedDemographic
       .map((item) => item.name)
       .join(", ");
+    setDemographicComma(searchDemographic);
     const searchSource = selectedSource
       .map((item) => item.anime_source)
       .join(", ");
+    setSourceComma(searchSource);
     const searchTags = selectedTags.map((item) => item.tag_name).join(", ");
-
+    setTagComma(searchTags);
     const res = await axios.post(`http://localhost:3000/AdvancedSearch`, {
       searchString: searchString,
       season: searchSeasons,
@@ -222,8 +265,28 @@ function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
     setAnimeList(res.data);
     setIsAnime(true);
     console.log(res.data);
+
+    // await getAnime({
+    //   searchSeasons,
+    //   searchGenres,
+    //   searchTypes,
+    //   searchDemographic,
+    //   searchSource,
+    //   searchTags,
+    // });
     setLoading(false);
   };
+
+  // useEffect(() => {
+  //   getAnime({
+  //     searchSeasons: seasonComma,
+  //     searchGenres: genreComma,
+  //     searchTypes: typeComma,
+  //     searchDemographic: demographicComma,
+  //     searchSource: sourceComma,
+  //     searchTags: tagComma,
+  //   });
+  // }, [forceRerender]);
 
   const indexOfLastAnime = currentPage * animePerPage;
   const indexOfFirstAnime = indexOfLastAnime - animePerPage;
@@ -242,6 +305,7 @@ function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      style={{ minHeight: "100vh" }}
     >
       <form>
         <input

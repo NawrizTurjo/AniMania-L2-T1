@@ -30,6 +30,15 @@ import AddAnime from "./pages/addAnime";
 import AddEpisode from "./pages/addEpisode";
 import DatePickerValue from "./Components/dateComp";
 import Characters from "./pages/characters";
+import Staffs from "./pages/staffs";
+import Admin from "./pages/admin";
+import LoginComponent from "./Components/loginComponent";
+import ContactUsComponent from "./Components/contactUsComponent";
+import Plans from "./pages/plans";
+import AdminLogin from "./pages/adminLogin";
+import Test from "./Components/test";
+import AboutPage from "./Components/aboutPage";
+import AnimatedElement from "./Components/animateScroll";
 
 function App() {
   const navigate = useNavigate();
@@ -62,7 +71,7 @@ function App() {
         <AnimatePresence>
           <Routes location={location} key={location.pathname}>
             <Route
-              path="/"
+              path="/landing"
               element={
                 <Landing
                   toggleRerender={toggleRerender}
@@ -80,7 +89,7 @@ function App() {
                 />
               }
             />
-            <Route path="/about" element={<About />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route
               path="/top100"
               element={
@@ -97,6 +106,7 @@ function App() {
             />
             <Route path="/sign_up" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/login/admin" element={<AdminLogin />} />
             <Route
               path="/anime/:id"
               element={<AnimePage toggleRerender={toggleRerender} />}
@@ -104,11 +114,22 @@ function App() {
             <Route path="/genre/:id" element={<GenreAnimes />} />
             <Route
               path="/searchAnime"
-              element={<SearchAnime forceRerender={forceRerender} />}
+              element={
+                <SearchAnime
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                />
+              }
             />
             <Route
               path="/searchAnime/:searchTerm"
-              element={<SearchAnime forceRerender={forceRerender} toggleRerender={toggleRerender}/>}
+              element={
+                <SearchAnime
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                  //setProgress={setProgress}
+                />
+              }
             />
             {/* <Route path="/home/:username" component={Home} /> */}
             <Route
@@ -120,7 +141,16 @@ function App() {
               element={<SearchAnime forceRerender={forceRerender} />}
             /> */}
             <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
-            <Route path="/userDash" element={<UserDash />}></Route>
+            <Route
+              path="/userDash"
+              element={
+                <UserDash
+                  forceRerender={forceRerender}
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
+            ></Route>
             <Route path="/notifications" element={<Notifications />}></Route>
             <Route
               path="/watch/anime/episodes/:id"
@@ -152,11 +182,18 @@ function App() {
                 />
               }
             />
+            <Route path="/contact" element={<ContactUsComponent />} />
             <Route path="/VideoPlayer" element={<VideoPlayer />} />
             <Route path="/addAnime" element={<AddAnime />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/:id/addEpisode" element={<AddEpisode />} />
             <Route path="/DatePickerValue" element={<DatePickerValue />} />
             <Route path="/:id/characters" element={<Characters />} />
+            <Route path="/:id/staffs" element={<Staffs />} />
+            <Route path="/plans" element={<Plans />} />
+            <Route path="/test" element={<Test />} />
+            <Route path="/" element={<AnimatedElement />} />
+            {/* <Route path="/aboutPage" element={<AboutPage />} /> */}
           </Routes>
         </AnimatePresence>
       </div>

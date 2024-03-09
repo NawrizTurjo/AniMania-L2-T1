@@ -17,6 +17,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { motion } from "framer-motion";
 //import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 //import Button from "@mui/material/Button";
 //import Paper from "@mui/material/Paper";
@@ -115,21 +116,41 @@ function Notifications() {
     }
   };
 
+  const setNotifcationsSeen = async () => {
+    try {
+      console.log(email);
+      const res = await axios.post(
+        "http://localhost:3000/setNotificationsSeen",
+        {
+          email,
+        }
+      );
+      console.log(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  // useEffect(() => {
+  //   setNotifcationsSeen();
+  // }, []);
+
   //const Notifications = ({ notifications }) => {
-    const getTimeAgo = (trackDate) => {
-      const trackTime = new Date(trackDate).getTime();
-      const currentTime = new Date().getTime();
-      const elapsedTime = currentTime - trackTime;
-      const seconds = Math.floor(elapsedTime / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
-      const days = Math.floor(hours / 24);
-  
-      if (days > 0) return `${days} day(s) ago`;
-      if (hours > 0) return `${hours} hour(s) ago`;
-      if (minutes > 0) return `${minutes} minute(s) ago`;
-      return `${seconds} second(s) ago`;
-    };
+  const getTimeAgo = (trackDate) => {
+    const trackTime = new Date(trackDate).getTime();
+    const currentTime = new Date().getTime();
+    const elapsedTime = currentTime - trackTime;
+    const seconds = Math.floor(elapsedTime / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days} day(s) ago`;
+    if (hours > 0) return `${hours} hour(s) ago`;
+    if (minutes > 0) return `${minutes} minute(s) ago`;
+    return `${seconds} second(s) ago`;
+  };
 
   useEffect(() => {
     let isMounted = true; // Flag to prevent state updates after unmounting
@@ -139,15 +160,21 @@ function Notifications() {
 
       console.log(newNotifications);
       if (isMounted) {
-        const oldTime = notifications.map((notification) => notification.track_date);
-        const newTime = newNotifications.map((notification) => notification.track_date);
+        const oldTime = notifications.map(
+          (notification) => notification.track_date
+        );
+        const newTime = newNotifications.map(
+          (notification) => notification.track_date
+        );
 
         if (JSON.stringify(oldTime) !== JSON.stringify(newTime)) {
           setLoading(true);
           setNotifications(newNotifications);
+          // console.log("1 in notifications")
           // setTimeout(() => {
           //   setProgress(100);
           // }, 500);
+          setNotifcationsSeen();
           setLoading(false);
         }
       }
@@ -159,8 +186,6 @@ function Notifications() {
       //   }, 500);
       // }
     };
-
-    
 
     const interval = setInterval(fetchNotifications, 10000); // Fetch reviews every 60 seconds
 
@@ -178,20 +203,26 @@ function Notifications() {
     //getContribution();
   }, []);
 
-  useEffect(() => {
-    getNotifications();
-  }, [notifications]);
-
-  
+  // useEffect(() => {
+  //   getNotifications();
+  // }, [notifications]);
 
   if (loading) {
     return <h2>Loading...</h2>;
   }
 
   return (
-    <div>
+    <motion.div
+      className="notification-container"
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <h2>Notifications For You</h2>
-      <TableContainer component={Paper}>
+      <TableContainer
+        // className="notification-container"
+        component={Paper}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -201,15 +232,29 @@ function Notifications() {
           </TableHead>
           <TableBody>
             {notifications.map((notification, index) => (
-              <TableRow key={index}>
-                <TableCell>{notification.notifications}</TableCell>
-                <TableCell>{getTimeAgo(notification.track_date)}</TableCell> {/* Display time ago */}
+              <TableRow
+                key={index}
+                className={
+                  notification.is_seen === "f"
+                    ? "gray-background"
+                    : "notification-bg"
+                }
+              >
+                <TableCell
+                  style={{
+                    fontWeight: notification.is_seen === "f" ? "bold" : "light",
+                  }}
+                >
+                  {notification.notifications}
+                </TableCell>
+                <TableCell>{getTimeAgo(notification.track_date)}</TableCell>{" "}
+                {/* Display time ago */}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </motion.div>
   );
 }
 

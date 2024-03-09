@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Madimi+One&family=Pacifico&display=swap");
+
+.animate-home-page {
+  background-color: #131316;
+  color: #ffffff;
+  font-family: "Poppins", sans-serif;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.animate-home-page section {
+  font-size: 700px;
+  font-family: Madimi One, cursive;
+  color: #66fbea;
+}
+
+/* section {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 100vh;
+} */
+
+/* .hidden{
+    opacity: 0;
+    transition: all 1s ;
+}
+
+.visible{
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+} */
+
+.hidden {
+  opacity: 0;
+  transition: opacity 1s;
+  filter: blur(5px);
+  transform: translateX(-100%);
+}
+
+.visible {
+  opacity: 1;
+  transition: opacity 1s;
+  filter: blur(0);
+  transform: translateX(0);
+}
+
+.logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo:nth-child(2) {
+  animation: fadeIn 1s ease-in-out;
+  transition-delay: 200ms;
+}
+
+.logo:nth-child(3) {
+  animation: fadeIn 1s ease-in-out;
+  transition-delay: 300ms;
+}
+
+.logo:nth-child(4) {
+  animation: fadeIn 1s ease-in-out;
+  transition-delay: 400ms;
+}
+
+.logo:nth-child(5) {
+  animation: fadeIn 1s ease-in-out;
+  transition-delay: 500ms;
+}

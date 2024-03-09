@@ -10,6 +10,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
@@ -19,6 +20,7 @@ export default function ModeratorDash() {
   let [deleted_episodes, setDeletedEpisodes] = useState("");
   let [review_verifications, setReviewVerifications] = useState("");
   let [filtered_comments, setFileteredComments] = useState("");
+  let [others, setOthers] = useState("");
   const [karma, setKarma] = useState(0);
   let [loading, setLoading] = useState(true);
   let location = useLocation();
@@ -31,6 +33,7 @@ export default function ModeratorDash() {
 
   let [pendingReviews, setPendingReviews] = useState([]);
   let [pendingComments, setPendingComments] = useState([]);
+  let [pendingChar, setPendingChar] = useState([]);
 
   user = state && state.user;
   let email = state && state.email;
@@ -43,9 +46,9 @@ export default function ModeratorDash() {
     deleted_series: 0,
     filtered_comments: 0,
     review_verifications: 0,
+    others: 0,
     role: "",
   });
-  
 
   let getPerson = async () => {
     try {
@@ -68,6 +71,7 @@ export default function ModeratorDash() {
         deleted_episodes: personData?.deleted_episodes || 0,
         review_verifications: personData?.review_verifications || 0,
         filtered_comments: personData?.filtered_comments || 0,
+        others: personData?.others || 0,
         img_url: personData?.img_url || "",
       };
 
@@ -80,6 +84,7 @@ export default function ModeratorDash() {
       setDeletedEpisodes(person.deleted_episodes);
       setReviewVerifications(person.review_verifications);
       setFileteredComments(person.filtered_comments);
+      setOthers(person.others);
       setImgUrl(person.img_url);
       setLoading(false);
       setStat((prev) => !prev);
@@ -91,10 +96,43 @@ export default function ModeratorDash() {
     getPerson();
   }, [user]);
 
+  // let handleUpdate = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     let response = await axios.put(
+  //       `http://localhost:3000/moderatorDash`,
+  //       JSON.stringify({ newUsername, img_url, email }),
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     let name = response.data[0].user_name;
+  //     setUser(name);
+  //     localStorage.setItem("user", name);
+  //     localStorage.setItem("img_url", img_url);
+  //   } catch (err) {
+  //     console.error(err.message);
+  //   }
+  // };
+
   let handleUpdate = async (e) => {
     e.preventDefault();
+    const loadingToastId = toast.loading("Saving Bio..", {
+      duration: 1000, // 4 seconds
+      style: {
+        border: "1px solid #06bf34",
+        padding: "16px",
+        color: "#06bf34",
+      },
+      iconTheme: {
+        primary: "#06bf34",
+        secondary: "#FFFAEE",
+      },
+    });
     try {
-      let response = await axios.put(
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const updatePromise = axios.put(
         `http://localhost:3000/moderatorDash`,
         JSON.stringify({ newUsername, img_url, email }),
         {
@@ -102,13 +140,43 @@ export default function ModeratorDash() {
           withCredentials: true,
         }
       );
-      let name = response.data[0].user_name;
-      setUser(name);
-      localStorage.setItem("user", name);
-      localStorage.setItem("img_url", img_url);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast
+      toast.success("Bio has been successfully saved.", {
+        style: {
+          border: "1px solid #06bf34",
+          padding: "16px",
+          color: "#06bf34",
+        },
+        iconTheme: {
+          primary: "#06bf34",
+          secondary: "#FFFAEE",
+        },
+      });
+      setTimeout(() => {
+        toast.dismiss();
+      }, 5000);
     } catch (err) {
       console.error(err.message);
+      toast.dismiss(loadingToastId); // Dismiss the loading toast on error
     }
+
+    // toast.promise(updatePromise, {
+    //   loading: "Updating...",
+    //   success: (res) => {
+    //     let name = res.data[0].user_name;
+    //     setUser(name);
+    //     localStorage.setItem("user", name);
+    //     localStorage.setItem("img_url", img_url);
+    //     return "Username successfully updated!";
+    //   },
+    //   error: "Update failed",
+    // });
+
+    // try {
+    //   let response = await updatePromise;
+    // } catch (err) {
+    //   console.error(err.message);
+    // }
   };
 
   const handleImageChange = async (event) => {
@@ -180,6 +248,26 @@ export default function ModeratorDash() {
     }
   };
 
+  const handleApproveCharacter = async (e, char_id) => {
+    e.preventDefault();
+    try {
+      console.log(char_id);
+      const response = await axios.post(
+        `http://localhost:3000/approveCharacters`,
+        JSON.stringify({ char_id, email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
   const handleDeclineReview = async (e, updatedId) => {
     e.preventDefault();
     try {
@@ -206,6 +294,26 @@ export default function ModeratorDash() {
       console.log(updatedId);
       const response = await axios.put(
         `http://localhost:3000/comment/decline`,
+        JSON.stringify({ updatedId, email }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      getPerson();
+      setStat((prev) => !prev);
+      //setUpdatedId(0);
+    } catch (error) {
+      console.error("Error Updating review");
+    }
+  };
+
+  const handleDeclineCharacter = async (e, updatedId) => {
+    e.preventDefault();
+    try {
+      console.log(updatedId);
+      const response = await axios.put(
+        `http://localhost:3000/chardecline`,
         JSON.stringify({ updatedId, email }),
         {
           headers: { "Content-Type": "application/json" },
@@ -252,8 +360,24 @@ export default function ModeratorDash() {
     }
   };
 
+  const getChars = async (event) => {
+    try {
+      // event.preventDefault();
+      let response = await axios.post(`http://localhost:3000/getReqCharacters`);
+      // console.log(response.data);
+      // setTimeout(()=>{
+
+      // },500);
+      setPendingChar(response.data);
+      console.log(pendingChar);
+    } catch (error) {
+      console.error("Error fetching Reviews");
+    }
+  };
+
   useEffect(() => {
     getReviews();
+    getChars();
   }, [stat]);
 
   useEffect(() => {
@@ -288,6 +412,7 @@ export default function ModeratorDash() {
         <h2>Loading...</h2>
       ) : (
         <>
+          <Toaster position="top-left" reverseOrder={false} />
           <div
             style={{
               display: "flex",
@@ -322,33 +447,89 @@ export default function ModeratorDash() {
               }}
             >
               {/* Content of the box */}
-              {pendingComments.map((comment, index) => (
+              {pendingReviews.map((review, index) => (
                 <div key={index} style={{ marginBottom: "20px" }}>
                   <Typography variant="body1">
-                    Comment ID: {comment.comment_id}
+                    User Name: {review.user_name}
                   </Typography>
                   <Typography variant="body1">
-                    Anime Name: {comment.anime_name}
-                  </Typography>
-                  <Typography variant="body1">
-                    Episode Title: {comment.episode_title}
-                  </Typography>
-                  <Typography variant="body1">
-                    User Name: {comment.user_name}
-                  </Typography>
-                  <Typography variant="body1">
-                    Comment Time: {comment.comment_time}
+                    Review Time: {review.review_time}
                   </Typography>
                   <Typography
                     variant="body1"
                     style={{ wordWrap: "break-word", marginLeft: 0 }}
                   >
-                    Comment Text: {comment.text}
+                    Review Text: {review.review_text}
+                  </Typography>
+                  <Typography variant="body1">
+                    Review ID: {review.review_id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Anime Name: {review.anime_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Rating: {review.rating}
                   </Typography>
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={(e) => handleApproveComment(e, comment.comment_id)}
+                    style={{ marginRight: "10px" }}
+                    onClick={(e) => handleApproveReview(e, review.review_id)}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={(e) => handleDeclineReview(e, review.review_id)}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {/* Pending Characters Box */}
+            <div
+              style={{
+                border: "0.5px solid #cccccc",
+                width: "400px",
+                height: "500px",
+                marginTop: "10px",
+                marginRight: "auto",
+                overflow: "auto",
+              }}
+            >
+              {/* Content of the box */}
+              {pendingChar.map((character, index) => (
+                <div key={index} style={{ marginBottom: "20px" }}>
+                  <Typography variant="body1">
+                    Character ID: {character.id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Anime ID: {character.anime_id}
+                  </Typography>
+                  <Typography variant="body1">
+                    Character Name: {character.character_name}
+                  </Typography>
+                  <Typography variant="body1">
+                    Role: {character.role}
+                  </Typography>
+                  <Typography variant="body1">
+                    Gender: {character.gender}
+                  </Typography>
+                  <Typography variant="body1">
+                    Profile Picture: {character.profile_picture}
+                  </Typography>
+                  <Typography variant="body1">
+                    User Email: {character.user_email}
+                  </Typography>
+                  <Typography variant="body1">
+                    Request Date: {character.req_date}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={(e) => handleApproveCharacter(e, character.id)}
                     style={{ marginRight: "10px" }}
                   >
                     Approve
@@ -356,7 +537,7 @@ export default function ModeratorDash() {
                   <Button
                     variant="contained"
                     color="secondary"
-                    onClick={(e) => handleDeclineComment(e, comment.comment_id)}
+                    onClick={(e) => handleDeclineCharacter(e, character.id)}
                   >
                     Decline
                   </Button>
@@ -383,7 +564,7 @@ export default function ModeratorDash() {
           <div
             style={{
               borderLeft: "0.5px solid #cccccc",
-              height: "800px",
+              height: "1300px",
               margin: "10px",
             }}
           ></div>
@@ -483,6 +664,14 @@ export default function ModeratorDash() {
                   </span>
                 </label>
               </div>
+              {/* <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
+                <label>
+                  <strong>Other Contributions:</strong>
+                  <span style={{ marginLeft: "20px", fontWeight: "bold" }}>
+                    {others}
+                  </span>
+                </label>
+              </div> */}
               <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
                 <label>
                   <strong>Karma:</strong>
@@ -499,7 +688,7 @@ export default function ModeratorDash() {
                   <Button variant="contained" color="primary" href="/addAnime">
                     Add Anime
                   </Button>
-              </div>
+                </div>
               </div>
             </form>
           </div>
@@ -508,7 +697,7 @@ export default function ModeratorDash() {
           <div
             style={{
               borderLeft: "0.5px solid #cccccc",
-              height: "800px",
+              height: "1300px",
               margin: "10px",
             }}
           ></div>
@@ -518,46 +707,48 @@ export default function ModeratorDash() {
             style={{
               border: "0.5px solid #cccccc",
               width: "600px",
-              height: "500px",
+              height: "1000px",
               marginTop: "225px",
               marginLeft: "auto",
               overflow: "auto",
             }}
           >
             {/* Content of the box */}
-            {pendingReviews.map((review, index) => (
+            {pendingComments.map((comment, index) => (
               <div key={index} style={{ marginBottom: "20px" }}>
                 <Typography variant="body1">
-                  User Name: {review.user_name}
+                  Comment ID: {comment.comment_id}
                 </Typography>
                 <Typography variant="body1">
-                  Review Time: {review.review_time}
+                  Anime Name: {comment.anime_name}
+                </Typography>
+                <Typography variant="body1">
+                  Episode Title: {comment.episode_title}
+                </Typography>
+                <Typography variant="body1">
+                  User Name: {comment.user_name}
+                </Typography>
+                <Typography variant="body1">
+                  Comment Time: {comment.comment_time}
                 </Typography>
                 <Typography
                   variant="body1"
                   style={{ wordWrap: "break-word", marginLeft: 0 }}
                 >
-                  Review Text: {review.review_text}
+                  Comment Text: {comment.text}
                 </Typography>
-                <Typography variant="body1">
-                  Review ID: {review.review_id}
-                </Typography>
-                <Typography variant="body1">
-                  Anime Name: {review.anime_name}
-                </Typography>
-                <Typography variant="body1">Rating: {review.rating}</Typography>
                 <Button
                   variant="contained"
                   color="primary"
+                  onClick={(e) => handleApproveComment(e, comment.comment_id)}
                   style={{ marginRight: "10px" }}
-                  onClick={(e) => handleApproveReview(e, review.review_id)}
                 >
                   Approve
                 </Button>
                 <Button
                   variant="contained"
                   color="secondary"
-                  onClick={(e) => handleDeclineReview(e, review.review_id)}
+                  onClick={(e) => handleDeclineComment(e, comment.comment_id)}
                 >
                   Decline
                 </Button>
