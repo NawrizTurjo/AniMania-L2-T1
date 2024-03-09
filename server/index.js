@@ -23,7 +23,7 @@ app.post("/sign_up", async (req, res) => {
   try {
     const { user, pwd, email, userRole, img_url } = req.body;
 
-    console.log(user, pwd, email, userRole, img_url)
+    console.log(user, pwd, email, userRole, img_url);
 
     if (userRole === "U") {
       const newModerator = await pool.query(
@@ -3813,7 +3813,7 @@ app.post("/addStaff", async (req, res) => {
     const characters = await pool.query(
       `
       insert into staffs
-        (name, role, gender, profile_picture, anime_id)
+        (name, "role", gender, profile_picture, anime_id)
         values
         ($1, $2, $3, $4, $5)
       `,

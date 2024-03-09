@@ -381,6 +381,7 @@ export default function AddAnime({ setProgress }) {
           value={year}
           onChange={(e) => setYear(e.target.value)}
         />
+        <br />
         {/* <TextField type="text" label="Studio" placeholder="Studio" />
         <TextField type="text" label="Duration" placeholder="Duration" /> */}
         <label htmlFor="Demographic">Select Demographic</label>
@@ -399,6 +400,8 @@ export default function AddAnime({ setProgress }) {
           ))}
         </Select>
         <div>
+          <label htmlFor="Tags">Select Tags</label>
+          <br />
           <MultiSelect
             options={tags}
             displayValue="tag_name"
@@ -407,7 +410,6 @@ export default function AddAnime({ setProgress }) {
             selectedValues={selectedTags}
             placeholder="Select Tags"
           />
-          <br />
           <br />
         </div>
         <label htmlFor="Source">Select Source</label>

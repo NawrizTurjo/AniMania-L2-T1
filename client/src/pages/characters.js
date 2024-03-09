@@ -9,6 +9,7 @@ import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
+import { uploadImage } from "./userDashboard";
 
 export default function Characters({ setProgress }) {
   const anime_id = useParams().id;
@@ -57,6 +58,21 @@ export default function Characters({ setProgress }) {
         toast.error("Could not add character");
       }
       handleClose();
+    }
+  };
+
+  const handleImageChange = async (event) => {
+    if (event.target.files[0]) {
+      //   setThumbnail(event.target.files[0]);
+      try {
+        const imageUrl = await uploadImage(event.target.files[0]);
+        // console.log("Uploaded image URL:", profile_picture);
+        setProfilePicture(imageUrl);
+        // console.log("img_url", thumbnail);
+        // console.log("img_url", thumbnail);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 
@@ -197,9 +213,16 @@ export default function Characters({ setProgress }) {
               label="Profile Picture URL"
               variant="outlined"
               margin="normal"
+              value={profile_picture}
               onChange={(e) => setProfilePicture(e.target.value)}
               /* You can add onChange event handler to capture the input */
             />
+            <p>
+              <label>
+                <b>Upload Profile Picture</b>
+              </label>
+              <input type="file" onChange={handleImageChange} />
+            </p>
           </FormControl>
         </Modal.Body>
         <Modal.Footer>
