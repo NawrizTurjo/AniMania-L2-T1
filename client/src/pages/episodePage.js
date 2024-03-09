@@ -524,6 +524,7 @@ export default function Episodes({ toggleRerender, setProgress }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      style={{ minHeight: "100vh" }}
     >
       <Toaster position="top-center" reverseOrder={false} />
       {loading !== true ? (

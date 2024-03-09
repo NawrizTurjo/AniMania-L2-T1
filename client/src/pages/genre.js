@@ -7,6 +7,52 @@ import Test from "./test";
 import Loader from "./loader.js";
 import { motion } from "framer-motion/dist/framer-motion";
 
+import styled, { keyframes } from "styled-components";
+
+const fadeInAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const shadowAnimation = keyframes`
+  0% {
+    text-shadow: none;
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: none;
+  }
+`;
+
+const colorAnimation = keyframes`
+  0% {
+    color: #4568dc;
+  }
+  50% {
+    color: #b06ab3;
+  }
+  100% {
+    color: #4568dc;
+  }
+`;
+
+const PlanHeading = styled.h1`
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: ${fadeInAnimation} 1s ease-in-out,
+    ${shadowAnimation} 3s ease-in-out infinite,
+    ${colorAnimation} 5s ease-in-out infinite;
+`;
+
 const Genre = ({ setProgress }) => {
   const [loading, setLoading] = useState(true);
   const [genre, setGenre] = useState([]);
@@ -38,7 +84,7 @@ const Genre = ({ setProgress }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      <h1>Genre</h1>
+      <PlanHeading>Genres</PlanHeading>
       <table className="table table-striped d-flex justify-content-center">
         <thead>
           {/* <tr>

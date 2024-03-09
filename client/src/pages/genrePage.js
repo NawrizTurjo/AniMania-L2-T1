@@ -14,6 +14,8 @@ import "./GenreAnimes.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 
+import styled, { keyframes } from "styled-components";
+
 const columns = [
   {
     id: "title_screen",
@@ -77,6 +79,50 @@ const columns = [
     format: (value) => value.toFixed(2),
   },
 ];
+
+const fadeInAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const shadowAnimation = keyframes`
+  0% {
+    text-shadow: none;
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: none;
+  }
+`;
+
+const colorAnimation = keyframes`
+  0% {
+    color: #4568dc;
+  }
+  50% {
+    color: #b06ab3;
+  }
+  100% {
+    color: #4568dc;
+  }
+`;
+
+const PlanHeading = styled.h1`
+  font-size: 3rem;
+  text-align: center;
+  // margin-bottom: 2rem;
+  animation: ${fadeInAnimation} 1s ease-in-out,
+    ${shadowAnimation} 3s ease-in-out infinite,
+    ${colorAnimation} 5s ease-in-out infinite;
+`;
 
 export default function GenrePage({ id, name }) {
   const [page, setPage] = React.useState(0);
@@ -241,47 +287,48 @@ export default function GenrePage({ id, name }) {
 
   return (
     <Paper sx={{ width: "100%" }}>
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Filter by title..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-
-        <input
-          type="text"
-          placeholder="Filter by type..."
-          value={searchTermType}
-          onChange={handleSearchTypeChange}
-        />
-        <input
-          type="number"
-          placeholder="Filter by score..."
-          value={searchTermScore}
-          onChange={handleSearchScoreChange}
-        />
-        <input
-          type="number"
-          placeholder="Filter by year..."
-          value={searchTermYear}
-          onChange={handleSearchYearChange}
-        />
-        {/* <button type="submit" onClick={handleSearchChange}>
-          aa
-        </button> */}
-      </div>
+      <Link
+        // to={`http://localhost:3001/genre/${id}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
+        {/* <h1>{name}</h1> */}
+        <PlanHeading>{name}</PlanHeading>
+      </Link>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
               <TableCell align="center" colSpan={9}>
-                <Link
-                  // to={`http://localhost:3001/genre/${id}`}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
-                  <h1>{name}</h1>
-                </Link>
+                <div className="search-container d-flex justify-content-around">
+                  <input
+                    type="text"
+                    placeholder="Filter by title..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Filter by type..."
+                    value={searchTermType}
+                    onChange={handleSearchTypeChange}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Filter by score..."
+                    value={searchTermScore}
+                    onChange={handleSearchScoreChange}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Filter by year..."
+                    value={searchTermYear}
+                    onChange={handleSearchYearChange}
+                  />
+                  {/* <button type="submit" onClick={handleSearchChange}>
+          aa
+        </button> */}
+                </div>
               </TableCell>
               {/* <TableCell align="center" colSpan={3}>
                 Details

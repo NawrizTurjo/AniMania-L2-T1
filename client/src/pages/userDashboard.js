@@ -666,7 +666,7 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
             <div
               style={{
                 border: "0.5px solid #cccccc",
-                minWidth: "450px",
+                width: "450px",
                 height: "100vh",
                 marginTop: "330px",
                 marginLeft: "auto",

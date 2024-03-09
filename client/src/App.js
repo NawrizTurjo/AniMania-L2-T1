@@ -59,7 +59,9 @@ function App() {
   }, [forceRerender]);
 
   return (
-    <div>
+    <div
+    // style={{ minHeight: "100vh" }}
+    >
       {/* <Router> */}
       <Navbar />
       <LoadingBar
