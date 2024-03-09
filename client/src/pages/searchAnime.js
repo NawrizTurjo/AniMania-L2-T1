@@ -6,6 +6,51 @@ import AnimeItem from "./animeItem";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion/dist/framer-motion";
 import Typewriter from "typewriter-effect";
+import styled, { keyframes } from "styled-components";
+
+const fadeInAnimation = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const shadowAnimation = keyframes`
+  0% {
+    text-shadow: none;
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: none;
+  }
+`;
+
+const colorAnimation = keyframes`
+  0% {
+    color: #4568dc;
+  }
+  50% {
+    color: #b06ab3;
+  }
+  100% {
+    color: #4568dc;
+  }
+`;
+
+const PlanHeading = styled.h1`
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: ${fadeInAnimation} 1s ease-in-out,
+    ${shadowAnimation} 3s ease-in-out infinite,
+    ${colorAnimation} 5s ease-in-out infinite;
+`;
 
 export default function SearchAnime({ forceRerender, toggleRerender }) {
   const location = useLocation();
@@ -112,7 +157,7 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
     localStorage.setItem("email", email);
     localStorage.setItem("userRole", userRole);
     //localStorage.setItem("img_url", img_url);
-  }, [ email, userRole]);
+  }, [email, userRole]);
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
@@ -157,7 +202,7 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
-      <h4>
+      {/* <h4>
         {" "}
         <Typewriter
           options={{
@@ -174,10 +219,10 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
           }}
           // className=""
         />
-      </h4>
+      </h4> */}
       {/* <h1>Hello {user}!</h1>
       <h1>Email: {email}</h1> */}
-      <h1>
+      {/* <h1>
         {"Search Results for:"}
         <Typewriter
           options={{
@@ -193,7 +238,46 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
           }}
           // className=""
         />
-      </h1>
+      </h1> */}
+      <div className="typewriter">
+        <h4>
+          {" "}
+          <Typewriter
+            options={{
+              strings: [
+                "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
+              ],
+              autoStart: true,
+              loop: true,
+              delay: 50,
+              deleteSpeed: 20,
+              pauseFor: 2000,
+              skipAddStyles: true,
+              // cursor: "_",
+              wrapperClassName: "custom-typewriter",
+            }}
+          />
+        </h4>
+      </div>
+
+      <div className="typewriter">
+        <PlanHeading>
+          {"Search Results for:"}
+          <Typewriter
+            options={{
+              strings: [searchTerm],
+              autoStart: true,
+              loop: true,
+              delay: 200,
+              deleteSpeed: 15,
+              pauseFor: 2000,
+              skipAddStyles: true,
+              // cursor: "_",
+              wrapperClassName: "custom-typewriter-1",
+            }}
+          />
+        </PlanHeading>
+      </div>
       <img
         src="./images/AniMania.png"
         alt="AniMania Logo"

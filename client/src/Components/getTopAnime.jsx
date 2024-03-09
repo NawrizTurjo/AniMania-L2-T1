@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../pages/pagination3";
 import AnimeItem from "../pages/animeItem";
 import { useLocation } from "react-router-dom";
+import Typewriter from "typewriter-effect";
 
 export default function GetTopAnime({
   forceRerender,
@@ -103,13 +104,51 @@ export default function GetTopAnime({
     localStorage.setItem("email", userEmail);
     localStorage.setItem("userRole", userRole);
     //localStorage.setItem("img_url", img_url);
-  }, [ userEmail, userRole]);
-
-
+  }, [userEmail, userRole]);
 
   if (loading) return <div>Loading...</div>;
   return (
     <div className="row">
+      <div className="typewriter">
+        <h4>
+          {" "}
+          <Typewriter
+            options={{
+              strings: [
+                "Unlock the Magic of Animation - where stories unfold, emotions ignite, and worlds come alive",
+              ],
+              autoStart: true,
+              loop: true,
+              delay: 50,
+              deleteSpeed: 20,
+              pauseFor: 2000,
+              skipAddStyles: true,
+              // cursor: "_",
+              wrapperClassName: "custom-typewriter",
+            }}
+          />
+        </h4>
+      </div>
+
+      <div className="typewriter">
+        <h4>
+          {" "}
+          <Typewriter
+            options={{
+              strings: ["Top 100 Anime - as rated by our users"],
+              autoStart: true,
+              loop: true,
+              delay: 200,
+              deleteSpeed: 15,
+              pauseFor: 2000,
+              skipAddStyles: true,
+              // cursor: "_",
+              wrapperClassName: "custom-typewriter-1",
+            }}
+          />
+        </h4>
+      </div>
+
       <section>
         <div className="anime-list-container">
           <AnimeItem

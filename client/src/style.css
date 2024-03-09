@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Madimi+One&family=Pacifico&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -14,6 +15,30 @@ body {
   font-size: larger;
   color: #007bff; /* Initial color */
   animation: alternate-colors 6s infinite; /* Apply animation */
+  margin-bottom: 50px;
+}
+
+.custom-typewriter-1 {
+  font-family: Madimi One, "cursive"; /* Apply the Google Font */
+  font-size: larger;
+  color: #b822fe; /* Initial color */
+  animation: alternate-colors-1 8s infinite; /* Apply animation */
+  margin-bottom: 50px;
+}
+
+@keyframes alternate-colors-1 {
+  0% {
+    color: #b822fe; /* Start with blue */
+  }
+  33% {
+    color: #ff0000; /* Transition to red */
+  }
+  66% {
+    color: #24dc70; /* Transition to green */
+  }
+  100% {
+    color: #1818fc; /* Back to blue */
+  }
 }
 
 @keyframes alternate-colors {
@@ -44,8 +69,8 @@ body {
 }
 
 .typewriter:hover {
-  font-weight: bolder;
-  font-family: "Times New Roman", Times, serif;
+  /* font-weight: bolder;
+  font-family: "Times New Roman", Times, serif; */
 }
 
 .gray-background {
