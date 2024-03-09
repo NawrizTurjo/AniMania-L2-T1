@@ -67,7 +67,7 @@ export default function Navbar() {
             About Us
           </CustomLink>
           <CustomLink to="/sign_up" onClick={toggleMenu}>
-            sign_up
+            Sign up
           </CustomLink>
           <CustomLink to="/login" onClick={toggleMenu}>
             login
