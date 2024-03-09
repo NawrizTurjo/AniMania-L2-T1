@@ -246,7 +246,11 @@ function UserDashboard({ forceRerender, toggleRerender, setProgress }) {
   };
 
   useEffect(() => {
+    setProgress(10);
     getPerson();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
     // getAnimeList();
     getContribution();
   }, []);

@@ -12,9 +12,7 @@ import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
-
-
-export default function ModeratorDash() {
+export default function ModeratorDash({ setProgress }) {
   let [newUsername, setNewUsername] = useState("");
   let [added_series, setAddedSeries] = useState("");
   let [deleted_series, setDeletedSeries] = useState("");
@@ -53,8 +51,8 @@ export default function ModeratorDash() {
   });
 
   let getPerson = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       let response = await axios.post(
         `http://localhost:3000/moderatorDash`,
         JSON.stringify({ email }),
@@ -88,15 +86,19 @@ export default function ModeratorDash() {
       setFileteredComments(person.filtered_comments);
       setOthers(person.others);
       setImgUrl(person.img_url);
-      setLoading(false);
       setStat((prev) => !prev);
     } catch (err) {
       console.error(err.message);
     }
+    setLoading(false);
   };
   useEffect(() => {
+    setProgress(10);
     getPerson();
-  }, [user]);
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
+  }, []);
 
   // let handleUpdate = async (e) => {
   //   e.preventDefault();
@@ -387,6 +389,10 @@ export default function ModeratorDash() {
     getKarma();
   }, [stat]);
 
+  useEffect(() => {
+    console.log("loading: ", loading);
+  }, [loading]);
+
   // useEffect(() => {
   // }, [stat]);
 
@@ -401,6 +407,10 @@ export default function ModeratorDash() {
     whiteSpace: "nowrap",
     width: 1,
   });
+
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
 
   return (
     <motion.div
@@ -700,7 +710,6 @@ export default function ModeratorDash() {
                   </Button>
                 </div>
               </div>
-              
             </form>
           </div>
 

@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function Characters() {
+export default function Characters({ setProgress }) {
   const anime_id = useParams().id;
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export default function Characters() {
 
   const handleSubmit = async () => {
     console.log("Submitted");
-    console.log(name, role, profile_picture, gender,userRole, email, anime_id);
+    console.log(name, role, profile_picture, gender, userRole, email, anime_id);
     if (name === "" || role === "") {
       toast.error("You must fill the required items");
     } else {
@@ -70,8 +70,11 @@ export default function Characters() {
   };
 
   const string =
-  userRole === "M" ? "Add Character" : userRole === "U" ? "Request Character Addition" : "";
-
+    userRole === "M"
+      ? "Add Character"
+      : userRole === "U"
+      ? "Request Character Addition"
+      : "";
 
   const getCharacters = async () => {
     try {
@@ -89,7 +92,11 @@ export default function Characters() {
   };
 
   useEffect(() => {
+    setProgress(10);
     getCharacters();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, []);
 
   const handleModalShow = () => {
@@ -119,11 +126,10 @@ export default function Characters() {
       </ul>
 
       {userRole === "M" || userRole === "U" ? (
-  <Button variant="primary" onClick={handleShow}>
-    {string}
-  </Button>
-) : null}
-
+        <Button variant="primary" onClick={handleShow}>
+          {string}
+        </Button>
+      ) : null}
 
       <Modal
         size="lg"
@@ -219,5 +225,3 @@ export default function Characters() {
         onHide={() => setModalShow(false)}
       />
  */
-
-      

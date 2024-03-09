@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function Staffs() {
+export default function Staffs({ setProgress }) {
   const anime_id = useParams().id;
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export default function Staffs() {
 
   const handleSubmit = async () => {
     console.log("Submitted");
-    console.log(name, role, profile_picture, gender,userRole, email, anime_id);
+    console.log(name, role, profile_picture, gender, userRole, email, anime_id);
     if (name === "" || role === "") {
       toast.error("You must fill the required items");
     } else {
@@ -70,16 +70,14 @@ export default function Staffs() {
     setIsModalOpen(false);
   };
 
-  const string =
-    userRole === "M" ? "Add Staff" : " ";
+  const string = userRole === "M" ? "Add Staff" : " ";
 
   const getStaffs = async () => {
     try {
       setLoading(true);
-      const characters = await axios.post(
-        `http://localhost:3000/getStaffs`,
-        { id: anime_id }
-      );
+      const characters = await axios.post(`http://localhost:3000/getStaffs`, {
+        id: anime_id,
+      });
       setCharacter(characters.data);
       console.log(characters.data);
       setLoading(false);
@@ -89,7 +87,11 @@ export default function Staffs() {
   };
 
   useEffect(() => {
+    setProgress(10);
     getStaffs();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, []);
 
   const handleModalShow = () => {
@@ -119,10 +121,10 @@ export default function Staffs() {
       </ul>
 
       {userRole === "M" && (
-      <Button variant="primary" onClick={handleShow}>
-        {string}
-      </Button>
-    )}
+        <Button variant="primary" onClick={handleShow}>
+          {string}
+        </Button>
+      )}
 
       <Modal
         size="lg"

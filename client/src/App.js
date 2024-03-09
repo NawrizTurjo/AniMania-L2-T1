@@ -70,7 +70,7 @@ function App() {
       <div className="container">
         <AnimatePresence>
           <Routes location={location} key={location.pathname}>
-            <Route
+            {/* <Route
               path="/landing"
               element={
                 <Landing
@@ -78,7 +78,7 @@ function App() {
                   setProgress={setProgress}
                 />
               }
-            />
+            /> */}
             <Route
               path="/Home"
               element={
@@ -89,7 +89,7 @@ function App() {
                 />
               }
             />
-            <Route path="/about" element={<AboutPage />} />
+            <Route path="/about" element={<AboutPage setProgress={setProgress}/>} />
             <Route
               path="/top100"
               element={
@@ -104,24 +104,39 @@ function App() {
               path="/genre"
               element={<Genre setProgress={setProgress} />}
             />
-            <Route path="/sign_up" element={<SignUp />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/login/admin" element={<AdminLogin />} />
+            <Route
+              path="/sign_up"
+              element={<SignUp setProgress={setProgress} />}
+            />
+            <Route
+              path="/login"
+              element={<Login setProgress={setProgress} />}
+            />
+            <Route
+              path="/login/admin"
+              element={<AdminLogin setProgress={setProgress} />}
+            />
             <Route
               path="/anime/:id"
-              element={<AnimePage toggleRerender={toggleRerender} />}
+              element={
+                <AnimePage
+                  toggleRerender={toggleRerender}
+                  setProgress={setProgress}
+                />
+              }
             />
-            <Route path="/genre/:id" element={<GenreAnimes />} />
+            {/* <Route path="/genre/:id" element={<GenreAnimes />} /> */}
             <Route
               path="/searchAnime"
               element={
                 <SearchAnime
                   forceRerender={forceRerender}
                   toggleRerender={toggleRerender}
+                  setProgress={setProgress}
                 />
               }
             />
-            <Route
+            {/* <Route
               path="/searchAnime/:searchTerm"
               element={
                 <SearchAnime
@@ -130,17 +145,20 @@ function App() {
                   //setProgress={setProgress}
                 />
               }
-            />
+            /> */}
             {/* <Route path="/home/:username" component={Home} /> */}
-            <Route
+            {/* <Route
               path="/Home"
               element={<Home forceRerender={forceRerender} />}
-            />
+            /> */}
             {/* <Route
               path="/searchAnime"
               element={<SearchAnime forceRerender={forceRerender} />}
             /> */}
-            <Route path="/moderatorDash" element={<ModeratorDash />}></Route>
+            <Route
+              path="/moderatorDash"
+              element={<ModeratorDash setProgress={setProgress} />}
+            ></Route>
             <Route
               path="/userDash"
               element={
@@ -151,7 +169,10 @@ function App() {
                 />
               }
             ></Route>
-            <Route path="/notifications" element={<Notifications />}></Route>
+            <Route
+              path="/notifications"
+              element={<Notifications setProgress={setProgress} />}
+            ></Route>
             <Route
               path="/watch/anime/episodes/:id"
               element={
@@ -170,8 +191,8 @@ function App() {
                 />
               }
             ></Route>
-            <Route path="/AnimeList" element={<AnimeList />} />
-            <Route path="/History" element={<History />} />
+            {/* <Route path="/AnimeList" element={<AnimeList />} />
+            <Route path="/History" element={<History />} /> */}
             <Route
               path="/AdvancedSearch"
               element={
@@ -182,17 +203,38 @@ function App() {
                 />
               }
             />
-            <Route path="/contact" element={<ContactUsComponent />} />
-            <Route path="/VideoPlayer" element={<VideoPlayer />} />
-            <Route path="/addAnime" element={<AddAnime />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/:id/addEpisode" element={<AddEpisode />} />
-            <Route path="/DatePickerValue" element={<DatePickerValue />} />
-            <Route path="/:id/characters" element={<Characters />} />
-            <Route path="/:id/staffs" element={<Staffs />} />
-            <Route path="/plans" element={<Plans />} />
-            <Route path="/test" element={<Test />} />
-            <Route path="/" element={<AnimatedElement />} />
+            {/* <Route path="/contact" element={<ContactUsComponent />} /> */}
+            {/* <Route path="/VideoPlayer" element={<VideoPlayer />} /> */}
+            <Route
+              path="/addAnime"
+              element={<AddAnime setProgress={setProgress} />}
+            />
+            <Route
+              path="/admin"
+              element={<Admin setProgress={setProgress} />}
+            />
+            <Route
+              path="/:id/addEpisode"
+              element={<AddEpisode setProgress={setProgress} />}
+            />
+            {/* <Route path="/DatePickerValue" element={<DatePickerValue />} /> */}
+            <Route
+              path="/:id/characters"
+              element={<Characters setProgress={setProgress} />}
+            />
+            <Route
+              path="/:id/staffs"
+              element={<Staffs setProgress={setProgress} />}
+            />
+            <Route
+              path="/plans"
+              element={<Plans setProgress={setProgress} />}
+            />
+            {/* <Route path="/test" element={<Test />} /> */}
+            <Route
+              path="/"
+              element={<AnimatedElement setProgress={setProgress} />}
+            />
             {/* <Route path="/aboutPage" element={<AboutPage />} /> */}
           </Routes>
         </AnimatePresence>

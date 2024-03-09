@@ -52,7 +52,7 @@ const PlanHeading = styled.h1`
     ${colorAnimation} 5s ease-in-out infinite;
 `;
 
-export default function Plans() {
+export default function Plans({ setProgress }) {
   const [plans, setPlans] = useState([]);
   let userEmail = localStorage.getItem("email");
   const [currentPlan, setCurrentPlan] = useState({});
@@ -144,7 +144,11 @@ export default function Plans() {
 
   useEffect(() => {
     console.log(userEmail);
+    setProgress(10);
     getAllPlans();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, []);
 
   useEffect(() => {

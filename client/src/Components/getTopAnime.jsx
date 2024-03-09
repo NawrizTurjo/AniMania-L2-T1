@@ -57,7 +57,11 @@ export default function GetTopAnime({
   };
 
   useEffect(() => {
+    setProgress(10);
     getTopAnime();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, [forceRerender]);
 
   const [currentPlan, setCurrentPlan] = useState({});

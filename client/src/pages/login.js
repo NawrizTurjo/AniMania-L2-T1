@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 const LOGIN_URL = "/auth";
 
-const Login = () => {
+const Login = ({setProgress}) => {
   const navigate = useNavigate();
   const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
@@ -25,6 +25,13 @@ const Login = () => {
 
   useEffect(() => {
     userRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    setProgress(10);
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, []);
 
   useEffect(() => {

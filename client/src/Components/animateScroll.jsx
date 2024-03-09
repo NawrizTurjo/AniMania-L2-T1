@@ -11,6 +11,7 @@ import image3 from "./image3.jpg";
 import image4 from "./image4.jpg";
 import image5 from "./image5.jpg";
 import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const fadeInAnimation = keyframes`
   0% {
@@ -53,7 +54,6 @@ const CardContainer = styled.div`
   justify-content: flex-end;
   margin-top: 2rem;
   margin-bottom: 2rem;
-  // minwidth: 1000px;
 `;
 
 const rotateColor = keyframes`
@@ -80,7 +80,7 @@ const Card = styled(motion.div)`
   text-align: center;
   font-weight: bold;
   color: #ffffff;
-  width: 48%;
+  width: 70%;
   // transition: background 1s ease-in-out;
   &:hover {
     background: linear-gradient(170deg, #a1054e, #0e21ed);
@@ -95,7 +95,7 @@ const CardTitle = styled.h3`
   margin-top: 0;
   margin-bottom: 1rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  font-family: "Consolas", sans-serif;
+  font-family: "Oswald", sans-serif;
   animation: ${fadeInAnimation} 1s ease-in-out,
     ${shadowAnimation} 3s ease-in-out infinite,
     ${colorAnimation} 5s ease-in-out infinite;
@@ -103,6 +103,9 @@ const CardTitle = styled.h3`
 
 const CardText = styled.p`
   margin-bottom: 0.5rem;
+  font-family: "Madimi One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 `;
 
 const CardFooter = styled.div`
@@ -112,7 +115,9 @@ const CardFooter = styled.div`
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #ffffff;
-  font-weight: bold;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
   color: #ffffff;
   animation: ${fadeInAnimation} 1s ease-in-out,
     ${shadowAnimation} 3s ease-in-out infinite,
@@ -127,21 +132,33 @@ const GetStartedButton = styled.button`
   font-family: Madimi One, cursive;
   text-align: center;
   text-decoration: none;
-  color: #0e3399;
-  background-color: #c8e8d0;
+  color: #c2b3ff;
+  background-color: transparent;
   border-radius: 20px;
-  border: none;
+  border: #c8e8d0;
+  border-style: inset;
   width: 400px;
-  transition: background-color 0.3s ease;
+  height: 85px;
+  transition: all 0.3s ease;
 
   &:hover {
     background-color: #7df0e8;
     color: #5126fc;
     cursor: pointer;
+    width: 425px;
+    height: 90px;
+    border-radius: 25px;
+  }
+  &:active {
+    background-color: #58ada7;
+    color: #5126fc;
+    width: 390px;
+    height: 80px;
+    border-radius: 18px;
   }
 `;
 
-const AnimatedElement = () => {
+const AnimatedElement = ({ setProgress }) => {
   //   const [ref, inView] = useInView({
   //     threshold: 0.5,
   //   });
@@ -194,6 +211,12 @@ const AnimatedElement = () => {
   //   const [inView3, refInView3] = useInView({
   //     threshold: 0.5,
   //   });
+  useEffect(() => {
+    setProgress(10);
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
+  }, []);
 
   useEffect(() => {
     console.log("inView1:", inView1);
@@ -246,7 +269,7 @@ const AnimatedElement = () => {
           variants={sectionVariantsLeftToRight}
           style={{ display: "flex", justifyContent: "space-between" }}
         >
-          <section>
+          <section className="d-flex justify-content-center align-items-center">
             <h1>Discover</h1>
           </section>
           <CardContainer>
@@ -294,11 +317,15 @@ const AnimatedElement = () => {
           animate={inView2 ? "visible" : "hidden"}
           transition={{ duration: 0.5 }}
           variants={sectionVariantsRightToLeft}
-          style={{ display: "flex", justifyContent: "space-between" }}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
         >
           <CardContainer
             style={{
               justifyContent: "flex-start",
+              height: "35vh",
             }}
           >
             <Card
@@ -337,14 +364,14 @@ const AnimatedElement = () => {
               </CardText>
             </Card>
           </CardContainer>
-          <section>
+          <section className="d-flex justify-content-center align-items-center">
             <h1>Engage</h1>
           </section>
         </motion.div>
         <div
           className="logos"
           style={{
-            height: "90vh",
+            height: "50vh",
             display: "flex",
             justifyContent: "space-between",
           }}
@@ -434,7 +461,7 @@ const AnimatedElement = () => {
           variants={sectionVariantsLeftToRight}
           style={{ display: "flex", justifyContent: "space-between" }}
         >
-          <section>
+          <section className="d-flex justify-content-center align-items-center">
             <h1>Immerse</h1>
           </section>
           <CardContainer>
@@ -474,7 +501,20 @@ const AnimatedElement = () => {
           </CardContainer>
         </motion.div>
       </div>
-      <GetStartedButton>Get Started</GetStartedButton>
+      <div
+        className="d-flex justify-content-around"
+        style={{ minHeight: "10vh" }}
+      >
+        <Link to="/home">
+          <GetStartedButton>Get Started</GetStartedButton>
+        </Link>
+        {/* <Link to="/sign_up">
+          <GetStartedButton>Sign Up</GetStartedButton>
+        </Link>
+        <Link to="/login">
+          <GetStartedButton>Login</GetStartedButton>
+        </Link> */}
+      </div>
     </motion.div>
   );
 };
