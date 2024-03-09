@@ -495,7 +495,7 @@ const AnimatedElement = () => {
           </CardContainer>
         </motion.div>
       </div>
-      <div className="d-flex justify-content-around" style={{ height: "10vh" }}>
+      <div className="d-flex justify-content-around" style={{ minHeight: "10vh" }}>
         <Link to="/home">
           <GetStartedButton>Get Started</GetStartedButton>
         </Link>

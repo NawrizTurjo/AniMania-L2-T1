@@ -1,10 +1,96 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./aboutPage.css";
 
 import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
 import { FaInstagram, FaReddit } from "react-icons/fa";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function AboutPage() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(firstName, lastName, email, subject, message);
+
+    // Display a loading toast
+    const loadingToast = toast.loading("Submitting your message...", {
+      duration: 2000,
+      style: {
+        border: "1px solid #2bffd1",
+        padding: "16px",
+        color: "#2bffd1",
+        background: "#333",
+      },
+      iconTheme: {
+        primary: "#2bffd1",
+        secondary: "#FFFAEE",
+      },
+    });
+
+    try {
+      // Simulate form submission delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      if (
+        firstName === "" ||
+        lastName === "" ||
+        email === "" ||
+        subject === "" ||
+        message === ""
+      ) {
+        // Dismiss loading toast
+        toast.dismiss(loadingToast);
+
+        // Display error toast
+        toast.error("Please fill all the fields.", {
+          style: {
+            border: "1px solid #713200",
+            padding: "16px",
+            color: "#fc5656",
+            background: "#333",
+          },
+          iconTheme: {
+            primary: "#fc5656",
+            secondary: "#FFFAEE",
+          },
+        });
+        return;
+      }
+
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
+      // Display success toast
+      toast.success(
+        "Thank you for contacting us. We will get back to you soon.",
+        {
+          style: {
+            border: "1px solid #42fc4b",
+            padding: "16px",
+            color: "#20ff08",
+            background: "#333",
+          },
+          iconTheme: {
+            primary: "#008207",
+            secondary: "#FFFAEE",
+          },
+        }
+      );
+
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setSubject("");
+      setMessage("");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     // Add class to body when component mounts
     document.body.classList.add("about-us-page");
@@ -13,12 +99,6 @@ export default function AboutPage() {
       document.body.classList.remove("about-us-page");
     };
   }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Thank you for contacting us. We will get back to you soon.");
-  };
-
   return (
     <div className="about-page-container">
       {/* <nav className="header">
@@ -46,6 +126,7 @@ export default function AboutPage() {
           </div>
         </div>
       </nav> */}
+      <Toaster position="bottom-left" reverseOrder={false} />
       <form className="contact-container">
         <h1>Contact Us</h1>
         <div className="about-input">
@@ -55,12 +136,16 @@ export default function AboutPage() {
               className="first-name"
               name="fName"
               placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
             <input
               type="text"
               className="last-name"
               name="lName"
               placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
           <div className="input-email">
@@ -69,6 +154,8 @@ export default function AboutPage() {
               className="email"
               name="email"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="input-subject">
@@ -77,6 +164,8 @@ export default function AboutPage() {
               className="subject"
               name="subject"
               placeholder="Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
             />
           </div>
           <div className="input-message">
@@ -85,6 +174,8 @@ export default function AboutPage() {
               className="message"
               name="message"
               placeholder="Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
           </div>
         </div>
