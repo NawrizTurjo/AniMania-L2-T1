@@ -12,6 +12,8 @@ import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
+
+
 export default function ModeratorDash() {
   let [newUsername, setNewUsername] = useState("");
   let [added_series, setAddedSeries] = useState("");
@@ -681,15 +683,24 @@ export default function ModeratorDash() {
                 </label>
               </div>
               <div style={{ marginBottom: "20px", marginLeft: "80px" }}>
-                <Button variant="contained" color="success" href="/home">
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: "#4caf50", color: "#fff" }} // Set background and text color
+                  href="/home"
+                >
                   Edit and delete anime
                 </Button>
                 <div style={{ marginTop: "10px" }}>
-                  <Button variant="contained" color="primary" href="/addAnime">
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: "#2196f3", color: "#fff" }} // Set background and text color
+                    href="/addAnime"
+                  >
                     Add Anime
                   </Button>
                 </div>
               </div>
+              
             </form>
           </div>
 

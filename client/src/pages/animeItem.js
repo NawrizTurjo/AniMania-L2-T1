@@ -89,7 +89,7 @@ const AnimeListItem = ({
           withCredentials: true,
         }
       );
-      console.log(res.data);
+      // console.log(res.data);
 
       localStorage.setItem("contribution", res.data[0].get_contribution);
     } catch (err) {
@@ -101,26 +101,26 @@ const AnimeListItem = ({
     setFav(is_favorite);
   }, [id]);
 
-  useEffect(() => {
-    console.log(
-      anime_id,
-      title,
-      ep,
-      anime_type,
-      age_rating,
-      demo,
-      season,
-      yr,
-      thumbnail,
-      id,
-      rating,
-      description,
-      genres,
-      is_favorite,
-      status,
-      user_id
-    );
-  }, []);
+  // useEffect(() => {
+  //   console.log(
+  //     anime_id,
+  //     title,
+  //     ep,
+  //     anime_type,
+  //     age_rating,
+  //     demo,
+  //     season,
+  //     yr,
+  //     thumbnail,
+  //     id,
+  //     rating,
+  //     description,
+  //     genres,
+  //     is_favorite,
+  //     status,
+  //     user_id
+  //   );
+  // }, []);
 
   // console.log(user);
   // console.log(email);

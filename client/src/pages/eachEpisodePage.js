@@ -17,6 +17,8 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import { IconButton } from "@mui/material";
 import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { toast } from "react-toastify";
 
 export default function Episode({ toggleRerender, setProgress }) {
   const { id, id2 } = useParams();
@@ -387,6 +389,9 @@ export default function Episode({ toggleRerender, setProgress }) {
   }, [dislikedComments]);
   const getLike = async (event) => {
     try {
+      setTimeout(() => {
+        setProgress(100);
+      }, 500);
       setCommentLoading(true);
       const res = await axios.get(`http://localhost:3000/getlikes`);
       //   setAnime(res.data[0]);
@@ -403,9 +408,6 @@ export default function Episode({ toggleRerender, setProgress }) {
       //console.log(replies);
       console.log(res.data);
       setCommentLoading(false);
-      setTimeout(() => {
-        setProgress(100);
-      }, 500);
     } catch (err) {
       console.error(err.message);
     }
@@ -476,6 +478,9 @@ export default function Episode({ toggleRerender, setProgress }) {
       // console.log(res.data[0]);
       // setReviews([...reviews, response.data]);
       // console.log(response.data[0]);
+      setTimeout(() => {
+        toast.success("Your Comment has been updated!");
+      }, 500);
       // setReview("");
       setStat((prev) => !prev);
     } catch (err) {
@@ -514,6 +519,7 @@ export default function Episode({ toggleRerender, setProgress }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      <Toaster position="top-left" reverseOrder={false} />
       <Modal
         show={show}
         onHide={handleClose}

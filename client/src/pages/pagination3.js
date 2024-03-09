@@ -14,6 +14,7 @@ const MaterialPagination = ({
     paginate(value);
     window.scrollTo(0, 0);
     toggleRerender();
+    console.log("value: ", value);
   };
 
   return (
@@ -22,7 +23,7 @@ const MaterialPagination = ({
     >
       <Stack spacing={2}>
         <Pagination
-          count={10}
+          count={pageCount}
           variant="outlined"
           color="primary"
           shape="rounded"
