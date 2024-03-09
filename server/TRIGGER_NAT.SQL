@@ -9,7 +9,7 @@ END;
 $$ LANGUAGE plpgsql;
 -- DROP TRIGGER IF EXISTS trigger_delete_reactions ON comments;
 CREATE OR REPLACE FUNCTION update_filtered_comments() RETURNS TRIGGER AS $$ BEGIN IF TG_OP = 'UPDATE' THEN NEW.status := 'approved';
--------update in 2+ tables 2
+-------------------------------------------------------------------------------------------------------------------------------update in 2+ tables 2
 NEW.moderator_id := NEW.moderator_id;
 RAISE NOTICE 'Trigger update_filtered_comments() called with moderator_id: %',
 NEW.moderator_id;
@@ -223,7 +223,8 @@ END IF;
 END;
 $$;
 /
-CREATE OR REPLACE FUNCTION update_acc_date() RETURNS TRIGGER AS $$
+------------------------------------------------------------INSERT ON 3+ TABLES
+CREATE OR REPLACE FUNCTION update_acc_date() RETURNS TRIGGER AS $$ 
 DECLARE C_ID INTEGER;
 BEGIN NEW.ACC_DATE := CURRENT_TIMESTAMP;
 NEW.REQ_STATUS := 'ACCEPTED';
@@ -247,6 +248,7 @@ $$ LANGUAGE plpgsql;
 / -- Create a trigger to call the function before update on REQ_STATUS
 CREATE OR REPLACE TRIGGER update_acc_date_trigger BEFORE
 UPDATE OF MODERATOR_ID ON USER_REQ_CHARACTER FOR EACH ROW EXECUTE FUNCTION update_acc_date();
+
 ---------------------update on 2+ tables 1
 / ----------------------------------------------------------
 /
