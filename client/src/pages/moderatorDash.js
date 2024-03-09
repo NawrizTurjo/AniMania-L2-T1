@@ -122,7 +122,7 @@ export default function ModeratorDash({ setProgress }) {
 
   let handleUpdate = async (e) => {
     e.preventDefault();
-    const loadingToastId = toast.loading("Saving Bio..", {
+    const loadingToastId = toast.loading("Saving Username..", {
       duration: 1000, // 4 seconds
       style: {
         border: "1px solid #06bf34",
@@ -145,7 +145,7 @@ export default function ModeratorDash({ setProgress }) {
         }
       );
       toast.dismiss(loadingToastId); // Dismiss the loading toast
-      toast.success("Bio has been successfully saved.", {
+      toast.success("Username has been successfully saved.", {
         style: {
           border: "1px solid #06bf34",
           padding: "16px",
