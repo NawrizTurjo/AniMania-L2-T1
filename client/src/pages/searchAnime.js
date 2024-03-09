@@ -52,7 +52,7 @@ const PlanHeading = styled.h1`
     ${colorAnimation} 5s ease-in-out infinite;
 `;
 
-export default function SearchAnime({ forceRerender, toggleRerender }) {
+export default function SearchAnime({ forceRerender, toggleRerender,setProgress }) {
   const location = useLocation();
   const { searchTerm } = location.state || {};
 
@@ -140,11 +140,11 @@ export default function SearchAnime({ forceRerender, toggleRerender }) {
     }
   };
   useEffect(() => {
-    //setProgress(10);
+    setProgress(10);
     getAnime();
-    // setTimeout(() => {
-    //   setProgress(100);
-    // }, 500);
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
     //getKarma(email);
     //getContribution(email);
     //getUnseenNotifications(email);

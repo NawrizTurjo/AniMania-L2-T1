@@ -168,9 +168,13 @@ function AdvancedSearch({ toggleRerender, forceRerender, setProgress }) {
   };
 
   useEffect(() => {
+    setProgress(10);
     getGenres();
     getTags();
     getSources();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, []);
 
   const getAnime = async ({

@@ -25,7 +25,7 @@ import { motion } from "framer-motion";
 // import AnimeList from "../Components/getAnimeList";
 // import History from "../Components/getHistory";
 
-function Notifications() {
+function Notifications({setProgress}) {
   const [image, setImage] = useState(null);
   const [url, setUrl] = useState("");
   let location = useLocation();
@@ -198,7 +198,11 @@ function Notifications() {
   }, [notifications]); // Fetch reviews when id changes
 
   useEffect(() => {
+    setProgress(10);
     getPerson();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
     // getAnimeList();
     //getContribution();
   }, []);

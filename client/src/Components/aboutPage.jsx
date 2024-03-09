@@ -5,7 +5,7 @@ import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
 import { FaInstagram, FaReddit } from "react-icons/fa";
 import { Toaster, toast } from "react-hot-toast";
 
-export default function AboutPage() {
+export default function AboutPage({ setProgress }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -93,7 +93,11 @@ export default function AboutPage() {
 
   useEffect(() => {
     // Add class to body when component mounts
+    setProgress(10);
     document.body.classList.add("about-us-page");
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
     return () => {
       // Remove class from body when component unmounts
       document.body.classList.remove("about-us-page");

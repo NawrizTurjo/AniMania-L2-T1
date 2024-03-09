@@ -8,7 +8,7 @@ import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Redirect } from "react-router-dom";
 
-export default function AddAnime() {
+export default function AddAnime({ setProgress }) {
   const [currentSeasons, setCurrentSeasons] = useState("");
   const [genres, setGenres] = useState([]);
   const [tags, setTags] = useState([]);
@@ -256,9 +256,13 @@ export default function AddAnime() {
   };
 
   useEffect(() => {
+    setProgress(10);
     getGenres();
     getTags();
     getSources();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, []);
 
   if (loadingGenres || loadingTags || loadingSources) {

@@ -158,7 +158,7 @@ const GetStartedButton = styled.button`
   }
 `;
 
-const AnimatedElement = () => {
+const AnimatedElement = ({ setProgress }) => {
   //   const [ref, inView] = useInView({
   //     threshold: 0.5,
   //   });
@@ -211,6 +211,12 @@ const AnimatedElement = () => {
   //   const [inView3, refInView3] = useInView({
   //     threshold: 0.5,
   //   });
+  useEffect(() => {
+    setProgress(10);
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
+  }, []);
 
   useEffect(() => {
     console.log("inView1:", inView1);
@@ -495,7 +501,10 @@ const AnimatedElement = () => {
           </CardContainer>
         </motion.div>
       </div>
-      <div className="d-flex justify-content-around" style={{ minHeight: "10vh" }}>
+      <div
+        className="d-flex justify-content-around"
+        style={{ minHeight: "10vh" }}
+      >
         <Link to="/home">
           <GetStartedButton>Get Started</GetStartedButton>
         </Link>

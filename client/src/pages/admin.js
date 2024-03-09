@@ -12,9 +12,9 @@ import Typography from "@mui/material/Typography";
 // import { useHistory } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import ErrorIcon from "@mui/icons-material/Error";
-import ErrorTwoToneIcon from '@mui/icons-material/ErrorTwoTone';
+import ErrorTwoToneIcon from "@mui/icons-material/ErrorTwoTone";
 
-export default function Admin() {
+export default function Admin({ setProgress }) {
   const [moderators, setModerators] = useState([]);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,6 @@ export default function Admin() {
   const [show, setShow] = useState(false);
 
   const history = useNavigate();
-  
 
   const handleClose = () => {
     setShow(false);
@@ -114,7 +113,11 @@ export default function Admin() {
   };
 
   useEffect(() => {
+    setProgress(10);
     getModerators();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, [stat]);
 
   useEffect(() => {
@@ -636,42 +639,40 @@ export default function Admin() {
         </Box>
       </Box>
       <div>
-  {/* Other component content */}
+        {/* Other component content */}
 
-  {/* Log Out Button */}
-  <div>
-  {/* Other component content */}
+        {/* Log Out Button */}
+        <div>
+          {/* Other component content */}
 
-  {/* Log Out Button */}
-  <button
-    onClick={handleAdminLogout}
-    style={{
-      backgroundColor: "#D32F2F", // Red
-      color: "white",
-      fontSize: "16px",
-      fontWeight: "bold",
-      border: "none",
-      cursor: "pointer",
-      padding: "10px 20px",
-      borderRadius: "5px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      transition: "all 0.3s ease",
-    }}
-    onMouseOver={(e) => {
-      e.target.style.backgroundColor = "#B71C1C"; // Darken on hover, darker red
-      e.target.style.transform = "scale(1.05)";
-    }}
-    onMouseOut={(e) => {
-      e.target.style.backgroundColor = "#D32F2F"; // Back to original red
-      e.target.style.transform = "scale(1)";
-    }}
-  >
-    Log Out
-  </button>
-</div>
-
-</div>
-
+          {/* Log Out Button */}
+          <button
+            onClick={handleAdminLogout}
+            style={{
+              backgroundColor: "#D32F2F", // Red
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "bold",
+              border: "none",
+              cursor: "pointer",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s ease",
+            }}
+            onMouseOver={(e) => {
+              e.target.style.backgroundColor = "#B71C1C"; // Darken on hover, darker red
+              e.target.style.transform = "scale(1.05)";
+            }}
+            onMouseOut={(e) => {
+              e.target.style.backgroundColor = "#D32F2F"; // Back to original red
+              e.target.style.transform = "scale(1)";
+            }}
+          >
+            Log Out
+          </button>
+        </div>
+      </div>
     </>
   );
 }

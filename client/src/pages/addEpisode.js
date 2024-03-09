@@ -13,7 +13,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 dayjs.locale("en");
-export default function AddEpisode() {
+export default function AddEpisode({setProgress}) {
   const [episodeName, setEpisodeName] = useState("");
   const [episodeNumber, setEpisodeNumber] = useState("");
   //   const [animeId, setAnimeId] = useState("");
@@ -132,6 +132,13 @@ export default function AddEpisode() {
   useEffect(() => {
     console.log("Anime ID:", animeId);
   }, [animeId]);
+
+  useEffect(() => {
+    setProgress(10);
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
+  }, []);
 
   return (
     <div>

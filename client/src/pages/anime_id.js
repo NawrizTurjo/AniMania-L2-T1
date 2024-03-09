@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { json, useLocation } from "react-router";
 
-const AnimePage = ({ toggleRerender }) => {
+const AnimePage = ({ toggleRerender,setProgress }) => {
   const [anime, setAnime] = useState({
     anime_name: "",
     number_of_episodes: 0,
@@ -91,7 +91,11 @@ const AnimePage = ({ toggleRerender }) => {
   };
 
   useEffect(() => {
+    setProgress(10);
     getAnime();
+    setTimeout(() => {
+      setProgress(100);
+    }, 500);
   }, [id]);
 
   useEffect(() => {
